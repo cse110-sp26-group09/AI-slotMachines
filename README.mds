@@ -4,3 +4,5 @@ Model that will be used: GPT-5.2
 
 Model Harness: CLI for codex
 
+Use /clear to reset context so prompts do not affect each other. 
+
