@@ -6,3 +6,5 @@ Model Harness: CLI for codex (medium reasoning)
 
 Use /clear to reset context so prompts do not affect each other. 
 
+Note any patterns you notice while
+prompting (like AI messing up and redoing or interesting things in general)
