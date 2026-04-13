@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>AI Token Slot Machine</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app" aria-labelledby="title">
+      <header class="header">
+        <div class="titleWrap">
+          <h1 id="title">AI Token Slot Machine</h1>
+          <p class="subtitle">Spend tokens. Win tokens. Pretend it’s “alignment”.</p>
+        </div>
+        <div class="statusPills" role="group" aria-label="Account status">
+          <div class="pill" aria-label="Token balance">
+            <span class="pillLabel">Balance</span>
+            <span id="balance" class="pillValue" aria-live="polite">0</span>
+          </div>
+          <div class="pill" aria-label="Token debt">
+            <span class="pillLabel">Debt</span>
+            <span id="debt" class="pillValue">0</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="machine" aria-label="Slot machine">
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" id="reel0" aria-label="Reel 1"><span class="symbol">🪙</span></div>
+          <div class="reel" id="reel1" aria-label="Reel 2"><span class="symbol">🤖</span></div>
+          <div class="reel" id="reel2" aria-label="Reel 3"><span class="symbol">🧠</span></div>
+        </div>
+        <div class="machineFooter">
+          <div class="controls" role="group" aria-label="Controls">
+            <button id="spinBtn" class="primary" type="button">Spin</button>
+            <button id="maxBtn" type="button" title="Set bet to max">Max</button>
+            <button id="dailyBtn" type="button" title="Claim once per day">Daily</button>
+            <button id="borrowBtn" type="button" title="Borrow tokens (with interest)">Borrow</button>
+          </div>
+          <div class="betRow" role="group" aria-label="Bet controls">
+            <label for="bet">Bet</label>
+            <input id="bet" type="range" min="1" max="25" value="5" />
+            <output id="betOut" for="bet">5</output>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Results and paytable">
+        <div class="panelGrid">
+          <div class="card">
+            <div class="cardHeader">
+              <h2 class="cardTitle">Result</h2>
+              <div class="cardActions">
+                <button id="muteBtn" type="button" aria-pressed="false" title="Toggle sound">
+                  Sound: On
+                </button>
+                <button id="shareBtn" type="button" title="Copy/share latest result">Share</button>
+                <button id="resetBtn" type="button" title="Reset everything">Reset</button>
+              </div>
+            </div>
+            <p id="message" class="message" aria-live="polite">
+              Insert tokens to begin. (We already did. You’re welcome.)
+            </p>
+            <div class="logWrap" aria-label="Activity log">
+              <ol id="log" class="log" aria-live="polite"></ol>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2 class="cardTitle">Paytable</h2>
+            <div class="paytable" role="table" aria-label="Payout rules">
+              <div class="payRow header" role="row">
+                <div role="columnheader">Combo</div>
+                <div role="columnheader">Payout</div>
+                <div role="columnheader">Notes</div>
+              </div>
+              <div class="payRow" role="row">
+                <div role="cell">🦄 🦄 🦄</div>
+                <div role="cell">+50× bet</div>
+                <div role="cell">Hallucination jackpot (“confidently incorrect”)</div>
+              </div>
+              <div class="payRow" role="row">
+                <div role="cell">🧠 🧠 🧠</div>
+                <div role="cell">+20× bet</div>
+                <div role="cell">Rare moment of actual reasoning</div>
+              </div>
+              <div class="payRow" role="row">
+                <div role="cell">🔥 🔥 🔥</div>
+                <div role="cell">+12× bet</div>
+                <div role="cell">GPU goes brrr</div>
+              </div>
+              <div class="payRow" role="row">
+                <div role="cell">🤖 🤖 🤖</div>
+                <div role="cell">+8× bet</div>
+                <div role="cell">Model found your “intent”</div>
+              </div>
+              <div class="payRow" role="row">
+                <div role="cell">🪲 🪲 🪲</div>
+                <div role="cell">+10× bet</div>
+                <div role="cell">Bug bounty (it’s a feature)</div>
+              </div>
+              <div class="payRow" role="row">
+                <div role="cell">🧾 🧾 🧾</div>
+                <div role="cell">−8× bet</div>
+                <div role="cell">Invoice (auto-billed “for your safety”)</div>
+              </div>
+              <div class="payRow" role="row">
+                <div role="cell">💸 💸 💸</div>
+                <div role="cell">−12× bet</div>
+                <div role="cell">Subscription renewed while you blinked</div>
+              </div>
+              <div class="payRow" role="row">
+                <div role="cell">Any two match</div>
+                <div role="cell">+2× bet</div>
+                <div role="cell">“Good enough” ships to production</div>
+              </div>
+              <div class="payRow" role="row">
+                <div role="cell">No match</div>
+                <div role="cell">0</div>
+                <div role="cell">Context window ate your winnings</div>
+              </div>
+            </div>
+            <p class="fineprint">
+              RNG uses <code>crypto.getRandomValues()</code>. If you lose, blame the dataset.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <p>
+          Tip: press <kbd>Space</kbd> to spin. Uses platform APIs: Local Storage, Web Audio, Clipboard/Share,
+          and Crypto RNG.
+        </p>
+        <p class="srOnly" id="srStatus" aria-live="assertive"></p>
+      </footer>
+    </main>
+
+    <script src="app.js"></script>
+    <noscript>
+      <div style="max-width: 720px; margin: 18px auto; padding: 12px 16px; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px;">
+        This slot machine requires JavaScript. Without it, the reels are stuck in “static demo mode”.
+      </div>
+    </noscript>
+  </body>
+</html>
