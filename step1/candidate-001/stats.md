@@ -14,5 +14,5 @@ Files produced	app.js
                 4
 Lines of code	1048
 Runs in browser?	yes
-App Quality Notes	Runs good and UI is mostly good.
+App Quality Notes	Runs good and UI is mostly good. Is functional and used correct tools. Not aware of any bugs. Good amount of Features
 Code Quality Notes	Seems like good code 
