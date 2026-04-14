@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Token Casino — Slot Machine</title>
+    <meta
+      name="description"
+      content="A vanilla HTML/CSS/JS slot machine that lovingly roasts AI hype while you spend and win tokens."
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🤖🎰</div>
+        <div>
+          <h1>AI Token Casino</h1>
+          <p class="tagline">
+            Insert tokens. Spin hype. Collect “wins” that definitely generalize.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="machine" aria-label="Slot machine">
+        <div class="panel">
+          <div class="bank">
+            <div class="bankRow">
+              <div class="bankLabel">Tokens</div>
+              <div class="bankValue" id="tokenBalance" aria-label="Token balance">—</div>
+            </div>
+            <div class="bankRow">
+              <div class="bankLabel">House Line</div>
+              <div class="bankValue subtle" id="houseLine">“We monetize your curiosity.”</div>
+            </div>
+          </div>
+
+          <div class="reels" role="group" aria-label="Reels">
+            <div class="reel" id="reel0" aria-label="Reel 1">
+              <div class="symbol">
+                <div class="emoji" aria-hidden="true">⬜</div>
+                <div class="label">READY</div>
+              </div>
+            </div>
+            <div class="reel" id="reel1" aria-label="Reel 2">
+              <div class="symbol">
+                <div class="emoji" aria-hidden="true">⬜</div>
+                <div class="label">SET</div>
+              </div>
+            </div>
+            <div class="reel" id="reel2" aria-label="Reel 3">
+              <div class="symbol">
+                <div class="emoji" aria-hidden="true">⬜</div>
+                <div class="label">SPIN</div>
+              </div>
+            </div>
+            <div class="payline" aria-hidden="true"></div>
+          </div>
+
+          <div class="controls">
+            <button class="primary" id="spinBtn" type="button">
+              Spin <span class="pill">1 token</span>
+            </button>
+            <button class="secondary" id="autoBtn" type="button" aria-pressed="false">
+              Auto ×10
+            </button>
+            <button class="ghost" id="shareBtn" type="button" disabled>
+              Copy brag
+            </button>
+            <button class="ghost danger" id="resetBtn" type="button">Reset</button>
+          </div>
+
+          <div class="message" id="message" role="status" aria-live="polite">
+            Welcome! This machine is “trained” on your willingness to click buttons.
+          </div>
+
+          <details class="details">
+            <summary>Pay table (approximate vibes)</summary>
+            <div class="table">
+              <div class="row head">
+                <div>Combo</div>
+                <div>Payout</div>
+                <div>Commentary</div>
+              </div>
+              <div class="row">
+                <div>3× API KEY 🔑</div>
+                <div>+50</div>
+                <div>Congrats, you’ve unlocked the “billing dashboard”.</div>
+              </div>
+              <div class="row">
+                <div>3× GPU 🔥</div>
+                <div>+20</div>
+                <div>It’s fine, the fans are “part of the aesthetic”.</div>
+              </div>
+              <div class="row">
+                <div>3× FINE-TUNE 🧪</div>
+                <div>+15</div>
+                <div>Now it’s confidently wrong in your brand voice.</div>
+              </div>
+              <div class="row">
+                <div>3× PROMPT 🧠</div>
+                <div>+10</div>
+                <div>You discover a new synonym for “please”.</div>
+              </div>
+              <div class="row">
+                <div>3× TOKENS 🪙</div>
+                <div>+8</div>
+                <div>Amazing: you won tokens… in a token game.</div>
+              </div>
+              <div class="row">
+                <div>Any pair</div>
+                <div>+2 to +6</div>
+                <div>Small win. Big tweet thread.</div>
+              </div>
+              <div class="row">
+                <div>Any REJECT 🚫</div>
+                <div>Cooldown</div>
+                <div>Rate-limited for your own safety (the house’s safety).</div>
+              </div>
+              <div class="row">
+                <div>3× HALLUCINATION 🪞</div>
+                <div>+0</div>
+                <div>It insisted you won. Reality disagreed.</div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <aside class="side">
+        <div class="panel">
+          <h2>Telemetry (totally not tracking you)</h2>
+          <ul class="stats">
+            <li><span>Spins</span><span id="statSpins">0</span></li>
+            <li><span>Spent</span><span id="statSpent">0</span></li>
+            <li><span>Won</span><span id="statWon">0</span></li>
+            <li><span>Biggest win</span><span id="statBiggest">0</span></li>
+            <li><span>Jackpots</span><span id="statJackpots">0</span></li>
+          </ul>
+
+          <div class="tip">
+            <div class="tipTitle">Pro tip</div>
+            <div class="tipBody">
+              If you run out of tokens, you can always “raise a seed round” by hitting Reset.
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <canvas id="confetti" class="confetti" aria-hidden="true"></canvas>
+
+    <footer class="foot">
+      Built with vanilla web tech: HTML, CSS, JavaScript, and a suspicious amount of optimism.
+    </footer>
+  </body>
+</html>
+
