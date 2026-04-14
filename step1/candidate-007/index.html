@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Token Tug-of-War — AI Slot Machine</title>
+    <meta
+      name="description"
+      content="A vanilla HTML/CSS/JS slot machine that lovingly roasts AI: spend tokens, win tokens, and occasionally get VC funding with strings attached."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg" aria-hidden="true"></div>
+
+    <main class="app" aria-label="AI Slot Machine">
+      <header class="header">
+        <div class="brand">
+          <div class="badge" aria-hidden="true">LLM</div>
+          <div>
+            <h1>Token Tug-of-War</h1>
+            <p class="sub">
+              Spend tokens. Win tokens. Receive unsolicited “model confidence.”
+            </p>
+          </div>
+        </div>
+
+        <section class="stats" aria-label="Stats">
+          <div class="stat">
+            <div class="k">Tokens</div>
+            <div class="v" id="tokensValue">—</div>
+          </div>
+          <div class="stat">
+            <div class="k">Spin cost</div>
+            <div class="v" id="spinCostValue">—</div>
+          </div>
+          <div class="stat">
+            <div class="k">Model level</div>
+            <div class="v">
+              <span id="modelLevelValue">—</span>
+              <span class="muted" id="multiplierValue"></span>
+            </div>
+          </div>
+        </section>
+      </header>
+
+      <section class="machine" aria-label="Slot machine">
+        <div class="topbar">
+          <div class="meter" aria-label="Confidence meter">
+            <div class="meterLabel">
+              <span>Confidence</span>
+              <span class="meterValue" id="confidenceValue">—</span>
+            </div>
+            <div class="meterTrack" role="presentation">
+              <div class="meterFill" id="confidenceFill"></div>
+            </div>
+          </div>
+
+          <div class="toggles" aria-label="Toggles">
+            <label class="toggle">
+              <input type="checkbox" id="audioToggle" />
+              <span>Audio</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="vibrateToggle" />
+              <span>Vibrate</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="hallucinationToggle" />
+              <span>Hallucination mode</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" aria-label="Reel 1">
+            <div class="window" aria-hidden="true"></div>
+            <div class="symbol" id="reel0">—</div>
+          </div>
+          <div class="reel" aria-label="Reel 2">
+            <div class="window" aria-hidden="true"></div>
+            <div class="symbol" id="reel1">—</div>
+          </div>
+          <div class="reel" aria-label="Reel 3">
+            <div class="window" aria-hidden="true"></div>
+            <div class="symbol" id="reel2">—</div>
+          </div>
+        </div>
+
+        <div class="controls" aria-label="Controls">
+          <button class="btn primary" id="spinBtn" type="button">
+            Spin (pay tokens)
+          </button>
+          <button class="btn" id="upgradeBtn" type="button">
+            Upgrade model
+          </button>
+          <button class="btn danger" id="bailoutBtn" type="button">
+            VC bailout
+          </button>
+          <button class="btn ghost" id="resetBtn" type="button">Reset</button>
+        </div>
+
+        <div class="readout">
+          <div class="msg" id="message" role="status" aria-live="polite"></div>
+          <details class="payouts">
+            <summary>Payout table</summary>
+            <div class="payoutGrid" id="payoutGrid" aria-label="Payouts"></div>
+            <p class="fineprint">
+              Payouts are multiplied by the model multiplier. Hallucination mode
+              inflates confidence (not accuracy).
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <p>
+          Uses platform APIs: <span class="mono">localStorage</span>,
+          <span class="mono">Web Audio</span>, and
+          <span class="mono">Vibration</span> (when available).
+        </p>
+      </footer>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
+
