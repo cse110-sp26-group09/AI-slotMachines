@@ -31,7 +31,7 @@ make a readme
 Roles of candidates:
 James: 1-5 (done)
 Daniel: 6-10 (done)
-Aditya: 11-15
+Aditya: 11-15 (done)
 Jason: 16-20 (done)
 Woosik: 21-25 (done)
 Hieu: 26-30 (done)
