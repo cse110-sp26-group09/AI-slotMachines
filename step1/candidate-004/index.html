@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AI Token Slots</title>
+    <meta
+      name="description"
+      content="A vanilla web slot machine that roasts AI while you win (and burn) tokens."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app" aria-label="AI Token Slots">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">🎰</div>
+          <div>
+            <h1>AI Token Slots</h1>
+            <p class="tagline">Spin the hype. Spend tokens. Win tokens. Pretend it was “alignment”.</p>
+          </div>
+        </div>
+
+        <section class="wallet" aria-label="Token wallet">
+          <div class="walletRow">
+            <div class="label">Balance</div>
+            <div class="value" id="balanceValue" aria-live="polite">—</div>
+          </div>
+          <div class="walletRow">
+            <div class="label">Bet</div>
+            <div class="value">
+              <div class="betPills" role="group" aria-label="Choose bet">
+                <button class="pill" type="button" data-bet="5">5</button>
+                <button class="pill isActive" type="button" data-bet="10">10</button>
+                <button class="pill" type="button" data-bet="25">25</button>
+                <button class="pill" type="button" data-bet="50">50</button>
+              </div>
+            </div>
+          </div>
+          <div class="walletActions">
+            <button class="btn btnGhost" type="button" id="claimDailyBtn">
+              Claim daily tokens
+            </button>
+            <button class="btn btnGhost" type="button" id="resetBtn">Reset</button>
+          </div>
+        </section>
+      </header>
+
+      <section class="machine" aria-label="Slot machine">
+        <div class="reels" aria-hidden="true">
+          <div class="reel" id="reel0"><div class="reelFace" id="reelFace0">—</div></div>
+          <div class="reel" id="reel1"><div class="reelFace" id="reelFace1">—</div></div>
+          <div class="reel" id="reel2"><div class="reelFace" id="reelFace2">—</div></div>
+        </div>
+
+        <div class="controls" aria-label="Controls">
+          <button class="btn btnPrimary" type="button" id="spinBtn">
+            SPIN
+          </button>
+          <label class="toggle">
+            <input type="checkbox" id="autoSpinToggle" />
+            <span>Auto-spin</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="soundToggle" checked />
+            <span>Sound</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="reducedMotionToggle" />
+            <span>Reduce motion</span>
+          </label>
+        </div>
+
+        <div class="readout" aria-label="Result">
+          <div class="resultLine" id="resultLine" aria-live="polite">
+            Insert tokens. Press spin. Receive vibes.
+          </div>
+          <div class="subLine" id="subLine" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="stats" aria-label="Stats">
+        <div class="stat">
+          <div class="statLabel">Spins</div>
+          <div class="statValue" id="spinsValue">—</div>
+        </div>
+        <div class="stat">
+          <div class="statLabel">Spent</div>
+          <div class="statValue" id="spentValue">—</div>
+        </div>
+        <div class="stat">
+          <div class="statLabel">Won</div>
+          <div class="statValue" id="wonValue">—</div>
+        </div>
+        <div class="stat">
+          <div class="statLabel">Best win</div>
+          <div class="statValue" id="bestValue">—</div>
+        </div>
+      </section>
+
+      <section class="paytable" aria-label="Pay table">
+        <details>
+          <summary>Pay table (not financial advice)</summary>
+          <div class="paytableGrid" id="paytableGrid"></div>
+          <p class="fineprint">
+            Odds are “AI-generated” (i.e., whatever happens happens). This machine uses local randomness and
+            stores your balance in your browser.
+          </p>
+        </details>
+      </section>
+
+      <footer class="footer">
+        <p>
+          Tip: If you lose, just say it’s a “temporary capability regression” and move on.
+        </p>
+      </footer>
+    </main>
+
+    <div class="srOnly" id="ariaAnnouncer" aria-live="assertive"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
+

@@ -1,0 +1,386 @@
+:root {
+  --bg0: #070a12;
+  --bg1: #0b1023;
+  --card: rgba(255, 255, 255, 0.06);
+  --card2: rgba(255, 255, 255, 0.09);
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.68);
+  --faint: rgba(255, 255, 255, 0.5);
+  --border: rgba(255, 255, 255, 0.12);
+  --shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
+  --glow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 0 30px rgba(109, 76, 255, 0.25);
+  --accent: #6d4cff;
+  --accent2: #00d1ff;
+  --danger: #ff4c7a;
+  --good: #34d399;
+  --warn: #fbbf24;
+  --radius: 18px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
+    "Segoe UI Emoji";
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--sans);
+  color: var(--text);
+  background: radial-gradient(1200px 800px at 15% 0%, rgba(109, 76, 255, 0.25), transparent 60%),
+    radial-gradient(900px 600px at 95% 20%, rgba(0, 209, 255, 0.18), transparent 60%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
+}
+
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 18px 36px;
+}
+
+.topbar {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.brand {
+  display: flex;
+  gap: 14px;
+  padding: 18px;
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  background: linear-gradient(135deg, rgba(109, 76, 255, 0.45), rgba(0, 209, 255, 0.25));
+  box-shadow: var(--glow);
+}
+
+h1 {
+  font-size: 22px;
+  line-height: 1.2;
+  margin: 2px 0 6px;
+}
+
+.tagline {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.wallet {
+  padding: 18px;
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 12px;
+}
+
+.walletRow {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.wallet .label {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.wallet .value {
+  font-family: var(--mono);
+  font-size: 16px;
+}
+
+.betPills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.12);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  padding: 7px 10px;
+  border-radius: 999px;
+}
+
+.pill.isActive {
+  border-color: rgba(109, 76, 255, 0.6);
+  background: rgba(109, 76, 255, 0.18);
+  box-shadow: 0 0 0 3px rgba(109, 76, 255, 0.1);
+}
+
+.walletActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.machine {
+  margin-top: 18px;
+  padding: 22px;
+  border-radius: calc(var(--radius) + 6px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.045));
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.machine::before {
+  content: "";
+  position: absolute;
+  inset: -120px -80px;
+  background: radial-gradient(400px 260px at 20% 20%, rgba(109, 76, 255, 0.22), transparent 60%),
+    radial-gradient(480px 320px at 85% 35%, rgba(0, 209, 255, 0.15), transparent 60%);
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.reels {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+  z-index: 1;
+}
+
+.reel {
+  height: 104px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.24);
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.reelFace {
+  font-family: var(--mono);
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  text-align: center;
+  padding: 0 10px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.btn {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.16);
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btnPrimary {
+  background: linear-gradient(135deg, rgba(109, 76, 255, 0.95), rgba(0, 209, 255, 0.55));
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: var(--glow);
+  min-width: 150px;
+}
+
+.btnGhost {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  user-select: none;
+}
+
+.toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+
+.readout {
+  margin-top: 16px;
+  padding: 14px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
+.resultLine {
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.subLine {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.stats {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.stat {
+  padding: 14px;
+  border-radius: var(--radius);
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+.statLabel {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.statValue {
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 18px;
+}
+
+.paytable {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+}
+
+.paytable summary {
+  cursor: pointer;
+  color: var(--text);
+  font-weight: 650;
+}
+
+.paytableGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 14px;
+}
+
+.payRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.payLeft {
+  font-family: var(--mono);
+  color: var(--text);
+}
+
+.payRight {
+  font-family: var(--mono);
+  color: var(--muted);
+}
+
+.fineprint {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.footer {
+  margin-top: 16px;
+  color: var(--faint);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.win {
+  color: var(--good);
+}
+
+.loss {
+  color: var(--danger);
+}
+
+.warn {
+  color: var(--warn);
+}
+
+@media (max-width: 900px) {
+  .topbar {
+    grid-template-columns: 1fr;
+  }
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .paytableGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
