@@ -1,5 +1,3 @@
- 3m 28s
-   gpt-5.2 medium · Context [▎    ] · 258K window · 144K used · 133K in · 11K out
 ## Field Notes
 
 - Run ID: candidate-001
