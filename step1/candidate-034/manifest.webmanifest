@@ -1,0 +1,17 @@
+{
+  "name": "AI Token Slots",
+  "short_name": "AI Slots",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#0b1020",
+  "description": "A vanilla-web slot machine that makes fun of AI tokens.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
