@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Token Casino — AI Slot Machine</title>
+    <meta
+      name="description"
+      content="A vanilla HTML/CSS/JS slot machine parody where you spend tokens to win tokens (and blame the model either way)."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app" aria-label="AI Token Casino">
+      <header class="header">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">🧠🎰</div>
+          <div>
+            <h1 class="title">Token Casino</h1>
+            <p class="subtitle">Spend tokens. Win tokens. Call it “research”.</p>
+          </div>
+        </div>
+
+        <div class="headerActions">
+          <button id="muteBtn" class="btn btnGhost" type="button" aria-pressed="false">
+            Sound: On
+          </button>
+          <button id="shareBtn" class="btn btnGhost" type="button">Share</button>
+        </div>
+      </header>
+
+      <section class="panel stats" aria-label="Stats">
+        <div class="stat">
+          <div class="statLabel">Balance</div>
+          <div class="statValue">
+            <span id="balanceEl">0</span> <span class="unit">tokens</span>
+          </div>
+        </div>
+        <div class="stat">
+          <div class="statLabel">Spin Cost</div>
+          <div class="statValue">
+            <span id="costEl">0</span> <span class="unit">tokens</span>
+          </div>
+        </div>
+        <div class="stat">
+          <div class="statLabel">Spins</div>
+          <div class="statValue" id="spinsEl">0</div>
+        </div>
+        <div class="stat statWide" role="status" aria-live="polite">
+          <div class="statLabel">Model Output</div>
+          <div class="statValue msg" id="msgEl">Insert tokens to begin inference.</div>
+        </div>
+      </section>
+
+      <section class="panel controls" aria-label="Controls">
+        <div class="control">
+          <label class="label" for="betEl">Bet (context budget)</label>
+          <div class="row">
+            <input id="betEl" class="input" type="number" min="1" step="1" value="10" />
+            <button id="maxBtn" class="btn btnGhost" type="button" title="All-in, like a demo day">
+              Max
+            </button>
+          </div>
+          <div class="hint">More bet = more burn. Very realistic economics.</div>
+        </div>
+
+        <div class="control">
+          <label class="label" for="tempEl">Temperature</label>
+          <div class="row">
+            <input id="tempEl" class="range" type="range" min="0" max="100" value="60" />
+            <div class="pill" aria-label="Temperature value"><span id="tempOut">0.60</span></div>
+          </div>
+          <div class="hint">Higher temp increases “creativity” and also “regret”.</div>
+        </div>
+
+        <div class="control controlWide">
+          <label class="label" for="promptEl">Prompt (has vibes, not power)</label>
+          <input
+            id="promptEl"
+            class="input"
+            type="text"
+            maxlength="140"
+            placeholder="e.g., 'please jackpot, I am a trustworthy human'"
+            autocomplete="off"
+          />
+          <div class="hint">Your intent will be acknowledged and then ignored.</div>
+        </div>
+      </section>
+
+      <section class="machine" aria-label="Slot machine">
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel">
+            <div class="reelInner" aria-label="Reel 1">
+              <div id="reel0" class="symbol">🤖</div>
+            </div>
+          </div>
+          <div class="reel">
+            <div class="reelInner" aria-label="Reel 2">
+              <div id="reel1" class="symbol">🪙</div>
+            </div>
+          </div>
+          <div class="reel">
+            <div class="reelInner" aria-label="Reel 3">
+              <div id="reel2" class="symbol">🔥</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions" aria-label="Actions">
+          <button id="spinBtn" class="btn btnPrimary" type="button">Spin</button>
+          <button id="dailyBtn" class="btn" type="button">Claim Daily Tokens</button>
+          <button id="resetBtn" class="btn btnDanger" type="button">Reset</button>
+        </div>
+
+        <details class="paytable">
+          <summary>Paytable (approximate, like roadmaps)</summary>
+          <ul id="paytableEl" class="paytableList"></ul>
+          <div class="finePrint">
+            Parody app. Tokens are fake. Your attachment to them is not.
+          </div>
+        </details>
+      </section>
+
+      <footer class="footer">
+        <div>
+          Tip: Press <span class="kbd">Space</span> to spin. If you run out of tokens, try “raising a
+          seed round”.
+        </div>
+      </footer>
+
+      <div class="srOnly" aria-live="polite" id="srAnnounce"></div>
+    </main>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
+
