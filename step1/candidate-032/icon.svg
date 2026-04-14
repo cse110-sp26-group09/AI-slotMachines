@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="TokenBurner icon">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7dc9ff" stop-opacity="0.95" />
+      <stop offset="1" stop-color="#c8ff7d" stop-opacity="0.9" />
+    </linearGradient>
+    <radialGradient id="r" cx="28%" cy="20%" r="70%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22" />
+      <stop offset="1" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect x="32" y="32" width="448" height="448" rx="120" fill="#0b0c10" />
+  <rect x="48" y="48" width="416" height="416" rx="112" fill="url(#g)" opacity="0.18" />
+  <rect x="52" y="52" width="408" height="408" rx="110" fill="url(#r)" />
+
+  <!-- Token -->
+  <circle cx="216" cy="270" r="116" fill="url(#g)" opacity="0.9" />
+  <circle cx="216" cy="270" r="92" fill="#0b0c10" opacity="0.92" />
+  <path d="M172 270c0-28 19-50 44-50h6c25 0 44 22 44 50s-19 50-44 50h-6c-25 0-44-22-44-50z" fill="url(#g)" opacity="0.95"/>
+  <path d="M180 270c0 23 16 42 36 42h6c20 0 36-19 36-42s-16-42-36-42h-6c-20 0-36 19-36 42z" fill="#0b0c10" opacity="0.9"/>
+
+  <!-- Robot head -->
+  <rect x="278" y="168" width="156" height="164" rx="52" fill="#0b0c10" opacity="0.92" />
+  <rect x="292" y="184" width="128" height="132" rx="44" fill="url(#g)" opacity="0.38" />
+  <circle cx="322" cy="250" r="16" fill="#0b0c10" />
+  <circle cx="390" cy="250" r="16" fill="#0b0c10" />
+  <path d="M318 292c18 18 58 18 76 0" fill="none" stroke="#0b0c10" stroke-width="14" stroke-linecap="round" />
+  <path d="M356 144v28" stroke="url(#g)" stroke-width="14" stroke-linecap="round" />
+  <circle cx="356" cy="132" r="12" fill="url(#g)" />
+</svg>
+

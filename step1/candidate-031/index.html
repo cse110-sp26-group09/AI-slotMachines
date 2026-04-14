@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0e14" />
+    <meta
+      name="description"
+      content="A tiny vanilla-web slot machine where you win and spend prompt tokens."
+    />
+    <title>Prompt Casino — Token Slot</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🎰</div>
+        <div class="brandText">
+          <h1>Prompt Casino</h1>
+          <p class="tagline">Where the house edge is “alignment”.</p>
+        </div>
+      </div>
+
+      <div class="topActions">
+        <button id="installBtn" class="btn btnGhost" type="button" hidden>
+          Install
+        </button>
+        <button id="shareBtn" class="btn btnGhost" type="button">
+          Share slip
+        </button>
+        <button id="resetBtn" class="btn btnGhost" type="button">
+          Factory reset
+        </button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel machine" aria-label="Slot machine">
+        <div class="stats" aria-label="Account stats">
+          <div class="stat">
+            <div class="k">Balance</div>
+            <div class="v">
+              <span id="tokenBalance" class="mono">0</span>
+              <span class="unit">tokens</span>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="k">Spin cost</div>
+            <div class="v">
+              <span id="spinCost" class="mono">0</span>
+              <span class="unit">tokens</span>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="k">Payout</div>
+            <div class="v">
+              <span id="lastDelta" class="mono">0</span>
+              <span class="unit">tokens</span>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="k">Status</div>
+            <div id="statusLine" class="v status" aria-live="polite">
+              Booting model…
+            </div>
+          </div>
+        </div>
+
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reelFrame">
+            <div id="reel0" class="reel" aria-label="Reel 1">🤖</div>
+          </div>
+          <div class="reelFrame">
+            <div id="reel1" class="reel" aria-label="Reel 2">🤖</div>
+          </div>
+          <div class="reelFrame">
+            <div id="reel2" class="reel" aria-label="Reel 3">🤖</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="bet">
+            <div class="labelRow">
+              <label for="betSelect">Inference tier</label>
+              <span class="hint">Higher tier burns more tokens.</span>
+            </div>
+            <select id="betSelect" class="select" aria-label="Select bet tier">
+              <option value="1">GPT-mini (x1)</option>
+              <option value="2">GPT-medium (x2)</option>
+              <option value="5">GPT-turbo (x5)</option>
+            </select>
+          </div>
+
+          <div class="buttons">
+            <button id="spinBtn" class="btn btnPrimary" type="button">
+              Spin
+            </button>
+            <button id="autoBtn" class="btn btnGhost" type="button">
+              Auto: Off
+            </button>
+            <button id="stipendBtn" class="btn btnGhost" type="button">
+              Claim daily stipend
+            </button>
+          </div>
+        </div>
+
+        <div class="logWrap">
+          <div class="logHead">
+            <div class="logTitle">Model output</div>
+            <div class="logMeta mono" id="seedLine">seed: —</div>
+          </div>
+          <div
+            id="log"
+            class="log"
+            role="log"
+            aria-label="Event log"
+            aria-live="polite"
+          ></div>
+        </div>
+      </section>
+
+      <aside class="panel sidebar">
+        <section class="card">
+          <h2>Paytable</h2>
+          <p class="small">
+            You’re not gambling. You’re “iterating”. (The difference is a
+            slide deck.)
+          </p>
+          <ul class="paytable">
+            <li><span class="syms">🪙🪙🪙</span><span class="pay">+500</span></li>
+            <li><span class="syms">🔥🔥🔥</span><span class="pay">+300</span></li>
+            <li><span class="syms">🤖🤖🤖</span><span class="pay">+220</span></li>
+            <li><span class="syms">🧠🧠🧠</span><span class="pay">+180</span></li>
+            <li><span class="syms">🔌🔌🔌</span><span class="pay">+120</span></li>
+            <li>
+              <span class="syms">Any pair</span><span class="pay">+30</span>
+            </li>
+            <li>
+              <span class="syms">📉 anywhere</span><span class="pay">−50</span>
+            </li>
+            <li>
+              <span class="syms">🧾🧾🧾</span><span class="pay">+0</span>
+            </li>
+          </ul>
+          <p class="small">
+            Payouts scale with tier. Losses scale with your life choices.
+          </p>
+        </section>
+
+        <section class="card">
+          <h2>Symbols</h2>
+          <div class="grid">
+            <div class="chip"><span>🤖</span><span>bot</span></div>
+            <div class="chip"><span>🧠</span><span>weights</span></div>
+            <div class="chip"><span>🔌</span><span>plugin</span></div>
+            <div class="chip"><span>🔥</span><span>GPU</span></div>
+            <div class="chip"><span>🪙</span><span>tokens</span></div>
+            <div class="chip"><span>📉</span><span>rate limit</span></div>
+            <div class="chip"><span>🧾</span><span>receipt</span></div>
+            <div class="chip"><span>🪤</span><span>prompt trap</span></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Tips</h2>
+          <ul class="smallList">
+            <li>Use <span class="mono">Space</span> to spin.</li>
+            <li>Auto-spin stops when you go broke.</li>
+            <li>Daily stipend is local-only.</li>
+          </ul>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <div class="small">
+        Built with plain HTML/CSS/JS + platform APIs. No trackers. Only vibes.
+      </div>
+    </footer>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
+

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>TokenBurner 3000 — AI Slot Machine</title>
+    <meta
+      name="description"
+      content="A vanilla web slot machine that lovingly mocks AI: win tokens, burn tokens, and occasionally hallucinate your way into debt."
+    />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🪙🤖</div>
+        <div>
+          <h1>TokenBurner 3000</h1>
+          <p class="tagline">Win tokens. Spend tokens. Get rate-limited anyway.</p>
+        </div>
+      </div>
+
+      <div class="hud" role="group" aria-label="Balances">
+        <div class="pill" title="Your in-app balance (not redeemable for anything, like most tokens).">
+          <div class="pillLabel">Tokens</div>
+          <div class="pillValue" id="tokensValue">—</div>
+        </div>
+        <div class="pill" title="Spins cost credits. Winnings are paid in tokens. This is normal.">
+          <div class="pillLabel">API Credits</div>
+          <div class="pillValue" id="creditsValue">—</div>
+        </div>
+        <div class="pill" title="House edge is a feature.">
+          <div class="pillLabel">Bet</div>
+          <div class="pillValue"><span id="betValue">—</span><span class="muted">/spin</span></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="machine" aria-label="Slot machine">
+        <div class="screen" aria-live="polite">
+          <div class="reels" role="group" aria-label="Reels">
+            <div class="reel" id="reel0" aria-label="Reel 1">
+              <div class="glyph" aria-hidden="true">—</div>
+              <div class="label">—</div>
+            </div>
+            <div class="reel" id="reel1" aria-label="Reel 2">
+              <div class="glyph" aria-hidden="true">—</div>
+              <div class="label">—</div>
+            </div>
+            <div class="reel" id="reel2" aria-label="Reel 3">
+              <div class="glyph" aria-hidden="true">—</div>
+              <div class="label">—</div>
+            </div>
+          </div>
+
+          <div class="result" id="resultLine">Insert credits. Or don’t. We’ll bill you anyway.</div>
+        </div>
+
+        <div class="controls">
+          <button class="btn primary" id="spinBtn" type="button">
+            <span class="btnTitle">Spin</span>
+            <span class="btnHint">Space</span>
+          </button>
+          <button class="btn" id="autoBtn" type="button" aria-pressed="false" title="Automatic spinning (until rate-limited or broke).">
+            Auto
+          </button>
+          <button class="btn" id="muteBtn" type="button" aria-pressed="false" title="Toggle sound effects (Web Audio).">
+            Sound
+          </button>
+          <button class="btn" id="fundBtn" type="button" title="Free credits, paid for by a totally-real pitch deck. (Limited.)">
+            VC Funding
+          </button>
+          <button class="btn danger" id="resetBtn" type="button" title="Deletes your local save. Like a bad fine-tune.">
+            Factory Reset
+          </button>
+        </div>
+
+        <div class="betRow">
+          <label class="betLabel" for="betInput">Bet size</label>
+          <input id="betInput" type="range" min="1" max="25" step="1" value="5" />
+          <div class="betMeta">
+            <div class="small muted">Higher bet = higher disappointment</div>
+          </div>
+        </div>
+
+        <details class="payouts" open>
+          <summary>Payout table (subject to “model updates”)</summary>
+          <div class="payoutGrid" id="payoutGrid" aria-label="Payout table"></div>
+          <p class="fineprint">
+            Tip: <span class="kbd">PIVOT</span> is a wild. <span class="kbd">HALLUCINATION</span> charges you extra.
+          </p>
+        </details>
+      </section>
+
+      <section class="side">
+        <div class="card">
+          <h2>Telemetry</h2>
+          <div class="stats" id="statsBox" aria-label="Stats"></div>
+          <div class="cardActions">
+            <button class="btn tiny" id="copyBtn" type="button" title="Copy last result to clipboard (Clipboard API).">Copy</button>
+            <button class="btn tiny" id="shareBtn" type="button" title="Share last result (Web Share).">Share</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Event log</h2>
+          <div class="log" id="logBox" role="log" aria-label="Event log"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <span class="muted">Built with vanilla HTML/CSS/JS + platform APIs (localStorage, Web Audio, Share, Clipboard, Service Worker, Vibration).</span>
+    </footer>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
+
