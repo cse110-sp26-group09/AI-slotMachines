@@ -25,4 +25,6 @@ Roles of candidates:
 James: 1-5
 Daniel: 6-10
 Aditya: 11-15
-Jason 16-20
+Jason: 16-20
+Woosik: 21-25
+Hieu: 26-30
