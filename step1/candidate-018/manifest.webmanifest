@@ -1,0 +1,17 @@
+{
+  "name": "Token Slots: The AI Casino",
+  "short_name": "Token Slots",
+  "description": "A vanilla web slot machine that turns AI hype into tokens you can win and spend.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#080912",
+  "theme_color": "#080912",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
+
