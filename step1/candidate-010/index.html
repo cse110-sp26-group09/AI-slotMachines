@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1020" />
+    <title>AI Token Slot Machine</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app" aria-labelledby="title">
+      <header class="top">
+        <div class="brand">
+          <h1 id="title">AI Token Slot Machine</h1>
+          <p class="tagline">Spin for tokens. Spend tokens. Pretend it’s “alignment”.</p>
+        </div>
+
+        <div class="stats" role="group" aria-label="Game stats">
+          <div class="stat">
+            <div class="stat__label">Balance</div>
+            <div class="stat__value"><span id="balance">0</span> 🪙</div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">Bet</div>
+            <div class="stat__value"><span id="bet">0</span> 🪙</div>
+          </div>
+          <div class="stat stat--small">
+            <div class="stat__label">Temp</div>
+            <div class="stat__value"><span id="tempLabel">0.7</span></div>
+          </div>
+        </div>
+      </header>
+
+      <section class="machine" aria-label="Slot machine">
+        <div class="screen" aria-hidden="true">
+          <div class="glow"></div>
+        </div>
+
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" id="reel0" aria-label="Reel 1">
+            <div class="reel__inner"><span class="symbol" id="sym0">🤖</span></div>
+          </div>
+          <div class="reel" id="reel1" aria-label="Reel 2">
+            <div class="reel__inner"><span class="symbol" id="sym1">🪙</span></div>
+          </div>
+          <div class="reel" id="reel2" aria-label="Reel 3">
+            <div class="reel__inner"><span class="symbol" id="sym2">🧠</span></div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="spinBtn" class="btn btn--primary" type="button">
+            Spin <span class="kbd" aria-hidden="true">Space</span>
+          </button>
+
+          <div class="controls__row">
+            <button id="betDownBtn" class="btn" type="button" aria-label="Decrease bet">−</button>
+            <button id="betUpBtn" class="btn" type="button" aria-label="Increase bet">+</button>
+
+            <label class="toggle">
+              <input id="muteToggle" type="checkbox" />
+              <span>Mute</span>
+            </label>
+          </div>
+
+          <div class="controls__row controls__row--sliders">
+            <label class="slider">
+              <span>Model temperature</span>
+              <input id="temp" type="range" min="0" max="2" step="0.05" value="0.7" />
+            </label>
+          </div>
+
+          <div class="actions" role="group" aria-label="Token actions">
+            <button id="fineTuneBtn" class="btn btn--danger" type="button">
+              Fine‑tune (−50 🪙)
+            </button>
+            <button id="claimBtn" class="btn" type="button">Claim daily grant (+100 🪙)</button>
+            <button id="shareBtn" class="btn" type="button">Share result</button>
+            <button id="resetBtn" class="btn btn--ghost" type="button">Reset</button>
+          </div>
+        </div>
+
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="log" aria-label="Spin log">
+        <div class="log__head">
+          <h2>Audit Log (definitely not telemetry)</h2>
+          <p class="log__hint">Tip: try <span class="kbd">Space</span>, <span class="kbd">↑</span>/<span class="kbd">↓</span>, and <span class="kbd">Enter</span>.</p>
+        </div>
+        <ol id="logList" class="log__list" reversed></ol>
+      </section>
+
+      <footer class="foot">
+        <p>
+          Uses platform APIs: <code>crypto.getRandomValues</code>, <code>localStorage</code>, Web Audio, Vibration, Clipboard/Share.
+        </p>
+      </footer>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
+
