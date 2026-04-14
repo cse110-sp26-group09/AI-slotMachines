@@ -1,6 +1,6 @@
 ## Field Notes
 
-- Run ID: candidate-001
+- Run ID: candidate-007
 - Timestamp: 6:11 (finish time)
 - Model + version string	GPT 5.2 medium
 - Input tokens:	133K
