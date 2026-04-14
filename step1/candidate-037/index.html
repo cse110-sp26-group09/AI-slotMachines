@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <meta
+      name="description"
+      content="A vanilla-web AI satire slot machine where you spend tokens to spin and win tokens back."
+    />
+    <title>AI Token Slot Machine</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="top">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">AI</div>
+          <div>
+            <h1>Token Slot Machine</h1>
+            <p class="sub">the future of gambling, but with invoices</p>
+          </div>
+        </div>
+
+        <div class="ledger" role="group" aria-label="Tokens and bill">
+          <div class="pill">
+            <div class="k">Balance</div>
+            <div class="v"><span id="balance">0</span> tokens</div>
+          </div>
+          <div class="pill">
+            <div class="k">API Bill</div>
+            <div class="v"><span id="bill">0</span> tokens</div>
+          </div>
+        </div>
+      </header>
+
+      <section class="machine" aria-label="Slot machine">
+        <div class="row">
+          <div class="panel">
+            <div class="panelrow">
+              <div class="k">Model</div>
+              <div class="v mono" id="model">gpt-Overconfident-XL</div>
+            </div>
+            <div class="panelrow">
+              <div class="k">Temperature</div>
+              <div class="v">
+                <input id="temp" type="range" min="0" max="100" value="55" />
+                <span class="mono" id="tempLabel">0.55</span>
+              </div>
+            </div>
+            <div class="panelrow">
+              <div class="k">Compliance</div>
+              <div class="v">
+                <label class="toggle">
+                  <input id="compliance" type="checkbox" />
+                  <span class="ui" aria-hidden="true"></span>
+                  <span class="mono">tax</span>
+                </label>
+                <span class="hint">reduces winnings, increases “safety”</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="reels" role="group" aria-label="Reels">
+            <div class="reel">
+              <div class="win" id="r0">?</div>
+              <div class="cap mono">Inference</div>
+            </div>
+            <div class="reel">
+              <div class="win" id="r1">?</div>
+              <div class="cap mono">Hype</div>
+            </div>
+            <div class="reel">
+              <div class="win" id="r2">?</div>
+              <div class="cap mono">Invoice</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="bet" role="group" aria-label="Bet controls">
+            <button class="btn ghost" id="betDown" type="button" aria-label="Decrease bet">-</button>
+            <div class="betread">
+              <div class="k">Bet</div>
+              <div class="v mono"><span id="bet">10</span> tokens</div>
+            </div>
+            <button class="btn ghost" id="betUp" type="button" aria-label="Increase bet">+</button>
+          </div>
+
+          <div class="actions" role="group" aria-label="Actions">
+            <button class="btn primary" id="spin" type="button">
+              Spin <span class="kbd" aria-hidden="true">Space</span>
+            </button>
+            <button class="btn" id="share" type="button">Share</button>
+            <button class="btn" id="reset" type="button">Reset</button>
+          </div>
+        </div>
+
+        <div class="ticker" role="status" aria-live="polite">
+          <div class="line mono" id="status">Insert ego. Press Spin.</div>
+          <div class="subline" id="sub">Tip: higher temperature = higher chaos.</div>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="card">
+          <h2>Token Hacks</h2>
+          <p class="muted">
+            Out of tokens? Do what every AI product does: wrap it, upsell it, and call it a platform.
+          </p>
+          <div class="hacks">
+            <button class="btn ghost" id="hackData" type="button">Sell “anonymized” data (+50)</button>
+            <button class="btn ghost" id="hackWrapper" type="button">Ship wrapper library (+20)</button>
+            <button class="btn ghost" id="hackApology" type="button">Generate apology email (+10)</button>
+          </div>
+          <p class="fine mono" id="cooldowns"></p>
+        </section>
+
+        <section class="card">
+          <h2>Recent Spins</h2>
+          <ol class="log mono" id="log" aria-label="Spin log"></ol>
+        </section>
+
+        <footer class="foot">
+          <label class="toggle">
+            <input id="sound" type="checkbox" checked />
+            <span class="ui" aria-hidden="true"></span>
+            <span class="mono">sound</span>
+          </label>
+          <label class="toggle">
+            <input id="haptics" type="checkbox" checked />
+            <span class="ui" aria-hidden="true"></span>
+            <span class="mono">haptics</span>
+          </label>
+        </footer>
+      </aside>
+    </main>
+
+    <dialog class="modal" id="modal">
+      <form method="dialog" class="modalform">
+        <h3 id="mt">Message</h3>
+        <p id="mb" class="mono"></p>
+        <div class="modact">
+          <button class="btn" value="cancel">Cancel</button>
+          <button class="btn primary" value="ok">OK</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
+

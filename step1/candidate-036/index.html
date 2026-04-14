@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <meta
+      name="description"
+      content="A satirical AI-themed slot machine where you win tokens and spend tokens."
+    />
+
+    <title>AI Token Slot Machine</title>
+
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+
+  <body>
+    <div class="bg" aria-hidden="true"></div>
+
+    <main class="shell">
+      <header class="top">
+        <div class="brand">
+          <div class="brand__mark" aria-hidden="true">AI</div>
+          <div class="brand__text">
+            <h1>Token Slot Machine</h1>
+            <p class="tagline">pay-per-spin, pay-per-existence</p>
+          </div>
+        </div>
+
+        <div class="stats" role="group" aria-label="Account status">
+          <div class="stat">
+            <div class="stat__k">Balance</div>
+            <div class="stat__v"><span id="balance">0</span> tokens</div>
+          </div>
+          <div class="stat">
+            <div class="stat__k">API Bill</div>
+            <div class="stat__v"><span id="bill">0</span> tokens</div>
+          </div>
+        </div>
+      </header>
+
+      <section class="cabinet" aria-label="Slot machine">
+        <div class="screen">
+          <div class="screen__row">
+            <div class="screen__label">Model</div>
+            <div class="screen__value" id="modelLine">gpt-Overconfident-XL</div>
+          </div>
+          <div class="screen__row">
+            <div class="screen__label">Temperature</div>
+            <div class="screen__value">
+              <input
+                id="temp"
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value="55"
+                aria-label="Temperature"
+              />
+              <span class="mono" id="tempLabel">0.55</span>
+            </div>
+          </div>
+          <div class="screen__row">
+            <div class="screen__label">Mode</div>
+            <div class="screen__value">
+              <label class="toggle">
+                <input id="compliance" type="checkbox" />
+                <span class="toggle__ui" aria-hidden="true"></span>
+                <span class="toggle__text">Compliance Tax</span>
+              </label>
+              <span class="hint">(reduces winnings, increases smugness)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" aria-label="Reel 1">
+            <div class="reel__window">
+              <div class="reel__symbol" id="r0">?</div>
+            </div>
+            <div class="reel__caption">Inference</div>
+          </div>
+          <div class="reel" aria-label="Reel 2">
+            <div class="reel__window">
+              <div class="reel__symbol" id="r1">?</div>
+            </div>
+            <div class="reel__caption">Hype</div>
+          </div>
+          <div class="reel" aria-label="Reel 3">
+            <div class="reel__window">
+              <div class="reel__symbol" id="r2">?</div>
+            </div>
+            <div class="reel__caption">Invoice</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="bet" role="group" aria-label="Bet controls">
+            <button class="btn btn--ghost" id="betDown" type="button" aria-label="Decrease bet">
+              -
+            </button>
+            <div class="bet__readout">
+              <div class="bet__k">Bet</div>
+              <div class="bet__v"><span id="bet">0</span> tokens</div>
+            </div>
+            <button class="btn btn--ghost" id="betUp" type="button" aria-label="Increase bet">
+              +
+            </button>
+          </div>
+
+          <div class="actions" role="group" aria-label="Actions">
+            <button class="btn btn--primary" id="spin" type="button">
+              Spin <span class="kbd" aria-hidden="true">Space</span>
+            </button>
+            <button class="btn" id="cashout" type="button" title="Convert tokens into vibes">
+              Cash Out
+            </button>
+            <button class="btn" id="share" type="button">
+              Share
+            </button>
+          </div>
+        </div>
+
+        <div class="ticker" role="status" aria-live="polite">
+          <div id="statusLine" class="ticker__line">Insert ego. Press Spin.</div>
+          <div id="subLine" class="ticker__sub">Tip: higher temperature = higher chaos.</div>
+        </div>
+      </section>
+
+      <section class="side">
+        <div class="panel">
+          <h2>Token Hacks</h2>
+          <p class="muted">
+            When you’re broke, do what every AI startup does: rebrand, upsell, and
+            quietly invoice the user.
+          </p>
+          <div class="hacks" role="group" aria-label="Token hacks">
+            <button class="btn btn--ghost" id="sellData" type="button">
+              Sell “anonymized” training data (+50)
+            </button>
+            <button class="btn btn--ghost" id="shipWrapper" type="button">
+              Ship a wrapper library (+20)
+            </button>
+            <button class="btn btn--ghost" id="apologize" type="button">
+              Generate apology email (+10)
+            </button>
+          </div>
+          <p class="fineprint" id="cooldowns"></p>
+        </div>
+
+        <div class="panel">
+          <h2>Recent Spins</h2>
+          <ol class="log" id="log" aria-label="Spin log"></ol>
+        </div>
+
+        <footer class="footer">
+          <p class="fineprint">
+            Uses platform APIs: Web Crypto RNG, Local Storage, Web Audio (optional),
+            Vibration (optional), Share/Clipboard, Service Worker (offline).
+          </p>
+          <div class="footrow">
+            <label class="toggle">
+              <input id="sound" type="checkbox" checked />
+              <span class="toggle__ui" aria-hidden="true"></span>
+              <span class="toggle__text">Sound</span>
+            </label>
+            <label class="toggle">
+              <input id="haptics" type="checkbox" checked />
+              <span class="toggle__ui" aria-hidden="true"></span>
+              <span class="toggle__text">Haptics</span>
+            </label>
+            <button class="btn btn--ghost" id="reset" type="button">Factory Reset</button>
+          </div>
+        </footer>
+      </section>
+    </main>
+
+    <dialog class="modal" id="modal">
+      <form method="dialog" class="modal__form">
+        <h3 id="modalTitle">Result</h3>
+        <p id="modalBody" class="muted"></p>
+        <div class="modal__actions">
+          <button class="btn" value="cancel">Cancel</button>
+          <button class="btn btn--primary" value="ok">OK</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>

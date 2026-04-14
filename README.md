@@ -1,4 +1,6 @@
- This is the 50 runs of the AI slot machine. 
+Playable app: see [ai-slot-machine/README.md](ai-slot-machine/README.md).
+
+This is the 50 runs of the AI slot machine. 
 
 Model that will be used: GPT-5.2
 
