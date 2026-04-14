@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Prompt Casino — AI Slot Machine</title>
+    <meta
+      name="description"
+      content="A vanilla web slot machine that wins and spends tokens while lovingly roasting AI."
+    />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#app">Skip to game</a>
+
+    <header class="topbar">
+      <div class="brand" aria-label="Prompt Casino">
+        <span class="logo" aria-hidden="true">⌁</span>
+        <span class="brandText">
+          <span class="title">Prompt Casino</span>
+          <span class="subtitle">“Definitely not a stochastic parrot.”</span>
+        </span>
+      </div>
+
+      <div class="status">
+        <div class="pill" title="Your token balance">
+          <span class="pillLabel">Tokens</span>
+          <span id="tokens" class="pillValue" aria-live="polite">0</span>
+        </div>
+        <button id="helpBtn" class="ghost" type="button" aria-haspopup="dialog">
+          Help
+        </button>
+      </div>
+    </header>
+
+    <main id="app" class="app" role="main">
+      <section class="machine" aria-label="Slot machine">
+        <div class="marquee" aria-live="polite" aria-atomic="true">
+          <span id="marqueeText">Warming up the GPUs…</span>
+        </div>
+
+        <div class="reels" role="group" aria-label="Three reels">
+          <div class="reel" aria-label="Reel one">
+            <div id="reel0" class="symbol" aria-hidden="true">?</div>
+            <div class="sr" id="reel0sr">Reel 1: unknown</div>
+          </div>
+          <div class="reel" aria-label="Reel two">
+            <div id="reel1" class="symbol" aria-hidden="true">?</div>
+            <div class="sr" id="reel1sr">Reel 2: unknown</div>
+          </div>
+          <div class="reel" aria-label="Reel three">
+            <div id="reel2" class="symbol" aria-hidden="true">?</div>
+            <div class="sr" id="reel2sr">Reel 3: unknown</div>
+          </div>
+        </div>
+
+        <div class="controls" aria-label="Controls">
+          <button id="spinBtn" class="primary" type="button">
+            Spin <span class="muted">(costs 1 token)</span>
+          </button>
+          <button id="autoplayBtn" class="secondary" type="button">
+            Autoplay <span class="muted">(10 spins)</span>
+          </button>
+          <button id="cashoutBtn" class="ghost" type="button" title="Resets your balance for bragging rights">
+            Cash out
+          </button>
+        </div>
+
+        <div class="tuning" aria-label="Model settings">
+          <label class="sliderRow" for="temperature">
+            <span class="sliderLabel">Temperature</span>
+            <span class="sliderHelp">Higher = wilder output (and volatility).</span>
+          </label>
+          <div class="slider">
+            <input
+              id="temperature"
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value="35"
+              aria-label="Temperature slider"
+            />
+            <div class="sliderMeta">
+              <span id="tempVal" class="mono">0.35</span>
+              <span class="muted">“Trust me, bro.”</span>
+            </div>
+          </div>
+
+          <div class="toggles" role="group" aria-label="Options">
+            <label class="toggle">
+              <input id="soundToggle" type="checkbox" />
+              <span>Sound</span>
+            </label>
+            <label class="toggle">
+              <input id="hapticsToggle" type="checkbox" />
+              <span>Haptics</span>
+            </label>
+            <label class="toggle">
+              <input id="glitchToggle" type="checkbox" checked />
+              <span>Glitch</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="result" aria-live="polite" aria-atomic="true">
+          <div id="resultLine" class="resultLine">Insert tokens to continue…</div>
+          <div class="resultMeta">
+            <span id="lastPayout" class="muted">Last payout: 0</span>
+            <span id="lifetime" class="muted">Lifetime: 0 spins</span>
+          </div>
+          <div class="shareRow">
+            <button id="shareBtn" class="secondary" type="button">Share</button>
+            <button id="copyBtn" class="ghost" type="button">Copy brag</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="shop" aria-label="Token shop">
+        <h2 class="shopTitle">Token Sink</h2>
+        <p class="shopDesc">
+          Spend your hard‑won tokens on the finest AI adjacent products.
+        </p>
+
+        <div class="items" role="list">
+          <button class="item" data-item="gpu" type="button" role="listitem">
+            <span class="itemName">1 GPU Minute</span>
+            <span class="itemDesc">Experience real‑time regret.</span>
+            <span class="itemCost">10 tokens</span>
+          </button>
+          <button class="item" data-item="context" type="button" role="listitem">
+            <span class="itemName">Long Context DLC</span>
+            <span class="itemDesc">Now with 12% fewer “as an AI…”</span>
+            <span class="itemCost">25 tokens</span>
+          </button>
+          <button class="item" data-item="alignment" type="button" role="listitem">
+            <span class="itemName">Alignment Patch</span>
+            <span class="itemDesc">Fixes everything. Probably.</span>
+            <span class="itemCost">15 tokens</span>
+          </button>
+          <button class="item" data-item="badge" type="button" role="listitem">
+            <span class="itemName">“Prompt Engineer” Badge</span>
+            <span class="itemDesc">Instant credibility (online only).</span>
+            <span class="itemCost">5 tokens</span>
+          </button>
+          <button class="item" data-item="coffee" type="button" role="listitem">
+            <span class="itemName">Cold Brew For The Ethics Team</span>
+            <span class="itemDesc">Morale +1. Meetings +3.</span>
+            <span class="itemCost">8 tokens</span>
+          </button>
+        </div>
+
+        <div class="shopFooter">
+          <div class="smallMuted" id="shopMsg" aria-live="polite"></div>
+          <details class="payouts">
+            <summary>Payout table</summary>
+            <ul>
+              <li>🤖🤖🤖 = +50 tokens</li>
+              <li>🪙🪙🪙 = +25 tokens</li>
+              <li>🧠🧠🧠 = +15 tokens</li>
+              <li>🔥🔥🔥 = +10 tokens</li>
+              <li>Any 3 matching = +8 tokens</li>
+              <li>Any 2 matching = +2 tokens</li>
+              <li>📉 anywhere = “valuation event” (−2 tokens)</li>
+            </ul>
+          </details>
+        </div>
+      </aside>
+    </main>
+
+    <dialog id="help" class="helpDialog" aria-label="Help">
+      <form method="dialog" class="helpInner">
+        <header class="helpHeader">
+          <h2>How to play</h2>
+          <button class="ghost" value="close" aria-label="Close help">Close</button>
+        </header>
+        <ul class="helpList">
+          <li>Each spin costs <strong>1 token</strong>.</li>
+          <li>Use <strong>Temperature</strong> to change variance (not your odds, totally).</li>
+          <li>Spend tokens in the <strong>Token Sink</strong> for comedic upgrades.</li>
+          <li>Your balance and stats are saved in <strong>localStorage</strong>.</li>
+          <li>Keyboard: <kbd>Space</kbd> to spin, <kbd>A</kbd> for autoplay, <kbd>H</kbd> for help.</li>
+        </ul>
+        <p class="smallMuted">
+          Disclaimer: this machine is powered by vibes, not financial advice.
+        </p>
+      </form>
+    </dialog>
+
+    <footer class="footer">
+      <span class="muted">Vanilla HTML/CSS/JS • Uses platform APIs (Audio, Vibration, Storage, Share/Clipboard)</span>
+    </footer>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
+
