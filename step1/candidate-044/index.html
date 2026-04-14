@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Token Tumbler — A Slot Machine That Roasts AI</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <canvas id="confetti" aria-hidden="true"></canvas>
+
+    <header class="top">
+      <div>
+        <h1>Token Tumbler</h1>
+        <p class="subtitle">Win tokens. Spend tokens. Accidentally fund a model that still can’t count fingers.</p>
+      </div>
+
+      <section class="wallet" aria-label="Wallet">
+        <div class="walletRow">
+          <span class="walletLabel">Tokens</span>
+          <output id="tokens" class="walletValue" aria-label="Token balance">0</output>
+        </div>
+        <div class="walletRow subtle">
+          <span>Spin cost</span>
+          <output id="spinCost">0</output>
+          <span class="dot">•</span>
+          <span>Jackpot</span>
+          <output id="jackpot">0</output>
+        </div>
+      </section>
+    </header>
+
+    <main class="grid">
+      <section class="machine" aria-label="Slot machine">
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel">
+            <div class="reelWindow" aria-hidden="true"></div>
+            <output id="reel0" class="reelSymbol" aria-label="Reel 1">?</output>
+          </div>
+          <div class="reel">
+            <div class="reelWindow" aria-hidden="true"></div>
+            <output id="reel1" class="reelSymbol" aria-label="Reel 2">?</output>
+          </div>
+          <div class="reel">
+            <div class="reelWindow" aria-hidden="true"></div>
+            <output id="reel2" class="reelSymbol" aria-label="Reel 3">?</output>
+          </div>
+        </div>
+
+        <div class="controls" role="group" aria-label="Controls">
+          <button id="spinBtn" class="primary" type="button">
+            Spin <span class="kbd">Space</span>
+          </button>
+          <button id="maxBtn" type="button" title="Spend more tokens to spin harder (allegedly).">
+            Max Spin
+          </button>
+          <button id="autoBtn" type="button" title="Do 5 spins quickly. Responsible? No. Funny? Yes.">
+            Auto ×5
+          </button>
+          <button id="cashoutBtn" type="button" title="Convert tokens into vibes and a fake receipt.">
+            Cash Out
+          </button>
+        </div>
+
+        <div class="toggles" role="group" aria-label="Toggles">
+          <label class="toggle">
+            <input id="soundToggle" type="checkbox" />
+            <span>Sound</span>
+          </label>
+          <label class="toggle">
+            <input id="hapticsToggle" type="checkbox" />
+            <span>Haptics</span>
+          </label>
+          <label class="toggle">
+            <input id="reduceMotionToggle" type="checkbox" />
+            <span>Reduce motion</span>
+          </label>
+        </div>
+
+        <section class="status" aria-label="Status">
+          <div id="statusLine" class="statusLine" role="status" aria-live="polite">
+            Insert tokens. Pull lever. Laugh at silicon.
+          </div>
+          <div class="microStats">
+            <span>Spins: <output id="spins">0</output></span>
+            <span class="dot">•</span>
+            <span>Won: <output id="won">0</output></span>
+            <span class="dot">•</span>
+            <span>Spent: <output id="spent">0</output></span>
+          </div>
+        </section>
+      </section>
+
+      <aside class="side">
+        <section class="panel">
+          <h2>Paytable (very scientific)</h2>
+          <div id="paytable" class="paytable" aria-label="Paytable"></div>
+          <p class="fineprint">
+            Odds are “market-driven,” meaning: made up, vibes-based, and occasionally evil.
+          </p>
+        </section>
+
+        <section class="panel">
+          <h2>Platform Tricks</h2>
+          <div class="platform">
+            <button id="bragBtn" type="button">Brag (Share/Clipboard)</button>
+            <button id="notifyBtn" type="button">Enable Snarky Notifications</button>
+            <button id="resetBtn" class="danger" type="button">Reset Save</button>
+          </div>
+          <p class="fineprint">
+            Uses localStorage, Web Audio, Vibration (if available), Web Share / Clipboard, and Notifications (optional).
+          </p>
+        </section>
+
+        <section class="panel logPanel">
+          <h2>Model Output (a.k.a. the log)</h2>
+          <div id="log" class="log" role="log" aria-live="polite" aria-relevant="additions"></div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <span>
+        Tip: press <span class="kbd">Space</span> to spin, <span class="kbd">M</span> for Max, <span class="kbd">A</span> for Auto.
+      </span>
+      <span class="dot">•</span>
+      <span>
+        Disclaimer: No GPUs were harmed; they were merely overworked.
+      </span>
+    </footer>
+
+    <script defer src="./script.js"></script>
+  </body>
+</html>
