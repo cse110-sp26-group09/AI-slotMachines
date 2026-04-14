@@ -20,7 +20,7 @@ Take note of your best output so we may consider it for refining. (AI may take a
 
 For any problems, contact James or Aditya
 
-DUE Tueday by End of day
+Due Tuesday by End of day
 
 #IMPORTANT Read prompting.md for how to prompt and contribute to each candidate
 
