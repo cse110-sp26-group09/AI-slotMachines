@@ -9,7 +9,7 @@ Use /clear to reset context so prompts do not affect each other.
 Note any patterns you notice while
 prompting (like AI messing up and redoing or interesting things in general)
 
-Take note of your best output so we may consider it for refining.
+Take note of your best output so we may consider it for refining. (AI may take anywhere from 2-20 minutes to complete everything)
 
 For any problems, contact James or Aditya
 
