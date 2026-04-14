@@ -9,7 +9,7 @@
 - Wall-clock time (s):	10m 16s
 - Tool-reported time (s): 10m 16s
 - Files produced:	app.js, icon.svg, index.html, manifest.webmanifest, styles.css, sw.js. (6)
-- Lines of code: 	954
+- Lines of code: 	1231
 - Runs in browser?:	Yes
 - App Quality Notes: Runs well and adds more features such as token purchases and prompt injection, but no sound.
 - Code Quality Notes: Parts of code seem extraneous and ill-understood (manifest, sw)
