@@ -1,0 +1,19 @@
+{
+  "name": "Prompt Payout",
+  "short_name": "Payout",
+  "description": "A tiny slot machine that makes fun of AI: win tokens, spend tokens, and blame the prompt.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b0a12",
+  "theme_color": "#0b0a12",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
