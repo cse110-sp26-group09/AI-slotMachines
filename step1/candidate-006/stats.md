@@ -11,7 +11,7 @@
 - Wall-clock time (s):	3m 10s
 - Tool-reported time (s): 3m 10s
 - Files produced:	app.js, index.html, styles.css.
-- Lines of code: 	TBD
+- Lines of code: 	1242
 - Runs in browser?:	Yes
 - App Quality Notes: Runs good, it works
 - Code Quality Notes: Runs correctly but it clearly feels AI generated
