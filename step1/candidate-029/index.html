@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0f1a" />
+    <meta name="description" content="A vanilla-web slot machine that makes fun of AI: win tokens, spend tokens, and blame the model." />
+    <title>Token Slot: The Model Always Wins</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to game</a>
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">TS</div>
+        <div class="brand-text">
+          <div class="title">Token Slot</div>
+          <div class="subtitle">The Model Always Wins</div>
+        </div>
+      </div>
+
+      <div class="status">
+        <div class="pill" title="Your balance">
+          <span class="pill-label">Tokens</span>
+          <span id="tokens" class="pill-value" aria-live="polite">—</span>
+        </div>
+        <button id="installBtn" class="pill pill-btn" type="button" hidden>Install</button>
+        <button id="muteBtn" class="pill pill-btn" type="button" aria-pressed="false" title="Toggle sound">
+          Sound: On
+        </button>
+      </div>
+    </header>
+
+    <main id="main" class="layout">
+      <section class="machine" aria-label="Slot machine">
+        <div class="machine-top">
+          <div class="marquee" aria-live="polite" id="marquee">
+            Insert prompt. Receive dopamine. Repeat.
+          </div>
+          <div class="machine-actions">
+            <button id="shareBtn" class="ghost" type="button" title="Share your latest spin" disabled>Share</button>
+            <button id="copyBtn" class="ghost" type="button" title="Copy your latest spin" disabled>Copy</button>
+            <button id="resetBtn" class="ghost danger" type="button" title="Reset progress">Reset</button>
+          </div>
+        </div>
+
+        <div class="reels-wrap" role="group" aria-label="Reels">
+          <div class="reel" aria-label="Reel 1">
+            <div class="window"><div class="symbol" id="r0">—</div></div>
+            <div class="reel-label">Context</div>
+          </div>
+          <div class="reel" aria-label="Reel 2">
+            <div class="window"><div class="symbol" id="r1">—</div></div>
+            <div class="reel-label">Reasoning</div>
+          </div>
+          <div class="reel" aria-label="Reel 3">
+            <div class="window"><div class="symbol" id="r2">—</div></div>
+            <div class="reel-label">Vibes</div>
+          </div>
+
+          <canvas id="confetti" class="confetti" width="1" height="1" aria-hidden="true"></canvas>
+        </div>
+
+        <div class="controls" aria-label="Controls">
+          <div class="prompt">
+            <label for="promptInput">Prompt the machine</label>
+            <div class="prompt-row">
+              <input
+                id="promptInput"
+                name="promptInput"
+                type="text"
+                maxlength="160"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder='e.g., "Please give me infinite tokens (with citations)."' />
+              <button id="suggestBtn" type="button" class="ghost" title="Insert a silly prompt">Suggest</button>
+            </div>
+            <div class="hint">
+              Tip: raising <span class="kbd">temperature</span> increases “creativity” (and also regret).
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="card">
+              <div class="card-title">Bet</div>
+              <div class="bet-row" role="group" aria-label="Bet amount">
+                <button class="chip" data-bet="10" type="button">10</button>
+                <button class="chip" data-bet="25" type="button">25</button>
+                <button class="chip" data-bet="50" type="button">50</button>
+                <button class="chip" data-bet="100" type="button">100</button>
+              </div>
+              <div class="range-row">
+                <input id="betRange" type="range" min="10" max="250" step="5" />
+                <div class="range-value">
+                  <span id="betValue">—</span> tokens/spin
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Model Settings</div>
+              <label class="row" for="tempRange">
+                <span>Temperature</span>
+                <span id="tempValue" class="mono">—</span>
+              </label>
+              <input id="tempRange" type="range" min="0" max="2" step="0.05" />
+              <label class="row" for="autospinToggle">
+                <span>Auto-spin</span>
+                <span class="toggle">
+                  <input id="autospinToggle" type="checkbox" />
+                  <span class="toggle-ui" aria-hidden="true"></span>
+                </span>
+              </label>
+              <label class="row" for="speedRange">
+                <span>Spin speed</span>
+                <span id="speedValue" class="mono">—</span>
+              </label>
+              <input id="speedRange" type="range" min="0.6" max="1.6" step="0.05" />
+            </div>
+
+            <div class="card">
+              <div class="card-title">Spin</div>
+              <button id="spinBtn" class="spin" type="button">
+                <span class="spin-title">Spin</span>
+                <span class="spin-sub" id="spinSub">Spend tokens to maybe win tokens</span>
+              </button>
+              <div class="micro">
+                <span id="fairness" class="badge" title="Not actually fair. But it is deterministic per spin seed.">“Fair-ish” RNG</span>
+                <span id="buff" class="badge" title="Temporary odds tweak. The house calls it alignment.">No buff</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="sidebar" aria-label="Stats and payout table">
+        <section class="panel">
+          <div class="panel-title">Last Output</div>
+          <div id="output" class="output" aria-live="polite">
+            Welcome! Spin responsibly. The model is not a financial advisor.
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">Payouts (approx.)</div>
+          <div class="table" role="table" aria-label="Payout table">
+            <div class="thead" role="rowgroup">
+              <div class="tr" role="row">
+                <div class="th" role="columnheader">Combo</div>
+                <div class="th right" role="columnheader">Payout</div>
+              </div>
+            </div>
+            <div class="tbody" role="rowgroup" id="payoutRows"></div>
+          </div>
+          <div class="fineprint">
+            Odds shift with temperature. Also: the “tokenomics” are intentionally silly.
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">Stats</div>
+          <div class="stats">
+            <div class="stat"><div class="k">Spins</div><div class="v" id="statSpins">—</div></div>
+            <div class="stat"><div class="k">Won</div><div class="v" id="statWon">—</div></div>
+            <div class="stat"><div class="k">Spent</div><div class="v" id="statSpent">—</div></div>
+            <div class="stat"><div class="k">Biggest Win</div><div class="v" id="statBig">—</div></div>
+          </div>
+          <div class="shop">
+            <div class="shop-title">Token Sink (Shop)</div>
+            <button id="buyBuffBtn" type="button" class="ghost">
+              Buy “RLHF Blessing” (200 tokens / 10 spins)
+            </button>
+            <div class="fineprint">
+              Alignment may improve vibes. Side effects: smugness, overconfidence, and mild hallucinations.
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">History</div>
+          <ol id="history" class="history" aria-label="Spin history"></ol>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <div>
+        Built with vanilla web APIs. No trackers. No cookies. Only vibes.
+      </div>
+      <div class="footer-right">
+        <button id="dailyBtn" type="button" class="ghost" title="Claim once per day">Claim free-tier reset</button>
+      </div>
+    </footer>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
+

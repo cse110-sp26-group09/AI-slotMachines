@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <meta
+      name="description"
+      content="A playful vanilla-web slot machine where you win and burn AI tokens."
+    />
+    <title>AI Token Slot Machine</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to game</a>
+
+    <header class="topbar">
+      <div class="topbar__inner">
+        <div class="brand">
+          <div class="brand__mark" aria-hidden="true">◎</div>
+          <div class="brand__text">
+            <h1>AI Token Slot Machine</h1>
+            <p class="muted">
+              Win tokens. Spend tokens. Repeat. (This is how “responsible AI” feels.)
+            </p>
+          </div>
+        </div>
+
+        <div class="status">
+          <div class="status__item">
+            <div class="status__label">Balance</div>
+            <div class="status__value">
+              <span id="tokenBalance" class="mono">0</span>
+              <span class="muted">tokens</span>
+            </div>
+          </div>
+          <div class="status__item">
+            <div class="status__label">House Edge</div>
+            <div class="status__value mono" title="Not financial advice">
+              ~<span id="houseEdge">--</span>%
+            </div>
+          </div>
+          <div class="status__item">
+            <div class="status__label">Model</div>
+            <div class="status__value mono">gpt-Overfit-13B</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="layout" tabindex="-1">
+      <section class="panel controls" aria-label="Controls">
+        <h2>Controls</h2>
+
+        <div class="card">
+          <div class="row">
+            <label for="bet" class="label">
+              Bet per spin
+              <span class="muted">(a.k.a. “inference budget”)</span>
+            </label>
+            <div class="pill mono"><span id="betValue">25</span> tokens</div>
+          </div>
+          <input id="bet" type="range" min="5" max="250" step="5" value="25" />
+          <div class="subrow muted">
+            <span>+1 token “alignment tax” per spin</span>
+            <span id="spinCostHint" class="mono">Cost: 26</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="btnrow">
+            <button id="spinBtn" class="btn primary" type="button">
+              Spin (run inference)
+            </button>
+            <button id="autoBtn" class="btn" type="button" aria-pressed="false">
+              Auto
+            </button>
+          </div>
+          <div class="btnrow">
+            <button id="soundBtn" class="btn" type="button" aria-pressed="true">
+              Sound: On
+            </button>
+            <button id="copyBtn" class="btn" type="button">Copy brag</button>
+          </div>
+          <div class="btnrow">
+            <button id="fundingBtn" class="btn danger" type="button">
+              Beg for seed funding
+            </button>
+            <button id="resetBtn" class="btn ghost" type="button">Reset</button>
+          </div>
+          <p id="cooldownText" class="muted small" aria-live="polite"></p>
+        </div>
+
+        <details class="card">
+          <summary>Pay table (totally not a dark pattern)</summary>
+          <div id="payTable" class="paytable" role="table" aria-label="Payout table"></div>
+        </details>
+
+        <details class="card">
+          <summary>Stats</summary>
+          <dl class="stats">
+            <div>
+              <dt>Spins</dt>
+              <dd id="statSpins" class="mono">0</dd>
+            </div>
+            <div>
+              <dt>Lifetime won</dt>
+              <dd id="statWon" class="mono">0</dd>
+            </div>
+            <div>
+              <dt>Lifetime spent</dt>
+              <dd id="statSpent" class="mono">0</dd>
+            </div>
+            <div>
+              <dt>Biggest win</dt>
+              <dd id="statBig" class="mono">0</dd>
+            </div>
+          </dl>
+        </details>
+      </section>
+
+      <section class="panel machine" aria-label="Slot machine">
+        <div class="machine__frame" role="application" aria-label="Slot reels">
+          <div class="reels" aria-hidden="true">
+            <div class="reel" data-reel="0">
+              <div class="reel__window">
+                <div class="reel__strip" id="reel0"></div>
+              </div>
+            </div>
+            <div class="reel" data-reel="1">
+              <div class="reel__window">
+                <div class="reel__strip" id="reel1"></div>
+              </div>
+            </div>
+            <div class="reel" data-reel="2">
+              <div class="reel__window">
+                <div class="reel__strip" id="reel2"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="machine__overlay" aria-hidden="true">
+            <div class="scanline"></div>
+            <div class="shine"></div>
+          </div>
+
+          <div class="readout" aria-live="polite">
+            <div class="readout__label muted">Model output</div>
+            <div id="resultText" class="readout__text">Insert tokens to begin.</div>
+          </div>
+        </div>
+
+        <section class="panel log" aria-label="Event log">
+          <h2>Log</h2>
+          <ol id="log" class="log__list" aria-live="polite" aria-relevant="additions">
+            <li class="muted">Tip: press <span class="mono">Space</span> to spin.</li>
+          </ol>
+        </section>
+      </section>
+    </main>
+
+    <footer class="footer muted">
+      <p>
+        This is satire. No real tokens were harmed—only imaginary GPUs and your dignity.
+      </p>
+    </footer>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>

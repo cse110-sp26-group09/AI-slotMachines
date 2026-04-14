@@ -1,4 +1,13 @@
+<<<<<<< HEAD
 Playable app: see [ai-slot-machine/README.md](ai-slot-machine/README.md).
+=======
+## AI Token Slot Machine (vanilla web app)
+
+- Open `index.html` directly to play (no install needed).
+- For offline/PWA caching, serve the folder (e.g. VS Code “Live Server”) so the service worker can register.
+
+---
+>>>>>>> 73280ca64dd41c7d5d1600c0193f07746fd5a169
 
 This is the 50 runs of the AI slot machine. 
 
@@ -15,7 +24,7 @@ Take note of your best output so we may consider it for refining. (AI may take a
 
 For any problems, contact James or Aditya
 
-DUE Tueday by End of day
+Due Tuesday by End of day
 
 #IMPORTANT Read prompting.md for how to prompt and contribute to each candidate
 
@@ -24,11 +33,20 @@ TODO:
 make a readme
 
 Roles of candidates:
-James: 1-5
-Daniel: 6-10
+James: 1-5 (done)
+Daniel: 6-10 (done)
 Aditya: 11-15
+<<<<<<< HEAD
 Jason: 16-20
 Woosik: 21-25
 Hieu: 26-30
 James: 31-35
 Waleed: 36-40
+=======
+Jason: 16-20 (done)
+Woosik: 21-25 (done)
+Hieu: 26-30 (done)
+James: 31-35 (done)
+Waleed: 36-40
+Hemendra: 42-46
+>>>>>>> 73280ca64dd41c7d5d1600c0193f07746fd5a169

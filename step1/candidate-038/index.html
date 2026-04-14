@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#0b0a12" />
+    <title>Prompt Payout — a Slot Machine That Bullies AI</title>
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <canvas id="fx" aria-hidden="true"></canvas>
+
+    <header class="top">
+      <div class="brand">
+        <h1>Prompt Payout</h1>
+        <p class="subtitle">You win tokens. You spend tokens. You pretend it was “inference,” not gambling.</p>
+      </div>
+
+      <section class="wallet" aria-label="Wallet">
+        <div class="walletRow">
+          <span class="walletLabel">Tokens</span>
+          <output id="tokens" class="walletValue" aria-label="Token balance">0</output>
+        </div>
+        <div class="walletRow subtle">
+          <span>Spin cost</span>
+          <output id="spinCost">0</output>
+          <span class="dot">&bull;</span>
+          <span>Cache</span>
+          <output id="cache" title="Cache hits reduce cost for a few spins.">0</output>
+        </div>
+      </section>
+    </header>
+
+    <main class="grid">
+      <section class="machine" aria-label="Slot machine">
+        <div class="row">
+          <label class="select">
+            <span class="selectLabel">Model tier</span>
+            <select id="tier">
+              <option value="budget">Budget (cheap & dramatic)</option>
+              <option value="turbo" selected>Turbo (fast-ish)</option>
+              <option value="frontier">Frontier (expensive & confident)</option>
+            </select>
+          </label>
+
+          <label class="toggle">
+            <input id="auto" type="checkbox" />
+            <span>Auto</span>
+          </label>
+
+          <button id="spinBtn" class="primary" type="button">Spin <span class="kbd">Space</span></button>
+        </div>
+
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel">
+            <div class="reelGlass" aria-hidden="true"></div>
+            <output id="r0" class="sym" aria-label="Reel 1">?</output>
+          </div>
+          <div class="reel">
+            <div class="reelGlass" aria-hidden="true"></div>
+            <output id="r1" class="sym" aria-label="Reel 2">?</output>
+          </div>
+          <div class="reel">
+            <div class="reelGlass" aria-hidden="true"></div>
+            <output id="r2" class="sym" aria-label="Reel 3">?</output>
+          </div>
+          <div class="reel">
+            <div class="reelGlass" aria-hidden="true"></div>
+            <output id="r3" class="sym" aria-label="Reel 4">?</output>
+          </div>
+        </div>
+
+        <section class="status" aria-label="Status">
+          <div id="status" class="statusLine" role="status" aria-live="polite">Insert tokens. Press spin. Blame the prompt.</div>
+          <div class="mini">
+            <span>Spins: <output id="spins">0</output></span>
+            <span class="dot">&bull;</span>
+            <span>Won: <output id="won">0</output></span>
+            <span class="dot">&bull;</span>
+            <span>Spent: <output id="spent">0</output></span>
+          </div>
+        </section>
+
+        <div class="controls" role="group" aria-label="Controls">
+          <button id="maxBtn" type="button" title="Pay more to feel more.">Max</button>
+          <button id="boostBtn" type="button" title="Spend tokens on a temporary buff.">Buy Boost</button>
+          <button id="bragBtn" type="button" title="Share or copy your balance.">Brag</button>
+          <button id="notifyBtn" type="button" title="Optional: enable notifications.">Notify</button>
+          <button id="resetBtn" class="danger" type="button" title="Delete your save.">Reset</button>
+        </div>
+
+        <div class="toggles" role="group" aria-label="Settings">
+          <label class="toggle">
+            <input id="sound" type="checkbox" />
+            <span>Sound</span>
+          </label>
+          <label class="toggle">
+            <input id="haptics" type="checkbox" />
+            <span>Haptics</span>
+          </label>
+          <label class="toggle">
+            <input id="reduceMotion" type="checkbox" />
+            <span>Reduce motion</span>
+          </label>
+          <label class="toggle">
+            <input id="wake" type="checkbox" />
+            <span>Wake lock</span>
+          </label>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="panel">
+          <h2>Paytable (totally legit)</h2>
+          <div id="pay" class="pay" aria-label="Paytable"></div>
+          <p class="fine">Payouts scale with your spin cost. Odds are “benchmarked” against vibes.</p>
+        </section>
+
+        <section class="panel">
+          <h2>Model Output Log</h2>
+          <div id="log" class="log" role="log" aria-live="polite" aria-relevant="additions"></div>
+          <p class="fine">
+            Uses localStorage, Web Audio, Vibration (if available), Clipboard/Share, Notifications, and Wake Lock
+            (optional).
+          </p>
+        </section>
+
+        <section class="panel">
+          <h2>Install</h2>
+          <p class="fine">Serve over <code>http://localhost</code> (or HTTPS) for best PWA results.</p>
+          <button id="installBtn" type="button" hidden>Install App</button>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <span>Tip: <span class="kbd">Space</span> spins. Auto mode continues until you're broke or enlightened.</span>
+      <span class="dot">&bull;</span>
+      <span>Disclaimer: this app cannot fix your prompt.</span>
+    </footer>
+
+    <script defer src="./app.js"></script>
+  </body>
+</html>
+

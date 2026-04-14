@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#0b1020" />
+    <title>TokenGambit: The AI Slot Machine</title>
+    <meta
+      name="description"
+      content="A tiny, vanilla-web slot machine that lovingly roasts AI economics: spend tokens, win tokens, and chase the mythical context window."
+    />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#app">Skip to game</a>
+
+    <main id="app" class="app" aria-label="TokenGambit slot machine">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand__mark" aria-hidden="true">TG</div>
+          <div class="brand__text">
+            <h1>TokenGambit</h1>
+            <p class="muted">Spend tokens. Win tokens. Get rate-limited anyway.</p>
+          </div>
+        </div>
+
+        <div class="pill-row" role="group" aria-label="Token and model status">
+          <div class="pill">
+            <span class="pill__label">Balance</span>
+            <span class="pill__value" id="balance">—</span>
+            <span class="pill__unit">tokens</span>
+          </div>
+          <div class="pill">
+            <span class="pill__label">Spin cost</span>
+            <span class="pill__value" id="spinCost">—</span>
+            <span class="pill__unit">tokens</span>
+          </div>
+          <div class="pill">
+            <span class="pill__label">Model</span>
+            <span class="pill__value" id="modelLabel">—</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="machine" aria-label="Slot machine">
+        <div class="machine__frame">
+          <div class="reels" role="group" aria-label="Reels">
+            <div class="reel" aria-label="Reel 1">
+              <div class="reel__window" aria-hidden="true"></div>
+              <div class="reel__symbol" id="reel1" aria-live="off">?</div>
+              <div class="reel__caption muted" id="cap1">booting…</div>
+            </div>
+            <div class="reel" aria-label="Reel 2">
+              <div class="reel__window" aria-hidden="true"></div>
+              <div class="reel__symbol" id="reel2" aria-live="off">?</div>
+              <div class="reel__caption muted" id="cap2">loading weights…</div>
+            </div>
+            <div class="reel" aria-label="Reel 3">
+              <div class="reel__window" aria-hidden="true"></div>
+              <div class="reel__symbol" id="reel3" aria-live="off">?</div>
+              <div class="reel__caption muted" id="cap3">warming GPU…</div>
+            </div>
+          </div>
+
+          <div class="meter" aria-label="Temperature control">
+            <label class="meter__label" for="temperature">
+              Temperature <span class="muted">(chaos knob)</span>
+            </label>
+            <input
+              id="temperature"
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value="55"
+              aria-describedby="tempHelp"
+            />
+            <div class="meter__help muted" id="tempHelp">
+              Low = predictable payouts. High = creative accounting.
+            </div>
+          </div>
+
+          <div class="controls" role="group" aria-label="Controls">
+            <button class="btn btn--primary" id="spinBtn" type="button">
+              Spin
+              <span class="btn__sub" id="spinHint">Space</span>
+            </button>
+            <button class="btn" id="autoBtn" type="button" aria-pressed="false">
+              Auto-spin
+              <span class="btn__sub">A</span>
+            </button>
+            <button class="btn" id="dailyBtn" type="button">
+              Claim daily drip
+              <span class="btn__sub">D</span>
+            </button>
+            <button class="btn" id="settingsBtn" type="button">
+              Settings
+              <span class="btn__sub">S</span>
+            </button>
+          </div>
+
+          <div class="status" role="status" aria-live="polite" aria-atomic="true">
+            <div class="status__title" id="statusTitle">Ready to hallucinate.</div>
+            <div class="status__detail muted" id="statusDetail">
+              Tip: chasing the 🧠 jackpot is financially irresponsible and spiritually correct.
+            </div>
+          </div>
+
+          <div class="mini-actions" role="group" aria-label="Share and copy">
+            <button class="linkish" id="copyBtn" type="button">Copy brag</button>
+            <span class="dot" aria-hidden="true">•</span>
+            <button class="linkish" id="shareBtn" type="button">Share</button>
+            <span class="dot" aria-hidden="true">•</span>
+            <button class="linkish" id="resetBtn" type="button">Reset run</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Stats and log">
+        <div class="panel__grid">
+          <div class="card">
+            <h2>Stats</h2>
+            <dl class="stats">
+              <div class="stats__row">
+                <dt>Spins</dt>
+                <dd id="statSpins">—</dd>
+              </div>
+              <div class="stats__row">
+                <dt>Spent</dt>
+                <dd id="statSpent">—</dd>
+              </div>
+              <div class="stats__row">
+                <dt>Won</dt>
+                <dd id="statWon">—</dd>
+              </div>
+              <div class="stats__row">
+                <dt>Best payout</dt>
+                <dd id="statBest">—</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="card">
+            <h2>Patch notes</h2>
+            <ul class="patch">
+              <li>Added pricing model: “pay per spin”.</li>
+              <li>Introduced token inflation. (We call it “alignment”.)</li>
+              <li>Fixed bug where the house didn’t win enough.</li>
+            </ul>
+          </div>
+
+          <div class="card card--wide">
+            <h2>Output log</h2>
+            <div class="log" id="log" aria-label="Spin log" role="log" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <p class="muted">
+          Built with plain HTML/CSS/JS. No tracking, no ads, and absolutely no
+          promises.
+        </p>
+      </footer>
+    </main>
+
+    <dialog class="dialog" id="settingsDialog" aria-label="Settings">
+      <form method="dialog" class="dialog__inner">
+        <div class="dialog__header">
+          <h2>Settings</h2>
+          <button class="icon-btn" value="cancel" aria-label="Close settings" type="submit">
+            ✕
+          </button>
+        </div>
+
+        <div class="dialog__body">
+          <label class="field">
+            <span class="field__label">Model tier</span>
+            <select id="modelSelect">
+              <option value="tiny">gpt-2.0 (nostalgia)</option>
+              <option value="mid">gpt-4-ish (expensive)</option>
+              <option value="max">gpt-5-ish (mythical)</option>
+            </select>
+            <span class="field__help muted">
+              Changes spin cost and payouts. Accuracy not included.
+            </span>
+          </label>
+
+          <label class="field field--row">
+            <input id="soundToggle" type="checkbox" />
+            <span>Sound effects</span>
+          </label>
+
+          <label class="field field--row">
+            <input id="hapticsToggle" type="checkbox" />
+            <span>Haptics (vibration)</span>
+          </label>
+
+          <label class="field field--row">
+            <input id="reducedMotionToggle" type="checkbox" />
+            <span>Reduce motion</span>
+          </label>
+
+          <details class="field">
+            <summary class="muted">What do the symbols mean?</summary>
+            <div class="legend" id="legend"></div>
+          </details>
+        </div>
+
+        <div class="dialog__footer">
+          <button class="btn btn--primary" id="saveSettingsBtn" value="default" type="submit">
+            Save
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>

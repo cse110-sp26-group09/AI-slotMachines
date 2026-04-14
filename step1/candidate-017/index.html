@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>AI Token Slot Machine</title>
+    <meta
+      name="description"
+      content="A vanilla HTML/CSS/JS slot machine that pokes fun at AI tokens: spend tokens to spin, win tokens to keep prompting."
+    />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🤖🎰</div>
+        <div>
+          <h1>AI Token Slot Machine</h1>
+          <p class="subtitle">Spend tokens to spin. Win tokens to keep “researching”.</p>
+        </div>
+      </div>
+
+      <div class="hud" role="group" aria-label="Token balance">
+        <div class="stat">
+          <div class="label">Balance</div>
+          <div class="value" id="balanceValue" aria-live="polite">—</div>
+        </div>
+        <div class="stat">
+          <div class="label">Bet</div>
+          <div class="value"><span id="betValue">—</span><span class="unit">tok</span></div>
+        </div>
+        <div class="stat">
+          <div class="label">Status</div>
+          <div class="value small" id="statusValue">Idle</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="machine" aria-label="Slot machine">
+        <div class="reels" role="img" aria-label="Three spinning reels">
+          <div class="reel" id="reel0">
+            <div class="reelFace" aria-hidden="true">…</div>
+            <div class="reelLabel">Model</div>
+          </div>
+          <div class="reel" id="reel1">
+            <div class="reelFace" aria-hidden="true">…</div>
+            <div class="reelLabel">Prompt</div>
+          </div>
+          <div class="reel" id="reel2">
+            <div class="reelFace" aria-hidden="true">…</div>
+            <div class="reelLabel">Output</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="primary" id="spinBtn" type="button">
+            <span class="btnIcon" aria-hidden="true">🎰</span>
+            Spin
+          </button>
+
+          <button class="ghost" id="autoBtn" type="button" aria-pressed="false">
+            <span class="btnIcon" aria-hidden="true">🌀</span>
+            Auto
+          </button>
+
+          <label class="select">
+            <span class="selectLabel">Bet</span>
+            <select id="betSelect" aria-label="Bet size">
+              <option value="1">1 token</option>
+              <option value="5" selected>5 tokens</option>
+              <option value="10">10 tokens</option>
+              <option value="25">25 tokens</option>
+            </select>
+          </label>
+
+          <button class="ghost danger" id="resetBtn" type="button">
+            <span class="btnIcon" aria-hidden="true">🧨</span>
+            Factory Reset
+          </button>
+        </div>
+
+        <div class="message" role="status" aria-live="polite" id="message">
+          Insert tokens (metaphorically). Press Spin.
+        </div>
+
+        <div class="payouts">
+          <h2>Payouts (very scientific)</h2>
+          <ul id="payoutList" class="payoutList"></ul>
+          <p class="fineprint">
+            Odds are influenced by your “temperature” setting, which is obviously how probability works.
+          </p>
+        </div>
+      </section>
+
+      <aside class="side" aria-label="Upgrades and stats">
+        <section class="card">
+          <h2>Upgrades</h2>
+          <div class="upgradeRow">
+            <div class="upgradeMeta">
+              <div class="upgradeTitle">Temperature</div>
+              <div class="upgradeDesc">Higher = more “creative” outcomes (translation: chaos).</div>
+            </div>
+            <input id="tempSlider" type="range" min="0" max="100" step="1" value="50" />
+          </div>
+
+          <div class="upgradeRow">
+            <div class="upgradeMeta">
+              <div class="upgradeTitle">Context Window</div>
+              <div class="upgradeDesc">Bigger = fewer “I forgot” moments. Costs tokens.</div>
+            </div>
+            <button class="ghost" id="buyContextBtn" type="button">
+              Buy +1 (cost <span id="contextCost">—</span>)
+            </button>
+          </div>
+
+          <div class="upgradeRow">
+            <div class="upgradeMeta">
+              <div class="upgradeTitle">Prompt Shield™</div>
+              <div class="upgradeDesc">Blocks one hallucination… allegedly.</div>
+            </div>
+            <button class="ghost" id="buyShieldBtn" type="button">
+              Buy (cost 30)
+            </button>
+          </div>
+
+          <details class="details">
+            <summary>Danger zone: “Prompt Injection”</summary>
+            <p>
+              Enable this to “increase wins”. It also adds a hidden compliance tax because security is hard.
+            </p>
+            <label class="toggle">
+              <input id="injectToggle" type="checkbox" />
+              <span>Enable prompt injection</span>
+            </label>
+          </details>
+        </section>
+
+        <section class="card">
+          <h2>Stats</h2>
+          <div class="grid">
+            <div class="mini">
+              <div class="label">Spins</div>
+              <div class="value" id="spinsValue">—</div>
+            </div>
+            <div class="mini">
+              <div class="label">Won</div>
+              <div class="value" id="wonValue">—</div>
+            </div>
+            <div class="mini">
+              <div class="label">Spent</div>
+              <div class="value" id="spentValue">—</div>
+            </div>
+            <div class="mini">
+              <div class="label">Jackpots</div>
+              <div class="value" id="jackpotsValue">—</div>
+            </div>
+          </div>
+
+          <div class="controls compact">
+            <button class="ghost" id="copyStatsBtn" type="button">
+              <span class="btnIcon" aria-hidden="true">📋</span>
+              Copy stats
+            </button>
+            <button class="ghost" id="downloadStatsBtn" type="button">
+              <span class="btnIcon" aria-hidden="true">💾</span>
+              Download JSON
+            </button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Platform APIs</h2>
+          <ul class="bullets">
+            <li><span class="pill">localStorage</span> saves your token addiction.</li>
+            <li><span class="pill">Web Audio</span> plays win/lose bleeps.</li>
+            <li><span class="pill">Vibration</span> (mobile) rumbles on jackpots.</li>
+            <li><span class="pill">Clipboard</span> copies your “metrics”.</li>
+            <li><span class="pill">Service Worker</span> caches for offline (served pages only).</li>
+          </ul>
+        </section>
+      </aside>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
+

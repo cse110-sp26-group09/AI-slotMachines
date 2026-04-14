@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Token Burn Slot Machine (Definitely Not Gambling)</title>
+    <meta
+      name="description"
+      content="A vanilla HTML/CSS/JS slot machine parody where you win tokens and spend tokens on questionable AI features."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app" aria-label="Token Burn Slot Machine">
+      <header class="header">
+        <div>
+          <h1 class="title">Token Burn Slot Machine</h1>
+          <p class="subtitle">
+            Train your luck. Burn your tokens. Monetize your disappointment.
+          </p>
+        </div>
+
+        <section class="wallet" aria-label="Token wallet">
+          <div class="walletRow">
+            <span class="walletLabel">Balance</span>
+            <output id="tokenBalance" class="walletValue" aria-live="polite">—</output>
+          </div>
+          <div class="walletRow walletRowSub">
+            <span class="walletLabel">Lifetime</span>
+            <span class="walletValueSub">
+              +<span id="lifetimeEarned">0</span> / -<span id="lifetimeSpent">0</span>
+            </span>
+          </div>
+        </section>
+      </header>
+
+      <section class="machine" aria-label="Slot machine">
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" aria-label="Reel 1">
+            <div class="symbol" id="reel0">🤖</div>
+          </div>
+          <div class="reel" aria-label="Reel 2">
+            <div class="symbol" id="reel1">🧠</div>
+          </div>
+          <div class="reel" aria-label="Reel 3">
+            <div class="symbol" id="reel2">🪙</div>
+          </div>
+        </div>
+
+        <div class="controls" aria-label="Controls">
+          <div class="bet" role="group" aria-label="Bet size">
+            <span class="betLabel">Spin cost</span>
+            <div class="betButtons">
+              <button class="chip" type="button" data-bet="1">1</button>
+              <button class="chip" type="button" data-bet="2">2</button>
+              <button class="chip" type="button" data-bet="5">5</button>
+              <button class="chip" type="button" data-bet="10">10</button>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button id="spinBtn" class="primary" type="button">
+              <span class="primaryTop">SPIN</span>
+              <span class="primarySub" id="spinCostLabel">Costs 5 tokens</span>
+            </button>
+            <button id="autoBtn" class="secondary" type="button" aria-pressed="false">
+              Auto (off)
+            </button>
+            <button id="spendBtn" class="secondary" type="button">Spend tokens</button>
+          </div>
+
+          <div class="toggles">
+            <label class="toggle">
+              <input id="soundToggle" type="checkbox" />
+              <span>Sound</span>
+            </label>
+            <label class="toggle">
+              <input id="announceToggle" type="checkbox" />
+              <span>Announce wins</span>
+            </label>
+            <button id="shareBtn" class="link" type="button">Share last spin</button>
+            <button id="resetBtn" class="link danger" type="button">Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Results">
+        <div class="status">
+          <div class="statusBadge" id="statusBadge">READY</div>
+          <p id="statusText" class="statusText" aria-live="polite">
+            Press <kbd>Space</kbd> to spin. Press <kbd>A</kbd> for auto.
+          </p>
+        </div>
+
+        <details class="payouts">
+          <summary>Payout table (a.k.a. “the benchmark”)</summary>
+          <div class="payoutGrid" role="table" aria-label="Payout table">
+            <div class="payoutRow payoutHead" role="row">
+              <div role="columnheader">Combo</div>
+              <div role="columnheader">What it means</div>
+              <div role="columnheader">Payout (× bet)</div>
+            </div>
+            <div class="payoutRow" role="row">
+              <div role="cell">🤖 🤖 🤖</div>
+              <div role="cell">“AGI (Anytime, Guaranteed, Imaginary)”</div>
+              <div role="cell">20×</div>
+            </div>
+            <div class="payoutRow" role="row">
+              <div role="cell">🪙 🪙 🪙</div>
+              <div role="cell">Token printer goes brrr</div>
+              <div role="cell">10×</div>
+            </div>
+            <div class="payoutRow" role="row">
+              <div role="cell">🐛 🐛 🐛</div>
+              <div role="cell">Bug bounty (now with bugs)</div>
+              <div role="cell">8×</div>
+            </div>
+            <div class="payoutRow" role="row">
+              <div role="cell">🧠 🧠 🧠</div>
+              <div role="cell">Reasoning tokens (non-refundable)</div>
+              <div role="cell">6×</div>
+            </div>
+            <div class="payoutRow" role="row">
+              <div role="cell">Any two match</div>
+              <div role="cell">“Close enough for a demo”</div>
+              <div role="cell">2×</div>
+            </div>
+            <div class="payoutRow" role="row">
+              <div role="cell">🛑 anywhere</div>
+              <div role="cell">Rate-limited mid-spin</div>
+              <div role="cell">0× (also -1 token)</div>
+            </div>
+          </div>
+          <p class="fineprint">Not gambling advice. Not financial advice. Not even good advice.</p>
+        </details>
+      </section>
+
+      <footer class="footer">
+        <p>
+          Built with platform APIs: <span class="apiTag">localStorage</span>,
+          <span class="apiTag">Web Audio</span>, <span class="apiTag">Speech Synthesis</span>,
+          <span class="apiTag">Web Share/Clipboard</span>, <span class="apiTag">Vibration</span>.
+        </p>
+      </footer>
+    </main>
+
+    <dialog id="spendDialog" class="dialog" aria-label="Spend tokens dialog">
+      <form method="dialog" class="dialogInner">
+        <h2>Spend tokens</h2>
+        <p class="dialogSub">
+          Convert your hard-earned tokens into “features” with the reliability of a first draft.
+        </p>
+
+        <div class="shop" role="group" aria-label="Token shop">
+          <button class="shopItem" value="buy-gpu" type="submit">
+            <span class="shopTitle">Rent GPU minutes</span>
+            <span class="shopDesc">Warm and loud. Like your laptop.</span>
+            <span class="shopPrice">-15 tokens</span>
+          </button>
+          <button class="shopItem" value="buy-context" type="submit">
+            <span class="shopTitle">Buy “context window”</span>
+            <span class="shopDesc">Still forgets your name, but in 4K.</span>
+            <span class="shopPrice">-10 tokens</span>
+          </button>
+          <button class="shopItem" value="buy-safety" type="submit">
+            <span class="shopTitle">Enable “safety” mode</span>
+            <span class="shopDesc">Adds warnings. Removes fun.</span>
+            <span class="shopPrice">-8 tokens</span>
+          </button>
+          <button class="shopItem" value="sell-data" type="submit">
+            <span class="shopTitle">Sell your data</span>
+            <span class="shopDesc">A classic. Adds +12 tokens.</span>
+            <span class="shopPrice">+12 tokens</span>
+          </button>
+        </div>
+
+        <menu class="dialogMenu">
+          <button class="secondary" value="cancel" type="submit">Close</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
+

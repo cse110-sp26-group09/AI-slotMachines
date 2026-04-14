@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>LLM Casino: Token Burner 9000</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <div>
+          <h1>LLM Casino</h1>
+          <p class="subtitle">Token Burner 9000 — spend tokens to win… more tokens.</p>
+        </div>
+
+        <div class="headerActions">
+          <button id="shareBtn" class="btn btnGhost" type="button" title="Share this app">
+            Share
+          </button>
+          <button id="resetBtn" class="btn btnGhost" type="button" title="Reset tokens & stats">
+            Reset
+          </button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="panel panelStats" aria-label="Game stats">
+          <div class="stat">
+            <div class="statLabel">Balance</div>
+            <div class="statValue"><span id="balance">0</span> <span class="statUnit">tokens</span></div>
+          </div>
+
+          <div class="stat">
+            <div class="statLabel">Spin cost</div>
+            <div class="statValue"><span id="spinCost">0</span> <span class="statUnit">tokens</span></div>
+          </div>
+
+          <div class="stat">
+            <div class="statLabel">RTP*</div>
+            <div class="statValue"><span id="rtp">??</span><span class="statUnit">%</span></div>
+          </div>
+
+          <div class="divider" role="presentation"></div>
+
+          <label class="row" for="temperature">
+            <span class="rowLabel">Temperature</span>
+            <span class="rowHint" id="tempLabel">1.0</span>
+          </label>
+          <input
+            id="temperature"
+            class="slider"
+            type="range"
+            min="0.2"
+            max="2"
+            step="0.1"
+            value="1"
+            aria-describedby="tempHelp"
+          />
+          <p id="tempHelp" class="help">
+            Lower = predictable. Higher = “creative”. (House calls it “alignment.”)
+          </p>
+
+          <div class="divider" role="presentation"></div>
+
+          <div class="toggles">
+            <label class="toggle">
+              <input id="muteToggle" type="checkbox" />
+              <span>Mute</span>
+            </label>
+            <label class="toggle">
+              <input id="announceToggle" type="checkbox" />
+              <span>Announce wins</span>
+            </label>
+            <label class="toggle">
+              <input id="autoToggle" type="checkbox" />
+              <span>Auto-spin</span>
+            </label>
+          </div>
+
+          <div class="divider" role="presentation"></div>
+
+          <button id="faucetBtn" class="btn btnSecondary" type="button">
+            Request more tokens
+          </button>
+          <p class="help subtle">
+            *“RTP” is “Reality Transfer Probability.” Absolutely not a gambling term.
+          </p>
+        </section>
+
+        <section class="panel panelMachine" aria-label="Slot machine">
+          <div class="marquee" aria-hidden="true">
+            <span>NOW SERVING:</span>
+            <span>HALLUCINATED JACKPOTS</span>
+            <span>UNLIMITED CONTEXT</span>
+            <span>100% RELIABLE OUTPUTS</span>
+          </div>
+
+          <div class="machine">
+            <div id="confetti" class="confetti" aria-hidden="true"></div>
+            <div class="reels" role="group" aria-label="Reels">
+              <div class="reel" aria-label="Reel 1">
+                <div class="reelWindow">
+                  <div id="reel0" class="reelSymbol" aria-live="polite">🤖</div>
+                </div>
+                <div id="reel0Label" class="reelLabel">BOT</div>
+              </div>
+              <div class="reel" aria-label="Reel 2">
+                <div class="reelWindow">
+                  <div id="reel1" class="reelSymbol" aria-live="polite">🧠</div>
+                </div>
+                <div id="reel1Label" class="reelLabel">BRAIN</div>
+              </div>
+              <div class="reel" aria-label="Reel 3">
+                <div class="reelWindow">
+                  <div id="reel2" class="reelSymbol" aria-live="polite">🪄</div>
+                </div>
+                <div id="reel2Label" class="reelLabel">MAGIC</div>
+              </div>
+            </div>
+
+            <div class="controls">
+              <button id="spinBtn" class="btn btnPrimary" type="button">
+                Spin (Space)
+              </button>
+              <div class="microcopy">
+                <div><span class="dot"></span> Model status: <span id="status">Idle</span></div>
+                <div class="kbdHelp">Tip: Press <kbd>Space</kbd> to spin, <kbd>R</kbd> to request tokens.</div>
+              </div>
+            </div>
+
+            <div class="result">
+              <div class="resultTitle">Output</div>
+              <div id="message" class="resultMessage" role="status" aria-live="polite"></div>
+              <div class="logWrap">
+                <ol id="log" class="log" aria-label="Recent events"></ol>
+              </div>
+            </div>
+          </div>
+
+          <footer class="footer">
+            <span class="tiny">No real money. Only fake tokens and real feelings.</span>
+            <span class="tiny">Made with HTML/CSS/JS + browser APIs.</span>
+          </footer>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>

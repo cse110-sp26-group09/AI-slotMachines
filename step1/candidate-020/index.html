@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>TokenGobbler 3000 — AI Slot Machine</title>
+    <meta
+      name="description"
+      content="A vanilla HTML/CSS/JS slot machine that lovingly roasts AI while you win and spend tokens."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🧠</div>
+        <div>
+          <div class="title">TokenGobbler 3000</div>
+          <div class="subtitle">Spend tokens. Win tokens. Blame the model.</div>
+        </div>
+      </div>
+
+      <div class="meter" aria-label="Token balance">
+        <div class="meter-label">Tokens</div>
+        <div class="meter-value">
+          <span id="tokens" class="tokens" aria-live="polite">0</span>
+          <span class="tokens-suffix">🪙</span>
+        </div>
+        <div class="meter-sub">
+          <span id="streak">Streak: 0</span>
+          <span class="dot" aria-hidden="true">•</span>
+          <span id="rtp">RTP-ish: 0%</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="machine" aria-label="Slot machine">
+        <div class="machine-top">
+          <div class="badge">100% Certified Synthetic Luck</div>
+          <div class="cost">
+            <span>Spin cost</span>
+            <strong id="spinCost">5</strong>
+            <span>🪙</span>
+          </div>
+        </div>
+
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" aria-label="Reel 1">
+            <div class="reel-window">
+              <div id="reel0" class="symbol" aria-hidden="true">…</div>
+            </div>
+          </div>
+          <div class="reel" aria-label="Reel 2">
+            <div class="reel-window">
+              <div id="reel1" class="symbol" aria-hidden="true">…</div>
+            </div>
+          </div>
+          <div class="reel" aria-label="Reel 3">
+            <div class="reel-window">
+              <div id="reel2" class="symbol" aria-hidden="true">…</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls" aria-label="Controls">
+          <button id="spinBtn" class="btn primary" type="button">
+            Spin <span class="kbd" aria-hidden="true">(Space)</span>
+          </button>
+          <button id="autoBtn" class="btn" type="button" aria-pressed="false">
+            Auto-spin <span class="kbd" aria-hidden="true">(A)</span>
+          </button>
+          <button id="sellBtn" class="btn danger" type="button">
+            Sell my data (+20 🪙)
+          </button>
+          <button id="resetBtn" class="btn ghost" type="button">
+            Factory reset
+          </button>
+        </div>
+
+        <div class="panel">
+          <label class="row">
+            <span class="row-label">Bet multiplier</span>
+            <select id="bet" class="select" aria-label="Bet multiplier">
+              <option value="1" selected>1× (normal)</option>
+              <option value="2">2× (overconfident)</option>
+              <option value="5">5× (venture funded)</option>
+            </select>
+          </label>
+          <label class="row">
+            <span class="row-label">Prompt the model</span>
+            <input
+              id="prompt"
+              class="input"
+              type="text"
+              maxlength="120"
+              placeholder="e.g., 'make me rich without consequences'"
+              aria-label="Prompt the model"
+            />
+          </label>
+        </div>
+
+        <div class="message" role="status" aria-live="polite">
+          <div id="statusTitle" class="status-title">Insert tokens to begin.</div>
+          <div id="statusBody" class="status-body">
+            Tip: press <span class="kbd">Space</span> to spin.
+          </div>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="card" aria-label="Paytable">
+          <h2>Paytable</h2>
+          <div class="small">
+            <div class="payrow">
+              <span class="payleft">3× match</span>
+              <span class="payright">big payout</span>
+            </div>
+            <div class="payrow">
+              <span class="payleft">2× match</span>
+              <span class="payright">tiny dopamine</span>
+            </div>
+            <div class="payrow">
+              <span class="payleft">🧠🤖🔥 (any order)</span>
+              <span class="payright">“AGI demo” bonus</span>
+            </div>
+            <div class="payrow">
+              <span class="payleft">🫠 anywhere</span>
+              <span class="payright">reality not guaranteed</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" aria-label="Spin log">
+          <div class="card-head">
+            <h2>Spin log</h2>
+            <button id="shareBtn" class="btn tiny" type="button" hidden>
+              Share win
+            </button>
+          </div>
+          <ul id="log" class="log" aria-live="polite" aria-relevant="additions">
+            <li class="log-item muted">No spins yet. The model is “warming up”.</li>
+          </ul>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-left">
+        Built with vanilla web tech: platform APIs, localStorage, Web Audio, and mild sarcasm.
+      </div>
+      <div class="footer-right">
+        <span class="muted">Not financial advice.</span>
+      </div>
+    </footer>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>

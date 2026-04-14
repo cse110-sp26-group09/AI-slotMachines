@@ -1,0 +1,19 @@
+{
+  "name": "Token Slot: The Model Always Wins",
+  "short_name": "Token Slot",
+  "description": "A vanilla-web slot machine that makes fun of AI token economics.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#070913",
+  "theme_color": "#0b0f1a",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
+

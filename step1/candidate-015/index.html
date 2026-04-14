@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1020" />
+    <meta
+      name="description"
+      content="A vanilla web slot machine that burns and earns tokens while roasting AI."
+    />
+
+    <title>Token Burner 9000 — AI Slot Machine</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">🪙</div>
+          <div class="brandText">
+            <div class="title">Token Burner 9000</div>
+            <div class="subtitle">A slot machine that roasts AI and your wallet.</div>
+          </div>
+        </div>
+
+        <div class="stats" aria-label="Token stats">
+          <div class="stat">
+            <div class="statLabel">Tokens</div>
+            <div class="statValue" id="tokensValue">—</div>
+          </div>
+          <div class="stat">
+            <div class="statLabel">Model</div>
+            <div class="statValue" id="modelValue">—</div>
+          </div>
+          <div class="stat">
+            <div class="statLabel">Context</div>
+            <div class="statValue" id="contextValue">—</div>
+          </div>
+        </div>
+      </header>
+
+      <main class="main">
+        <section class="machine" aria-label="Slot machine">
+          <div class="marquee" aria-hidden="true">
+            <div class="marqueeInner">
+              <span>WIN TOKENS • BURN TOKENS • HALLUCINATE VALUE • RATE LIMIT YOURSELF •</span>
+              <span>WIN TOKENS • BURN TOKENS • HALLUCINATE VALUE • RATE LIMIT YOURSELF •</span>
+            </div>
+          </div>
+
+          <div class="reels" role="group" aria-label="Reels">
+            <div class="reel" id="reel0" aria-label="Reel 1">
+              <div class="reelEmoji" id="reelEmoji0">🤖</div>
+              <div class="reelText" id="reelText0">Booting…</div>
+            </div>
+            <div class="reel" id="reel1" aria-label="Reel 2">
+              <div class="reelEmoji" id="reelEmoji1">🤖</div>
+              <div class="reelText" id="reelText1">Booting…</div>
+            </div>
+            <div class="reel" id="reel2" aria-label="Reel 3">
+              <div class="reelEmoji" id="reelEmoji2">🤖</div>
+              <div class="reelText" id="reelText2">Booting…</div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <div class="controlRow">
+              <button class="primary" id="spinBtn" type="button">
+                Spin <span class="pill" id="spinCostPill">—</span>
+              </button>
+              <button class="ghost" id="autoBtn" type="button" aria-pressed="false">Auto</button>
+              <button class="ghost" id="bragBtn" type="button">Copy brag</button>
+            </div>
+
+            <div class="controlGrid" aria-label="Settings">
+              <label class="field">
+                <span class="fieldLabel">Temperature</span>
+                <input id="tempSlider" type="range" min="0" max="100" step="1" value="45" />
+                <span class="fieldValue" id="tempValue">0.45</span>
+              </label>
+
+              <label class="field">
+                <span class="fieldLabel">Bet</span>
+                <input id="betInput" type="number" inputmode="numeric" min="1" step="1" />
+                <span class="fieldHint" id="betHint">—</span>
+              </label>
+
+              <div class="field">
+                <span class="fieldLabel">Daily bonus</span>
+                <button class="secondary" id="dailyBtn" type="button">Claim</button>
+                <span class="fieldHint" id="dailyHint">—</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="status" aria-live="polite" aria-atomic="true" id="status">
+            Insert tokens to begin mocking the future.
+          </div>
+        </section>
+
+        <aside class="side">
+          <section class="panel" aria-label="Payout table">
+            <div class="panelTitle">Payouts (3 of a kind)</div>
+            <div class="payouts" id="payouts"></div>
+            <div class="smallPrint">
+              Two of a kind pays a tiny pity bonus. “Hallucination” pays confidence, not tokens.
+            </div>
+          </section>
+
+          <section class="panel" aria-label="History">
+            <div class="panelTitle">Recent spins</div>
+            <ol class="history" id="history"></ol>
+          </section>
+        </aside>
+      </main>
+
+      <footer class="footer">
+        <div>
+          Built with plain HTML/CSS/JS + platform APIs (localStorage, Web Audio, Clipboard, Vibration, Service Worker).
+        </div>
+        <div class="footerRight">
+          <button class="link" id="resetBtn" type="button">Reset save</button>
+        </div>
+      </footer>
+    </div>
+
+    <script defer src="app.js"></script>
+  </body>
+</html>

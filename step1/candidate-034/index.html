@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A vanilla-web slot machine that runs on tokens, vibes, and questionable AI confidence."
+    />
+    <meta name="theme-color" content="#0b1020" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>AI Token Slot Machine</title>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">AI</div>
+          <div>
+            <h1>AI Token Slots</h1>
+            <p class="tagline">Win tokens. Spend tokens. Repeat until sentient.</p>
+          </div>
+        </div>
+
+        <div class="hud" role="group" aria-label="Token status">
+          <div class="stat">
+            <div class="k">Tokens</div>
+            <div class="v" id="balance">—</div>
+          </div>
+          <div class="stat">
+            <div class="k">Spin cost</div>
+            <div class="v" id="spinCost">—</div>
+          </div>
+          <div class="stat">
+            <div class="k">Confidence</div>
+            <div class="v"><span id="confidence">99</span>%</div>
+          </div>
+        </div>
+      </header>
+
+      <main class="main">
+        <section class="machine" aria-label="Slot machine">
+          <div class="marquee" aria-hidden="true">
+            <span>Now with 2× more parameters and 0× more accountability</span>
+          </div>
+
+          <div class="reels" role="group" aria-label="Reels">
+            <div class="reel" id="reel0" aria-label="Reel 1">
+              <div class="window"><span class="symbol" id="sym0">…</span></div>
+            </div>
+            <div class="reel" id="reel1" aria-label="Reel 2">
+              <div class="window"><span class="symbol" id="sym1">…</span></div>
+            </div>
+            <div class="reel" id="reel2" aria-label="Reel 3">
+              <div class="window"><span class="symbol" id="sym2">…</span></div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button class="primary" id="spinBtn" type="button">
+              <span class="btnTop">Spin</span>
+              <span class="btnSub" id="spinHint">Spend tokens to generate value</span>
+            </button>
+            <button class="secondary" id="autoBtn" type="button">Autospin</button>
+            <button class="ghost" id="paytableBtn" type="button">Paytable</button>
+            <button class="ghost" id="dailyBtn" type="button">Daily token grant</button>
+            <button class="ghost" id="resetBtn" type="button">Reset</button>
+          </div>
+
+          <div class="statusRow">
+            <div class="status" id="status" aria-live="polite"></div>
+            <div class="miniToggles" role="group" aria-label="Preferences">
+              <label class="toggle">
+                <input id="soundToggle" type="checkbox" />
+                <span>Sound</span>
+              </label>
+              <label class="toggle">
+                <input id="hapticsToggle" type="checkbox" />
+                <span>Haptics</span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="side">
+          <div class="card">
+            <h2>Model settings</h2>
+            <p class="muted">
+              Adjusting these will not improve your luck, but it will improve your feeling of control.
+            </p>
+            <div class="row">
+              <label for="temp" class="rowLabel">Temperature</label>
+              <input id="temp" type="range" min="0" max="2" step="0.1" />
+              <output id="tempOut" for="temp">—</output>
+            </div>
+            <div class="row">
+              <label for="topP" class="rowLabel">Top‑p</label>
+              <input id="topP" type="range" min="0.1" max="1" step="0.05" />
+              <output id="topPOut" for="topP">—</output>
+            </div>
+            <div class="row">
+              <label for="latency" class="rowLabel">Latency</label>
+              <input id="latency" type="range" min="150" max="1100" step="10" />
+              <output id="latencyOut" for="latency">—</output>
+            </div>
+            <div class="divider"></div>
+            <div class="actions">
+              <button class="secondary" id="copyBragBtn" type="button">Copy brag</button>
+              <button class="secondary" id="shareBtn" type="button">Share</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Stats</h2>
+            <div class="statsGrid">
+              <div class="stat2">
+                <div class="k">Spins</div>
+                <div class="v" id="spins">—</div>
+              </div>
+              <div class="stat2">
+                <div class="k">Total won</div>
+                <div class="v" id="totalWon">—</div>
+              </div>
+              <div class="stat2">
+                <div class="k">Best win</div>
+                <div class="v" id="bestWin">—</div>
+              </div>
+              <div class="stat2">
+                <div class="k">Hallucinations</div>
+                <div class="v" id="halluCount">—</div>
+              </div>
+            </div>
+            <p class="fineprint">Not financial advice. Not even good advice.</p>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="fineprint">
+          Tip: If you run out of tokens, request more from the Daily token grant. If that fails, blame rate limits.
+        </div>
+      </footer>
+    </div>
+
+    <dialog id="paytableDialog" class="dialog">
+      <form method="dialog" class="dialogInner">
+        <header class="dialogHeader">
+          <h2>Paytable</h2>
+          <button class="ghost" value="close" aria-label="Close">Close</button>
+        </header>
+        <div class="dialogBody" id="paytable"></div>
+        <div class="dialogFooter">
+          <button class="primary" value="close">Back to generating value</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
+

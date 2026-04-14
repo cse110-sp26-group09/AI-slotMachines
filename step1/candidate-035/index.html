@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Token Slot Machine</title>
+    <meta
+      name="description"
+      content="A vanilla web slot machine that lovingly roasts AI economics: win tokens, spend tokens, and occasionally get invoiced."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <div class="title">AI Token Slot Machine</div>
+        <div class="subtitle">
+          Win tokens. Spend tokens. Get invoiced for “alignment”. Repeat.
+        </div>
+      </div>
+      <div class="wallet" aria-label="Token wallet">
+        <div class="wallet__label">Wallet</div>
+        <div class="wallet__value">
+          <span id="tokenCount" class="mono">0</span>
+          <span class="wallet__unit">tokens</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="machine" aria-label="Slot machine">
+        <div class="marquee" aria-hidden="true">
+          <span class="marquee__dot"></span>
+          <span class="marquee__dot"></span>
+          <span class="marquee__dot"></span>
+          <span class="marquee__dot"></span>
+          <span class="marquee__dot"></span>
+          <span class="marquee__dot"></span>
+          <span class="marquee__dot"></span>
+          <span class="marquee__dot"></span>
+          <span class="marquee__dot"></span>
+          <span class="marquee__dot"></span>
+        </div>
+
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" id="reel0" aria-label="Reel 1">
+            <div class="reel__symbol" id="sym0">🤖</div>
+          </div>
+          <div class="reel" id="reel1" aria-label="Reel 2">
+            <div class="reel__symbol" id="sym1">🧠</div>
+          </div>
+          <div class="reel" id="reel2" aria-label="Reel 3">
+            <div class="reel__symbol" id="sym2">🪙</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="spinBtn" class="btn btn--primary" type="button">
+            Spin <span class="btn__sub" id="spinCostText"></span>
+          </button>
+          <button id="dailyBtn" class="btn" type="button">Claim daily tokens</button>
+          <button id="shareBtn" class="btn" type="button">Copy brag</button>
+          <button id="resetBtn" class="btn btn--ghost" type="button">
+            Reset save
+          </button>
+        </div>
+
+        <div id="readout" class="readout" role="status" aria-live="polite">
+          <div class="readout__headline" id="headline">Ready to burn tokens.</div>
+          <div class="readout__detail" id="detail">
+            Tip: “🤖🤖🤖” is not AGI, but it does pay rent.
+          </div>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="panel" aria-label="Stats">
+          <h2 class="panel__title">Telemetry</h2>
+          <div class="stats">
+            <div class="stat">
+              <div class="stat__k">Spins</div>
+              <div class="stat__v mono" id="statSpins">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat__k">Wins</div>
+              <div class="stat__v mono" id="statWins">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat__k">Losses</div>
+              <div class="stat__v mono" id="statLosses">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat__k">Net</div>
+              <div class="stat__v mono" id="statNet">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat__k">Biggest win</div>
+              <div class="stat__v mono" id="statBig">0</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" aria-label="Payout table">
+          <details open>
+            <summary class="panel__title">Payout table</summary>
+            <div class="payout">
+              <div class="payout__row">
+                <div class="payout__lhs">🪙🪙🪙</div>
+                <div class="payout__rhs">+250</div>
+              </div>
+              <div class="payout__row">
+                <div class="payout__lhs">🧠🧠🧠</div>
+                <div class="payout__rhs">+120</div>
+              </div>
+              <div class="payout__row">
+                <div class="payout__lhs">🤖🤖🤖</div>
+                <div class="payout__rhs">+80</div>
+              </div>
+              <div class="payout__row">
+                <div class="payout__lhs">💾💾💾</div>
+                <div class="payout__rhs">+60</div>
+              </div>
+              <div class="payout__row">
+                <div class="payout__lhs">🔥🔥🔥</div>
+                <div class="payout__rhs">+40</div>
+              </div>
+              <div class="payout__row payout__row--bad">
+                <div class="payout__lhs">🧾🧾🧾</div>
+                <div class="payout__rhs">-80</div>
+              </div>
+              <div class="payout__row payout__row--bad">
+                <div class="payout__lhs">🕳️🕳️🕳️</div>
+                <div class="payout__rhs">-150</div>
+              </div>
+
+              <div class="payout__note">
+                Two-of-a-kind pays smaller. Three invoices are… an invoice.
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section class="panel" aria-label="About">
+          <h2 class="panel__title">About</h2>
+          <p class="about">
+            This is a fully client-side, vanilla HTML/CSS/JS slot machine. It saves
+            your tokens with <span class="mono">localStorage</span>. No tracking.
+            (Except the “Telemetry” section… which is also local.)
+          </p>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <div class="footer__hint">
+        Pro tip: If you run out of tokens, just rename your loss as a “research
+        preview”.
+      </div>
+    </footer>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0f1a" />
+    <meta name="description" content="A satirical AI slot machine: win tokens, spend tokens, get rate-limited." />
+    <title>TokenBandit.ai — Slot Machine</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">▦</div>
+        <div class="brandText">
+          <div class="title">TokenBandit.ai</div>
+          <div class="subtitle">Because the house always has more GPUs.</div>
+        </div>
+      </div>
+      <div class="status">
+        <div class="pill" title="Your balance">
+          <span class="pillLabel">Balance</span>
+          <span class="pillValue" id="balance">—</span>
+          <span class="pillUnit">tokens</span>
+        </div>
+        <div class="pill" title="Your current bet">
+          <span class="pillLabel">Bet</span>
+          <span class="pillValue" id="betLabel">—</span>
+          <span class="pillUnit">/ spin</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="machine" aria-label="Slot machine">
+        <div class="marquee" aria-hidden="true">
+          <div class="marqueeInner" id="marquee">
+            <span>WIN TOKENS</span><span>SPEND TOKENS</span><span>GET RATE-LIMITED</span><span>UPGRADE ANYWAY</span>
+          </div>
+        </div>
+
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" id="reel0" aria-label="Reel 1">
+            <div class="symbol" id="reel0Symbol">…</div>
+            <div class="symbolLabel" id="reel0Label">Booting model</div>
+          </div>
+          <div class="reel" id="reel1" aria-label="Reel 2">
+            <div class="symbol" id="reel1Symbol">…</div>
+            <div class="symbolLabel" id="reel1Label">Warming GPUs</div>
+          </div>
+          <div class="reel" id="reel2" aria-label="Reel 3">
+            <div class="symbol" id="reel2Symbol">…</div>
+            <div class="symbolLabel" id="reel2Label">Counting tokens</div>
+          </div>
+        </div>
+
+        <div class="controls" aria-label="Controls">
+          <div class="betRow">
+            <label class="betLabel" for="bet">Bet size</label>
+            <input id="bet" class="bet" type="range" min="1" max="50" step="1" value="10" />
+            <button class="btn ghost" id="maxBet" type="button" title="Set bet to maximum">Max</button>
+          </div>
+
+          <div class="buttons">
+            <button class="btn primary" id="spin" type="button">
+              <span class="btnMain">Spin</span>
+              <span class="btnSub" id="spinHint">Costs tokens. May hallucinate.</span>
+            </button>
+            <button class="btn" id="auto" type="button" aria-pressed="false" title="Toggle auto-spin">Auto</button>
+            <button class="btn" id="bonus" type="button" title="Claim a daily bonus">Daily Bonus</button>
+            <button class="btn danger" id="reset" type="button" title="Reset progress">Reset</button>
+          </div>
+
+          <div class="toggles">
+            <label class="toggle">
+              <input id="sound" type="checkbox" checked />
+              <span>Sound</span>
+            </label>
+            <label class="toggle">
+              <input id="vibe" type="checkbox" />
+              <span>Vibrate</span>
+            </label>
+            <button class="btn ghost" id="share" type="button" title="Share your luck (or lack thereof)">Share</button>
+            <button class="btn ghost" id="copy" type="button" title="Copy a 'winning prompt' to clipboard">Copy Prompt</button>
+          </div>
+        </div>
+
+        <div class="result" aria-live="polite" aria-atomic="true">
+          <div class="resultTitle" id="resultTitle">Insert tokens. Pretend it’s “usage-based pricing”.</div>
+          <div class="resultBody" id="resultBody">Match symbols to win tokens. Beware: latency, rate limits, and hallucinations.</div>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="card">
+          <h2>Paytable</h2>
+          <div class="paytable" id="paytable" aria-label="Paytable"></div>
+          <div class="fineprint">Satire. No real money. The only thing you can lose is dignity (and tokens).</div>
+        </section>
+
+        <section class="card">
+          <h2>Telemetry</h2>
+          <dl class="stats">
+            <div><dt>Spins</dt><dd id="statSpins">—</dd></div>
+            <div><dt>Wins</dt><dd id="statWins">—</dd></div>
+            <div><dt>Biggest win</dt><dd id="statBiggest">—</dd></div>
+            <div><dt>Net</dt><dd id="statNet">—</dd></div>
+          </dl>
+          <div class="microcopy">
+            We store your tokens locally using <code>localStorage</code>, because our “cloud” is just your browser.
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>How it “works”</h2>
+          <ul class="bullets">
+            <li>Each spin costs your bet in tokens.</li>
+            <li>Three of a kind pays most. Two of a kind pays a consolation prize.</li>
+            <li><strong>Hallucination</strong> may show a “win” message with a payout of exactly 0.</li>
+            <li><strong>Rate Limit</strong> can put you in a short cooldown.</li>
+          </ul>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <span>Tip: Serving via <code>http://</code> enables full platform APIs (share, clipboard, offline).</span>
+    </footer>
+
+    <noscript><div class="noscript">This app needs JavaScript to spin the reels.</div></noscript>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

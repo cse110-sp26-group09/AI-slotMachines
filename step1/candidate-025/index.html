@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>AI Slots — Token Laundromat</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to game</a>
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand__title">AI Slots</div>
+        <div class="brand__tagline">Winning tokens. Spending tokens. Optimizing vibes.</div>
+      </div>
+
+      <div class="hud" aria-label="Game status">
+        <div class="hud__item">
+          <div class="hud__label">Tokens</div>
+          <div id="tokens" class="hud__value" aria-live="polite">—</div>
+        </div>
+        <div class="hud__item">
+          <div class="hud__label">Spin Cost</div>
+          <div class="hud__value">
+            <label class="inline">
+              <span class="sr-only">Spin cost</span>
+              <select id="bet" class="select">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="hud__item hud__item--small">
+          <div class="hud__label">RTP (ish)</div>
+          <div id="rtp" class="hud__value">—</div>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="app" tabindex="-1">
+      <section class="machine" aria-label="Slot machine">
+        <div class="machine__screen">
+          <div class="reels" role="group" aria-label="Reels">
+            <div class="reel" aria-label="Reel 1">
+              <div class="reel__window"><span id="reel0" class="reel__symbol">🤖</span></div>
+            </div>
+            <div class="reel" aria-label="Reel 2">
+              <div class="reel__window"><span id="reel1" class="reel__symbol">🤖</span></div>
+            </div>
+            <div class="reel" aria-label="Reel 3">
+              <div class="reel__window"><span id="reel2" class="reel__symbol">🤖</span></div>
+            </div>
+          </div>
+
+          <div class="readout">
+            <div id="message" class="message" role="status" aria-live="polite">
+              Insert tokens. Press Spin. Pretend this is “research”.
+            </div>
+            <div class="micro">
+              <span id="lastResult">—</span>
+              <button id="copyResult" class="linklike" type="button">
+                Copy “audit log”
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls" aria-label="Controls">
+          <button id="spin" class="btn btn--primary" type="button">
+            Spin
+          </button>
+          <button id="autospin" class="btn" type="button" aria-pressed="false">
+            Auto (10)
+          </button>
+          <button id="paytableBtn" class="btn" type="button">
+            Paytable
+          </button>
+          <button id="reset" class="btn btn--danger" type="button">
+            Reset
+          </button>
+        </div>
+
+        <div class="tweaks" aria-label="Toggles">
+          <label class="toggle">
+            <input id="sound" type="checkbox" checked />
+            <span>Sound</span>
+          </label>
+          <label class="toggle">
+            <input id="reducedMotion" type="checkbox" />
+            <span>Reduce motion</span>
+          </label>
+          <label class="toggle">
+            <input id="strictMode" type="checkbox" />
+            <span>Strict mode (no “hallucinated” bonuses)</span>
+          </label>
+        </div>
+
+        <div class="prompt">
+          <label for="promptText" class="prompt__label">Prompt the reels (optional)</label>
+          <div class="prompt__row">
+            <input
+              id="promptText"
+              class="input"
+              type="text"
+              autocomplete="off"
+              inputmode="text"
+              spellcheck="false"
+              placeholder="e.g. “more GPUs, fewer rate limits”"
+              maxlength="80"
+            />
+            <button id="applyPrompt" class="btn" type="button">Apply</button>
+          </div>
+          <div id="promptHint" class="hint">
+            Costs 1 token per spin while active. May be ignored due to “alignment”.
+          </div>
+        </div>
+      </section>
+
+      <section class="stats" aria-label="Stats">
+        <div class="card">
+          <div class="card__title">Session Stats</div>
+          <div class="kv">
+            <div class="kv__row"><div class="kv__k">Spins</div><div id="spins" class="kv__v">—</div></div>
+            <div class="kv__row"><div class="kv__k">Wins</div><div id="wins" class="kv__v">—</div></div>
+            <div class="kv__row"><div class="kv__k">Biggest Win</div><div id="biggest" class="kv__v">—</div></div>
+            <div class="kv__row"><div class="kv__k">Net</div><div id="net" class="kv__v">—</div></div>
+          </div>
+          <div class="card__actions">
+            <button id="exportStats" class="btn" type="button">Export stats (JSON)</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__title">Disclaimer</div>
+          <p class="card__p">
+            This machine is trained on vibes, not facts. It will happily take your tokens, then explain why that’s
+            “expected behavior”.
+          </p>
+          <p class="card__p subtle">
+            Platform APIs used: <span class="pill">localStorage</span> <span class="pill">Clipboard</span>
+            <span class="pill">Web Audio</span> <span class="pill">Vibration</span> <span class="pill">File download</span>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="paytable" class="dialog">
+      <form method="dialog" class="dialog__inner">
+        <div class="dialog__head">
+          <div>
+            <div class="dialog__title">Paytable</div>
+            <div class="dialog__sub">Payouts scale with your spin cost.</div>
+          </div>
+          <button class="btn" value="close">Close</button>
+        </div>
+
+        <div id="paytableBody" class="paytable" aria-label="Paytable entries"></div>
+
+        <div class="dialog__foot subtle">
+          House edge powered by “product decisions”.
+        </div>
+      </form>
+    </dialog>
+
+    <canvas id="fx" class="fx" aria-hidden="true"></canvas>
+
+    <script src="app.js"></script>
+  </body>
+</html>
+

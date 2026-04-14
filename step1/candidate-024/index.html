@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <meta
+      name="description"
+      content="A vanilla-web slot machine that satirizes AI: spend tokens to spin, win tokens to keep prompting."
+    />
+    <title>Token Fortune — AI Slot Machine</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">TF</div>
+          <div class="brand-text">
+            <h1>Token Fortune</h1>
+            <p class="subtitle">Spend tokens. Win tokens. Blame the model.</p>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button class="ghost" id="shareBtn" type="button" title="Copy a share message">
+            Share
+          </button>
+          <button class="ghost" id="resetBtn" type="button" title="Reset balance and settings">
+            Reset
+          </button>
+        </div>
+      </header>
+
+      <main class="grid">
+        <section class="panel stats" aria-label="Stats">
+          <div class="stat">
+            <div class="label">Balance</div>
+            <div class="value">
+              <span id="balance" aria-live="polite">0</span><span class="unit"> tokens</span>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="label">Bet</div>
+            <div class="value">
+              <span id="betText">0</span><span class="unit"> tokens</span>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="label">Prompt Tax</div>
+            <div class="value">
+              <span id="taxText">0</span><span class="unit"> tokens</span>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="label">Last Spin</div>
+            <div class="value" id="lastSpin" aria-live="polite">—</div>
+          </div>
+        </section>
+
+        <section class="panel machine" aria-label="Slot machine">
+          <div class="marquee" aria-hidden="true">
+            <div class="marquee-track">
+              <span>ALIGNMENT SOLD SEPARATELY</span>
+              <span>NO REFUNDS FOR HALLUCINATIONS</span>
+              <span>GPU TIME IS NON-TRANSFERABLE</span>
+              <span>PROMPT ENGINEERING IS A LIFESTYLE</span>
+              <span>ALIGNMENT SOLD SEPARATELY</span>
+              <span>NO REFUNDS FOR HALLUCINATIONS</span>
+              <span>GPU TIME IS NON-TRANSFERABLE</span>
+              <span>PROMPT ENGINEERING IS A LIFESTYLE</span>
+            </div>
+          </div>
+
+          <div class="reels" role="group" aria-label="Reels">
+            <div class="reel" data-reel="0" aria-label="Reel 1">
+              <div class="reel-face" id="reel0">🤖</div>
+              <div class="reel-glass" aria-hidden="true"></div>
+            </div>
+            <div class="reel" data-reel="1" aria-label="Reel 2">
+              <div class="reel-face" id="reel1">🪙</div>
+              <div class="reel-glass" aria-hidden="true"></div>
+            </div>
+            <div class="reel" data-reel="2" aria-label="Reel 3">
+              <div class="reel-face" id="reel2">⚡️</div>
+              <div class="reel-glass" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <div class="bet">
+              <label for="betRange">Bet</label>
+              <input id="betRange" type="range" min="1" max="250" step="1" value="25" />
+              <div class="bet-hint">Tip: spacebar to spin • ↑/↓ bet</div>
+            </div>
+            <div class="buttons">
+              <button class="primary" id="spinBtn" type="button">Spin (Space)</button>
+              <button class="secondary" id="fundBtn" type="button" title="Inject capital, dilute dignity">
+                Raise Seed
+              </button>
+            </div>
+          </div>
+
+          <div class="toggles" aria-label="Settings">
+            <label class="toggle">
+              <input id="soundToggle" type="checkbox" checked />
+              <span>Sound</span>
+            </label>
+            <label class="toggle">
+              <input id="hapticsToggle" type="checkbox" checked />
+              <span>Haptics</span>
+            </label>
+            <label class="toggle">
+              <input id="autoSpinToggle" type="checkbox" />
+              <span>Auto-spin</span>
+            </label>
+          </div>
+
+          <div class="statusline" id="statusline" aria-live="polite"></div>
+        </section>
+
+        <section class="panel paytable" aria-label="Pay table">
+          <h2>Pay Table</h2>
+          <div class="table" role="table" aria-label="Payouts">
+            <div class="row header" role="row">
+              <div class="cell" role="columnheader">Combo</div>
+              <div class="cell" role="columnheader">Payout</div>
+              <div class="cell" role="columnheader">Commentary</div>
+            </div>
+            <div class="row" role="row">
+              <div class="cell" role="cell">🧠🧠🧠</div>
+              <div class="cell" role="cell">×12</div>
+              <div class="cell" role="cell">Big Brain Energy™ (still overfits)</div>
+            </div>
+            <div class="row" role="row">
+              <div class="cell" role="cell">🖥️🖥️🖥️</div>
+              <div class="cell" role="cell">×10</div>
+              <div class="cell" role="cell">GPU acquired (your wallet screams)</div>
+            </div>
+            <div class="row" role="row">
+              <div class="cell" role="cell">🪙🪙🪙</div>
+              <div class="cell" role="cell">×8</div>
+              <div class="cell" role="cell">Tokens printed (economists weep)</div>
+            </div>
+            <div class="row" role="row">
+              <div class="cell" role="cell">🧪🧪🧪</div>
+              <div class="cell" role="cell">×6</div>
+              <div class="cell" role="cell">Fine-tune complete (it learned sarcasm)</div>
+            </div>
+            <div class="row" role="row">
+              <div class="cell" role="cell">✨✨✨</div>
+              <div class="cell" role="cell">×5</div>
+              <div class="cell" role="cell">Prompt perfectly framed (for once)</div>
+            </div>
+            <div class="row" role="row">
+              <div class="cell" role="cell">🎭🎭🎭</div>
+              <div class="cell" role="cell">×0</div>
+              <div class="cell" role="cell">Hallucination! Confidently wrong, like a champ</div>
+            </div>
+            <div class="row" role="row">
+              <div class="cell" role="cell">Any 2 of a kind</div>
+              <div class="cell" role="cell">×2</div>
+              <div class="cell" role="cell">“Reasonable” output (with 3 disclaimers)</div>
+            </div>
+            <div class="row" role="row">
+              <div class="cell" role="cell">Any triple</div>
+              <div class="cell" role="cell">×3</div>
+              <div class="cell" role="cell">Synergy! (marketing approves)</div>
+            </div>
+          </div>
+          <p class="fineprint">
+            House edge: the prompt tax. If you run out of tokens, just “raise seed.”
+          </p>
+        </section>
+
+        <section class="panel log" aria-label="Event log">
+          <h2>Model Output</h2>
+          <div class="logbox" id="logbox" role="log" aria-live="polite" aria-relevant="additions"></div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <p>
+          Vanilla web tech only • Works offline after first load • Built to roast AI (lovingly)
+        </p>
+      </footer>
+    </div>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
+

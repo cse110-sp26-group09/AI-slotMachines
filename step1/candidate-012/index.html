@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TokenBandit™ — The AI Slot Machine</title>
+    <meta
+      name="description"
+      content="A vanilla HTML/CSS/JS slot machine that lovingly roasts AI: spend tokens, win tokens, and occasionally get rate-limited."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app" role="application" aria-label="TokenBandit slot machine">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">TB</div>
+          <div class="brandText">
+            <h1>TokenBandit<span class="tm">™</span></h1>
+            <p class="tagline">Because paying to hallucinate should be fun.</p>
+          </div>
+        </div>
+
+        <div class="stats" aria-label="Game stats">
+          <div class="stat">
+            <div class="statLabel">Balance</div>
+            <div class="statValue" id="balanceValue" aria-live="polite">0</div>
+            <div class="statSub">tokens</div>
+          </div>
+          <div class="stat">
+            <div class="statLabel">Spin cost</div>
+            <div class="statValue" id="spinCostValue">25</div>
+            <div class="statSub">tokens</div>
+          </div>
+          <div class="stat">
+            <div class="statLabel">Streak</div>
+            <div class="statValue" id="streakValue">0</div>
+            <div class="statSub">wins</div>
+          </div>
+        </div>
+      </header>
+
+      <main class="machineWrap">
+        <section class="machine" aria-label="Slot machine">
+          <div class="marquee" aria-hidden="true">
+            <span id="marqueeText">Welcome! Insert tokens to begin the inevitable.</span>
+          </div>
+
+          <div class="reels" role="group" aria-label="Reels">
+            <div class="reel" aria-label="Reel 1">
+              <div class="reelWindow">
+                <div class="symbol" id="reel0Symbol" aria-live="polite">—</div>
+                <div class="symbolLabel" id="reel0Label">—</div>
+              </div>
+            </div>
+            <div class="reel" aria-label="Reel 2">
+              <div class="reelWindow">
+                <div class="symbol" id="reel1Symbol" aria-live="polite">—</div>
+                <div class="symbolLabel" id="reel1Label">—</div>
+              </div>
+            </div>
+            <div class="reel" aria-label="Reel 3">
+              <div class="reelWindow">
+                <div class="symbol" id="reel2Symbol" aria-live="polite">—</div>
+                <div class="symbolLabel" id="reel2Label">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="payoutPanel" aria-label="Result">
+            <div class="resultLine">
+              <div class="resultTitle">Output</div>
+              <div class="resultText" id="resultText" aria-live="polite">
+                Tip: Don’t gamble. Unless it’s with pretend tokens.
+              </div>
+            </div>
+            <div class="pills" aria-label="Quick actions">
+              <button class="pill" id="shareBtn" type="button" title="Copy a shareable result to clipboard">
+                Copy result
+              </button>
+              <button class="pill" id="resetBtn" type="button" title="Reset your balance and stats">
+                Factory reset
+              </button>
+            </div>
+          </div>
+
+          <div class="controls" aria-label="Controls">
+            <button class="primary" id="spinBtn" type="button">
+              Spin (⌘/Ctrl+Enter)
+            </button>
+            <button class="secondary" id="insertBtn" type="button">Insert 100 tokens</button>
+            <button class="secondary" id="autoBtn" type="button" aria-pressed="false">
+              Auto-spin: Off
+            </button>
+          </div>
+
+          <details class="rules">
+            <summary>How payouts work</summary>
+            <div class="rulesBody" id="rulesBody"></div>
+          </details>
+        </section>
+
+        <aside class="side" aria-label="Settings and flavor">
+          <section class="card">
+            <h2>Settings</h2>
+            <label class="toggle">
+              <input type="checkbox" id="soundToggle" />
+              <span>Sound (Web Audio)</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="hapticToggle" />
+              <span>Haptics (Vibration API)</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="reduceMotionToggle" />
+              <span>Reduce motion</span>
+            </label>
+            <div class="smallNote">
+              Saved locally on this device. No cloud. No telemetry. No “training on your spins”.
+            </div>
+          </section>
+
+          <section class="card">
+            <h2>Patch notes</h2>
+            <ul class="bullets">
+              <li>v1.0 — Added “Rate Limited” jackpot (it pays in disappointment).</li>
+              <li>v1.0 — Improved RNG (not “temperature=2.0”).</li>
+              <li>v1.0 — Removed “AGI in Q3” banner due to excessive hallucination.</li>
+            </ul>
+          </section>
+
+          <section class="card">
+            <h2>Keyboard</h2>
+            <ul class="bullets">
+              <li><kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Enter</kbd>: Spin</li>
+              <li><kbd>Space</kbd>: Spin (when focused)</li>
+            </ul>
+          </section>
+        </aside>
+      </main>
+
+      <footer class="footer">
+        <div class="footerLeft">
+          Built with vanilla HTML/CSS/JS + platform APIs.
+        </div>
+        <div class="footerRight" id="footerHint" aria-live="polite"></div>
+      </footer>
+    </div>
+
+    <canvas id="confetti" class="confetti" aria-hidden="true"></canvas>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
+

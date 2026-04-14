@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TokenBandit 3000 — An AI Slot Machine</title>
+    <meta
+      name="description"
+      content="A playful, vanilla-web slot machine where you spend tokens to spin and win more tokens. Satire included."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">
+        <div class="brand__title">TokenBandit 3000</div>
+        <div class="brand__subtitle">Spend tokens. Win tokens. Definitely not a business model.</div>
+      </div>
+
+      <div class="hud" aria-label="Game stats">
+        <div class="hud__item">
+          <div class="hud__label">Tokens</div>
+          <div class="hud__value" id="tokensValue">—</div>
+        </div>
+        <div class="hud__item">
+          <div class="hud__label">Spin Cost</div>
+          <div class="hud__value" id="spinCostValue">—</div>
+        </div>
+        <div class="hud__item">
+          <div class="hud__label">Spins</div>
+          <div class="hud__value" id="spinsValue">—</div>
+        </div>
+        <div class="hud__item">
+          <div class="hud__label">Best Win</div>
+          <div class="hud__value" id="bestWinValue">—</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="machine" aria-label="Slot machine">
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" aria-label="Reel 1">
+            <div class="reel__window">
+              <div class="reel__symbol" id="reel0Symbol">?</div>
+              <div class="reel__label" id="reel0Label">—</div>
+            </div>
+          </div>
+          <div class="reel" aria-label="Reel 2">
+            <div class="reel__window">
+              <div class="reel__symbol" id="reel1Symbol">?</div>
+              <div class="reel__label" id="reel1Label">—</div>
+            </div>
+          </div>
+          <div class="reel" aria-label="Reel 3">
+            <div class="reel__window">
+              <div class="reel__symbol" id="reel2Symbol">?</div>
+              <div class="reel__label" id="reel2Label">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls" aria-label="Controls">
+          <button class="btn btn--primary" id="spinBtn" type="button">
+            Spin
+            <span class="btn__hint">(Space)</span>
+          </button>
+          <button class="btn" id="autoBtn" type="button" aria-pressed="false">Auto</button>
+          <button class="btn" id="resetBtn" type="button">Reset</button>
+        </div>
+
+        <div class="tuning" aria-label="Model settings (satire)">
+          <div class="tuning__row">
+            <label class="tuning__label" for="temperatureInput">
+              Temperature
+              <span class="tuning__meta" id="temperatureValue">—</span>
+            </label>
+            <input
+              id="temperatureInput"
+              class="tuning__range"
+              type="range"
+              min="0.25"
+              max="2"
+              step="0.05"
+              value="1"
+            />
+          </div>
+
+          <div class="tuning__toggles">
+            <label class="toggle">
+              <input id="demoModeInput" type="checkbox" />
+              <span>Investor Demo Mode (payouts look “great”)</span>
+            </label>
+            <label class="toggle">
+              <input id="soundInput" type="checkbox" checked />
+              <span>Sound</span>
+            </label>
+            <label class="toggle">
+              <input id="speechInput" type="checkbox" />
+              <span>Narrator (Speech)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="actions" aria-label="Token actions">
+          <button class="btn btn--ghost" id="freeTokensBtn" type="button">
+            Get “free” tokens (sell your privacy)
+          </button>
+          <button class="btn btn--ghost" id="donateBtn" type="button">Donate tokens to GPU time</button>
+        </div>
+
+        <div class="status" role="status" aria-live="polite" aria-atomic="true">
+          <div class="status__headline" id="statusHeadline">Insert tokens to begin the experiment.</div>
+          <div class="status__detail" id="statusDetail">
+            Tip: temperature changes how chaotic the “model” feels.
+          </div>
+        </div>
+
+        <div class="paytable" aria-label="Pay table">
+          <div class="paytable__title">Pay Table (totally reproducible)</div>
+          <div class="paytable__grid" id="paytableGrid"></div>
+          <div class="paytable__fineprint">
+            Not financial advice. Results may vary by prompt, vibes, and lunar phase.
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer__text">
+        Built with plain HTML/CSS/JS + platform APIs: <code>localStorage</code>, <code>crypto.getRandomValues</code>,
+        <code>Web Audio</code>, <code>Speech Synthesis</code>, and (maybe) <code>vibrate</code>.
+      </div>
+    </footer>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
+

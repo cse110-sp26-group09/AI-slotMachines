@@ -1,0 +1,18 @@
+{
+  "name": "TokenGambit: The AI Slot Machine",
+  "short_name": "TokenGambit",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#070a12",
+  "theme_color": "#0b1020",
+  "description": "A vanilla-web slot machine that roasts AI token economics: spend tokens, win tokens, repeat.",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%237c5cff'/%3E%3Cstop offset='1' stop-color='%2327d7ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='128' height='128' rx='28' fill='url(%23g)'/%3E%3Ctext x='64' y='78' text-anchor='middle' font-family='ui-sans-serif,system-ui' font-size='58' font-weight='900' fill='%23050713'%3ETG%3C/text%3E%3C/svg%3E",
+      "sizes": "128x128",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
+

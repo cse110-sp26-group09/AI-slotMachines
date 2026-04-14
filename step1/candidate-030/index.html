@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1020" />
+    <meta
+      name="description"
+      content="A tiny slot machine that roasts AI while you win and burn imaginary tokens."
+    />
+    <title>TokenSpin™ — The AI Slot Machine</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand" aria-label="TokenSpin">
+        <span class="brand__logo" aria-hidden="true">◎</span>
+        <span class="brand__name">TokenSpin<span class="tm">™</span></span>
+      </div>
+
+      <div class="status" role="group" aria-label="Account status">
+        <div class="pill" title="Your imaginary balance">
+          <span class="pill__label">Tokens</span>
+          <span class="pill__value" id="tokenBalance">—</span>
+        </div>
+        <div class="pill subtle" title="How the machine feels today">
+          <span class="pill__label">Model Mood</span>
+          <span class="pill__value" id="modelMood">calibrating…</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="machine" aria-label="Slot machine">
+        <div class="marquee" aria-hidden="true">
+          <div class="marquee__inner" id="marqueeText">
+            Loading responsibly… (no GPUs were harmed, only your wallet)
+          </div>
+        </div>
+
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" id="reel0" aria-label="Reel 1">
+            <div class="reel__window">
+              <ul class="reel__strip" aria-hidden="true"></ul>
+            </div>
+            <div class="reel__result" id="reel0Result">—</div>
+          </div>
+          <div class="reel" id="reel1" aria-label="Reel 2">
+            <div class="reel__window">
+              <ul class="reel__strip" aria-hidden="true"></ul>
+            </div>
+            <div class="reel__result" id="reel1Result">—</div>
+          </div>
+          <div class="reel" id="reel2" aria-label="Reel 3">
+            <div class="reel__window">
+              <ul class="reel__strip" aria-hidden="true"></ul>
+            </div>
+            <div class="reel__result" id="reel2Result">—</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="controls" role="group" aria-label="Controls">
+            <button class="btn primary" id="spinBtn" type="button">
+              <span class="btn__title">SPIN</span>
+              <span class="btn__sub" id="spinCostLabel">Costs —</span>
+            </button>
+
+            <button class="btn" id="autospinBtn" type="button" aria-pressed="false">
+              Auto-spin
+            </button>
+            <button class="btn" id="muteBtn" type="button" aria-pressed="false">
+              Sound
+            </button>
+            <button class="btn" id="shareBtn" type="button">Share receipt</button>
+            <button class="btn" id="fullscreenBtn" type="button">Immersive</button>
+            <button class="btn danger" id="resetBtn" type="button">Factory reset</button>
+          </div>
+
+          <div class="hud">
+            <div class="hud__left">
+              <div class="hint">
+                <span class="hint__k">Tip:</span>
+                <span class="hint__v">3× matches pay. “Hallucination” pays… emotionally.</span>
+              </div>
+              <div class="hint subtle">
+                <span class="hint__k">Disclaimer:</span>
+                <span class="hint__v">All tokens are imaginary. All feelings are real.</span>
+              </div>
+            </div>
+            <div class="hud__right">
+              <div class="stat">
+                <div class="stat__k">Spin cost</div>
+                <div class="stat__v" id="spinCost">—</div>
+              </div>
+              <div class="stat">
+                <div class="stat__k">Total spins</div>
+                <div class="stat__v" id="totalSpins">—</div>
+              </div>
+              <div class="stat">
+                <div class="stat__k">Net</div>
+                <div class="stat__v" id="netTokens">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="result" role="status" aria-live="polite" aria-atomic="true">
+            <div class="result__title" id="resultTitle">Insert tokens. Experience capitalism.</div>
+            <div class="result__detail" id="resultDetail">
+              Press SPIN to convert optimism into invoices.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="side">
+        <section class="card" aria-label="Payout table">
+          <h2 class="card__title">Payouts (because math is “alignment”)</h2>
+          <div class="table" id="payoutTable" aria-label="Payout table"></div>
+          <p class="fineprint">
+            Odds powered by <code>crypto.getRandomValues</code>, not vibes.
+          </p>
+        </section>
+
+        <section class="card" aria-label="Achievements">
+          <h2 class="card__title">Achievements</h2>
+          <ul class="achievements" id="achievements"></ul>
+        </section>
+
+        <section class="card" aria-label="About">
+          <h2 class="card__title">About</h2>
+          <p class="about">
+            TokenSpin is a lovingly unregulated simulator of “AI token economics”. You win
+            tokens. You spend tokens. You learn nothing.
+          </p>
+          <p class="about subtle">
+            If you hear beeps: that’s the machine “thinking”.
+          </p>
+        </section>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Built with vanilla HTML/CSS/JS + Web APIs.</span>
+      <span class="sep" aria-hidden="true">•</span>
+      <span>Now featuring: regret persistence via <code>localStorage</code>.</span>
+    </footer>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
