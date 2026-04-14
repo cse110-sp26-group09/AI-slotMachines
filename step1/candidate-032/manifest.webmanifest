@@ -1,0 +1,19 @@
+{
+  "name": "TokenBurner 3000",
+  "short_name": "TokenBurner",
+  "description": "A vanilla web slot machine that lovingly mocks AI: win tokens, burn tokens, and occasionally hallucinate your way into debt.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b0c10",
+  "theme_color": "#0b0c10",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
