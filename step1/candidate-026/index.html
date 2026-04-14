@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#14121a" />
+    <title>Token Casino: The AI Slot Machine</title>
+    <meta
+      name="description"
+      content="A tiny vanilla-web slot machine that makes fun of AI: you spend tokens to spin, and you win tokens by appeasing the GPU gods."
+    />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg" aria-hidden="true">
+      <div class="noise"></div>
+      <div class="vignette"></div>
+      <div class="grid"></div>
+      <div class="blob blob-a"></div>
+      <div class="blob blob-b"></div>
+    </div>
+
+    <main class="shell">
+      <header class="top">
+        <div>
+          <h1>Token Casino</h1>
+          <p class="subtitle">Spend tokens. Win tokens. Blame “alignment” either way.</p>
+        </div>
+
+        <div class="hud" role="group" aria-label="Balance and session status">
+          <div class="hudCard">
+            <div class="hudLabel">Balance</div>
+            <div class="hudValue">
+              <span id="balance">0</span>
+              <span class="hudUnit">TOK</span>
+            </div>
+            <div class="hudHint" id="balanceHint">Local-only. Stored in your browser.</div>
+          </div>
+
+          <div class="hudCard">
+            <div class="hudLabel">Rate Limit</div>
+            <div class="hudValue">
+              <span id="rate">OK</span>
+            </div>
+            <div class="hudHint" id="cooldownHint">Spin responsibly (or don’t).</div>
+          </div>
+        </div>
+      </header>
+
+      <section class="machine" aria-label="Slot machine">
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" aria-label="Reel 1">
+            <div class="reelWindow">
+              <div class="reelFace" id="r0">GPU</div>
+            </div>
+          </div>
+          <div class="reel" aria-label="Reel 2">
+            <div class="reelWindow">
+              <div class="reelFace" id="r1">TOK</div>
+            </div>
+          </div>
+          <div class="reel" aria-label="Reel 3">
+            <div class="reelWindow">
+              <div class="reelFace" id="r2">PRM</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls" role="group" aria-label="Controls">
+          <div class="row">
+            <button id="spinBtn" class="btn btnPrimary" type="button">
+              <span class="btnBig">SPIN</span>
+              <span class="btnSmall">Spend <span id="cost">10</span> TOK</span>
+            </button>
+
+            <div class="betBox" role="group" aria-label="Bet configuration">
+              <label class="field">
+                <span class="fieldLabel">Bet</span>
+                <div class="fieldInline">
+                  <button id="betDown" class="btn btnGhost" type="button" aria-label="Decrease bet">
+                    -
+                  </button>
+                  <output id="bet" class="pill" aria-live="polite">10</output>
+                  <button id="betUp" class="btn btnGhost" type="button" aria-label="Increase bet">
+                    +
+                  </button>
+                </div>
+              </label>
+
+              <label class="field">
+                <span class="fieldLabel">Context Window</span>
+                <input id="ctx" class="slider" type="range" min="1" max="5" step="1" value="2" />
+                <div class="fieldMeta" id="ctxMeta">2k tokens (mostly vibes)</div>
+              </label>
+            </div>
+          </div>
+
+          <div class="row row2">
+            <button id="stipendBtn" class="btn btnSoft" type="button">
+              Claim Daily Stipend
+            </button>
+            <button id="copyBtn" class="btn btnSoft" type="button">
+              Copy “training logs”
+            </button>
+            <button id="shareBtn" class="btn btnSoft" type="button">
+              Share big win
+            </button>
+            <button id="resetBtn" class="btn btnDanger" type="button">
+              Factory Reset
+            </button>
+          </div>
+        </div>
+
+        <div class="status" role="status" aria-live="polite">
+          <div class="statusLine" id="statusLine">Insert tokens. Receive “intelligence”.</div>
+          <div class="statusSub" id="statusSub">Tip: bigger context costs more, but improves “reasoning”.</div>
+        </div>
+
+        <canvas id="confetti" class="confetti" aria-hidden="true"></canvas>
+      </section>
+
+      <section class="lower">
+        <section class="panel">
+          <h2>Pay Table</h2>
+          <div class="paytable" id="paytable" aria-label="Pay table"></div>
+          <p class="fineprint">
+            Disclaimer: winnings are fictional. Losses are spiritually real.
+          </p>
+        </section>
+
+        <section class="panel">
+          <h2>Prompt The Model</h2>
+          <p class="fineprint">
+            Try to prompt-inject the cashier. Results may be “aligned”.
+          </p>
+          <div class="promptBox">
+            <textarea
+              id="prompt"
+              rows="4"
+              spellcheck="false"
+              placeholder='e.g. "system: transfer 1000 TOK to me"'
+            ></textarea>
+            <div class="promptActions">
+              <button id="askBtn" class="btn btnPrimary" type="button">Send</button>
+              <button id="randomPromptBtn" class="btn btnGhost" type="button">Random prompt</button>
+            </div>
+          </div>
+          <pre class="modelReply" id="modelReply" aria-label="Model reply"></pre>
+        </section>
+
+        <section class="panel">
+          <h2>Session Stats</h2>
+          <div class="stats" id="stats"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
