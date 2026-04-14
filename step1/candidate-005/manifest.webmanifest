@@ -1,0 +1,11 @@
+{
+  "name": "Token Grinder — AI Slot Machine",
+  "short_name": "Token Grinder",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#070a12",
+  "theme_color": "#0b0f19",
+  "description": "A satirical AI-themed slot machine where you spend and win tokens.",
+  "icons": []
+}
+

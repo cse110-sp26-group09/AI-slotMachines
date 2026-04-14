@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0f19" />
+    <meta
+      name="description"
+      content="A vanilla web slot machine that roasts AI: spend tokens, win tokens, and lose tokens to hallucinations."
+    />
+    <title>Token Grinder — AI Slot Machine</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#app">Skip to game</a>
+
+    <main id="app" class="app" aria-label="Token Grinder slot machine">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand__title">Token Grinder</div>
+          <div class="brand__subtitle">Spin the model. Pay in tokens. Get vibes.</div>
+        </div>
+
+        <section class="wallet" aria-label="Wallet">
+          <div class="wallet__row">
+            <div class="wallet__label">Balance</div>
+            <output id="balance" class="wallet__value" aria-live="polite">0</output>
+          </div>
+          <div class="wallet__row">
+            <div class="wallet__label">Bet</div>
+            <output id="bet" class="wallet__value">0</output>
+          </div>
+        </section>
+      </header>
+
+      <section class="machine" aria-label="Slot machine">
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" aria-label="Reel 1">
+            <div id="reel0" class="reel__face" aria-live="off">?</div>
+          </div>
+          <div class="reel" aria-label="Reel 2">
+            <div id="reel1" class="reel__face" aria-live="off">?</div>
+          </div>
+          <div class="reel" aria-label="Reel 3">
+            <div id="reel2" class="reel__face" aria-live="off">?</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__controls" role="group" aria-label="Controls">
+            <button id="spinBtn" class="btn btn--primary" type="button">Spin (S)</button>
+            <button id="autoBtn" class="btn" type="button" aria-pressed="false">Auto</button>
+            <button id="betBtn" class="btn" type="button">Bet +</button>
+            <button id="soundBtn" class="btn" type="button" aria-pressed="true">Sound</button>
+            <button id="resetBtn" class="btn btn--danger" type="button">Reset</button>
+          </div>
+
+          <div class="panel__status">
+            <div class="status" aria-label="Status">
+              <div class="status__headline">System message</div>
+              <output id="message" class="status__message" aria-live="polite"></output>
+            </div>
+
+            <details class="paytable">
+              <summary>Paytable (a.k.a. “alignment plan”)</summary>
+              <div id="paytable" class="paytable__grid" aria-label="Paytable"></div>
+              <div class="paytable__fineprint">
+                Odds are “best effort.” No refunds. No guarantees. Please do not deploy to production.
+              </div>
+            </details>
+
+            <details class="stats">
+              <summary>Stats</summary>
+              <div class="stats__grid" aria-label="Stats">
+                <div class="stat">
+                  <div class="stat__k">Spins</div>
+                  <output id="statSpins" class="stat__v">0</output>
+                </div>
+                <div class="stat">
+                  <div class="stat__k">Wins</div>
+                  <output id="statWins" class="stat__v">0</output>
+                </div>
+                <div class="stat">
+                  <div class="stat__k">Losses</div>
+                  <output id="statLosses" class="stat__v">0</output>
+                </div>
+                <div class="stat">
+                  <div class="stat__k">Biggest Win</div>
+                  <output id="statBigWin" class="stat__v">0</output>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="footer__row">
+          <button id="freeBtn" class="btn btn--ghost" type="button">Claim stipend</button>
+          <div id="stipendHint" class="footer__hint" aria-live="polite"></div>
+        </div>
+        <div class="footer__legal">
+          Token Grinder is satire. “Tokens” are pretend. Your browser may still keep score.
+        </div>
+      </footer>
+    </main>
+
+    <dialog id="confirmReset" class="dialog" aria-label="Confirm reset">
+      <form method="dialog" class="dialog__card">
+        <div class="dialog__title">Reset the lab?</div>
+        <p class="dialog__body">
+          This clears your balance and stats. Your model will be “retrained” on nothing but vibes.
+        </p>
+        <div class="dialog__actions">
+          <button class="btn" value="cancel">Cancel</button>
+          <button class="btn btn--danger" value="ok">Reset</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
+
