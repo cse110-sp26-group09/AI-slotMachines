@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<<<<<<< HEAD
+    <meta name="theme-color" content="#0b1020" />
+    <meta
+      name="description"
+      content="A vanilla web slot machine that lovingly roasts AI: win tokens, burn tokens, and blame the model either way."
+    />
+    <title>TokenBandit.exe — AI Slot Machine</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="scanlines" aria-hidden="true"></div>
+    <main class="app">
+      <header class="top">
+        <div class="brand">
+          <div class="brand__title">TokenBandit.exe</div>
+          <div class="brand__subtitle">A slot machine that runs on vibes and “tokens”.</div>
+        </div>
+
+        <div class="stats" role="group" aria-label="Token balance">
+          <div class="stat">
+            <div class="stat__label">Balance</div>
+            <div class="stat__value">
+              <span id="balanceValue" class="mono">0</span>
+              <span class="stat__unit">tokens</span>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">Last Win</div>
+            <div class="stat__value">
+              <span id="lastWinValue" class="mono">0</span>
+              <span class="stat__unit">tokens</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="machine" aria-label="Slot machine">
+        <div class="marquee" aria-hidden="true">
+          <span>“just one more spin”</span>
+          <span class="dot">•</span>
+          <span>temperature=0.7</span>
+          <span class="dot">•</span>
+          <span>beam search? in this economy?</span>
+          <span class="dot">•</span>
+          <span>you are now breathing manually</span>
+          <span class="dot">•</span>
+          <span>token usage: impressive</span>
+        </div>
+
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" data-reel="0" aria-label="Reel 1">
+            <div class="reel__window">
+              <div class="reel__symbol" id="reel0">🤖</div>
+            </div>
+          </div>
+          <div class="reel" data-reel="1" aria-label="Reel 2">
+            <div class="reel__window">
+              <div class="reel__symbol" id="reel1">🧠</div>
+            </div>
+          </div>
+          <div class="reel" data-reel="2" aria-label="Reel 3">
+            <div class="reel__window">
+              <div class="reel__symbol" id="reel2">🪙</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="bet">
+            <label class="bet__label" for="betRange">Bet</label>
+            <input id="betRange" type="range" min="1" max="100" step="1" value="10" />
+            <div class="bet__meta" aria-live="polite">
+              <span class="mono" id="betValue">10</span> tokens per spin
+            </div>
+          </div>
+
+          <div class="buttons" role="group" aria-label="Actions">
+            <button id="spinBtn" class="btn btn--primary" type="button">
+              Spin (spend tokens)
+            </button>
+            <button id="autoBtn" class="btn" type="button" aria-pressed="false">
+              Auto: Off
+            </button>
+            <button id="resetBtn" class="btn btn--danger" type="button">
+              Reset Balance
+            </button>
+          </div>
+        </div>
+
+        <div class="status" role="status" aria-live="polite" aria-atomic="true">
+          <div class="status__title">System Output</div>
+          <div id="statusLine" class="status__line mono">Ready. Insert confidence interval.</div>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Payout table">
+        <div class="panel__header">
+          <h2 class="panel__title">Payouts (scientifically questionable)</h2>
+          <div class="panel__hint">All payouts are multiples of your bet.</div>
+        </div>
+
+        <div class="payouts" role="list">
+          <div class="payout" role="listitem">
+            <div class="payout__combo">🤖 🤖 🤖</div>
+            <div class="payout__desc">Model Collapse Jackpot</div>
+            <div class="payout__mult mono">×50</div>
+          </div>
+          <div class="payout" role="listitem">
+            <div class="payout__combo">🪙 🪙 🪙</div>
+            <div class="payout__desc">Token Printer Goes Brr</div>
+            <div class="payout__mult mono">×40</div>
+          </div>
+          <div class="payout" role="listitem">
+            <div class="payout__combo">📎 📎 📎</div>
+            <div class="payout__desc">Copilot Claims Credit</div>
+            <div class="payout__mult mono">×30</div>
+          </div>
+          <div class="payout" role="listitem">
+            <div class="payout__combo">🧠 🧠 🧠</div>
+            <div class="payout__desc">Emergent Reasoning Event</div>
+            <div class="payout__mult mono">×25</div>
+          </div>
+          <div class="payout" role="listitem">
+            <div class="payout__combo">🤖 🧠 🪙 (any order)</div>
+            <div class="payout__desc">Alignment Achieved (briefly)</div>
+            <div class="payout__mult mono">×15</div>
+          </div>
+          <div class="payout" role="listitem">
+            <div class="payout__combo">Any 3 of a kind</div>
+            <div class="payout__desc">Solid Sample (p-value: vibes)</div>
+            <div class="payout__mult mono">×10</div>
+          </div>
+          <div class="payout" role="listitem">
+            <div class="payout__combo">Any 2 of a kind</div>
+            <div class="payout__desc">Partial Credit (like a rubric)</div>
+            <div class="payout__mult mono">×2</div>
+          </div>
+        </div>
+
+        <div class="panel__footer">
+          <div class="smallprint">
+            This is a joke game. No real money, no real odds, only real regret. Your balance is saved in
+            <span class="mono">localStorage</span>.
+          </div>
+          <div class="shareRow">
+            <button id="shareBtn" class="btn btn--ghost" type="button">
+              Share Bragging Rights
+            </button>
+            <button id="copyBtn" class="btn btn--ghost" type="button">
+              Copy “Winning Prompt”
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="footer__left">
+          Built with HTML/CSS/JS + platform APIs (crypto RNG, audio, storage, share, clipboard).
+        </div>
+        <div class="footer__right mono" id="footerMeta">v1.0</div>
+      </footer>
+    </main>
+
+    <script src="app.js" defer></script>
+=======
+    <meta name="color-scheme" content="dark light" />
+    <title>LLM Casino: Token Burner 9000</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <div>
+          <h1>LLM Casino</h1>
+          <p class="subtitle">Token Burner 9000 — spend tokens to win… more tokens.</p>
+        </div>
+
+        <div class="headerActions">
+          <button id="shareBtn" class="btn btnGhost" type="button" title="Share this app">
+            Share
+          </button>
+          <button id="resetBtn" class="btn btnGhost" type="button" title="Reset tokens & stats">
+            Reset
+          </button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="panel panelStats" aria-label="Game stats">
+          <div class="stat">
+            <div class="statLabel">Balance</div>
+            <div class="statValue"><span id="balance">0</span> <span class="statUnit">tokens</span></div>
+          </div>
+
+          <div class="stat">
+            <div class="statLabel">Spin cost</div>
+            <div class="statValue"><span id="spinCost">0</span> <span class="statUnit">tokens</span></div>
+          </div>
+
+          <div class="stat">
+            <div class="statLabel">RTP*</div>
+            <div class="statValue"><span id="rtp">??</span><span class="statUnit">%</span></div>
+          </div>
+
+          <div class="divider" role="presentation"></div>
+
+          <label class="row" for="temperature">
+            <span class="rowLabel">Temperature</span>
+            <span class="rowHint" id="tempLabel">1.0</span>
+          </label>
+          <input
+            id="temperature"
+            class="slider"
+            type="range"
+            min="0.2"
+            max="2"
+            step="0.1"
+            value="1"
+            aria-describedby="tempHelp"
+          />
+          <p id="tempHelp" class="help">
+            Lower = predictable. Higher = “creative”. (House calls it “alignment.”)
+          </p>
+
+          <div class="divider" role="presentation"></div>
+
+          <div class="toggles">
+            <label class="toggle">
+              <input id="muteToggle" type="checkbox" />
+              <span>Mute</span>
+            </label>
+            <label class="toggle">
+              <input id="announceToggle" type="checkbox" />
+              <span>Announce wins</span>
+            </label>
+            <label class="toggle">
+              <input id="autoToggle" type="checkbox" />
+              <span>Auto-spin</span>
+            </label>
+          </div>
+
+          <div class="divider" role="presentation"></div>
+
+          <button id="faucetBtn" class="btn btnSecondary" type="button">
+            Request more tokens
+          </button>
+          <p class="help subtle">
+            *“RTP” is “Reality Transfer Probability.” Absolutely not a gambling term.
+          </p>
+        </section>
+
+        <section class="panel panelMachine" aria-label="Slot machine">
+          <div class="marquee" aria-hidden="true">
+            <span>NOW SERVING:</span>
+            <span>HALLUCINATED JACKPOTS</span>
+            <span>UNLIMITED CONTEXT</span>
+            <span>100% RELIABLE OUTPUTS</span>
+          </div>
+
+          <div class="machine">
+            <div id="confetti" class="confetti" aria-hidden="true"></div>
+            <div class="reels" role="group" aria-label="Reels">
+              <div class="reel" aria-label="Reel 1">
+                <div class="reelWindow">
+                  <div id="reel0" class="reelSymbol" aria-live="polite">🤖</div>
+                </div>
+                <div id="reel0Label" class="reelLabel">BOT</div>
+              </div>
+              <div class="reel" aria-label="Reel 2">
+                <div class="reelWindow">
+                  <div id="reel1" class="reelSymbol" aria-live="polite">🧠</div>
+                </div>
+                <div id="reel1Label" class="reelLabel">BRAIN</div>
+              </div>
+              <div class="reel" aria-label="Reel 3">
+                <div class="reelWindow">
+                  <div id="reel2" class="reelSymbol" aria-live="polite">🪄</div>
+                </div>
+                <div id="reel2Label" class="reelLabel">MAGIC</div>
+              </div>
+            </div>
+
+            <div class="controls">
+              <button id="spinBtn" class="btn btnPrimary" type="button">
+                Spin (Space)
+              </button>
+              <div class="microcopy">
+                <div><span class="dot"></span> Model status: <span id="status">Idle</span></div>
+                <div class="kbdHelp">Tip: Press <kbd>Space</kbd> to spin, <kbd>R</kbd> to request tokens.</div>
+              </div>
+            </div>
+
+            <div class="result">
+              <div class="resultTitle">Output</div>
+              <div id="message" class="resultMessage" role="status" aria-live="polite"></div>
+              <div class="logWrap">
+                <ol id="log" class="log" aria-label="Recent events"></ol>
+              </div>
+            </div>
+          </div>
+
+          <footer class="footer">
+            <span class="tiny">No real money. Only fake tokens and real feelings.</span>
+            <span class="tiny">Made with HTML/CSS/JS + browser APIs.</span>
+          </footer>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js" defer></script>
+>>>>>>> 15850032c97bdc0971805f62c0642c434c5aaefa
+  </body>
+</html>
