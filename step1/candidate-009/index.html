@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1020" />
+    <title>Token Burner 9000 — AI Slot Machine</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg" aria-hidden="true"></div>
+
+    <main class="app" aria-label="AI slot machine">
+      <header class="top">
+        <div>
+          <h1>Token Burner 9000</h1>
+          <p class="sub">Win tokens. Spend tokens. Blame the model either way.</p>
+        </div>
+
+        <div class="stats" role="group" aria-label="Balance and bet">
+          <div class="stat">
+            <div class="label">Balance</div>
+            <div class="value">
+              <span id="balance" class="mono" aria-live="polite">0</span>
+              <span class="unit">tokens</span>
+            </div>
+          </div>
+
+          <div class="stat">
+            <div class="label">Bet</div>
+            <div class="value">
+              <span id="betValue" class="mono">0</span>
+              <span class="unit">/ spin</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="machine" aria-label="Slot machine">
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" data-reel="0">
+            <div class="reelWindow" aria-hidden="true"></div>
+            <div id="reel0" class="reelFace" aria-label="Reel 1" role="img">🤖</div>
+          </div>
+          <div class="reel" data-reel="1">
+            <div class="reelWindow" aria-hidden="true"></div>
+            <div id="reel1" class="reelFace" aria-label="Reel 2" role="img">🧠</div>
+          </div>
+          <div class="reel" data-reel="2">
+            <div class="reelWindow" aria-hidden="true"></div>
+            <div id="reel2" class="reelFace" aria-label="Reel 3" role="img">⚡</div>
+          </div>
+        </div>
+
+        <div class="controls" role="group" aria-label="Controls">
+          <button id="spinBtn" class="btn primary" type="button">
+            Spin <span class="hint">(Space)</span>
+          </button>
+          <button id="maxBtn" class="btn" type="button" title="Set bet to max">
+            Max Bet
+          </button>
+          <button id="resetBtn" class="btn ghost" type="button" title="Reset balance and settings">
+            Reset
+          </button>
+        </div>
+
+        <div class="betRow" role="group" aria-label="Bet size">
+          <label class="betLabel" for="bet">Prompt length</label>
+          <input
+            id="bet"
+            type="range"
+            min="5"
+            max="200"
+            step="5"
+            value="25"
+            aria-describedby="betHelp"
+          />
+          <div id="betHelp" class="muted">
+            Higher bet = longer prompt = more tokens burned (and sometimes, more “intelligence”).
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panelHead">
+            <div class="panelTitle">Output</div>
+            <div class="toggles">
+              <label class="toggle">
+                <input id="soundToggle" type="checkbox" />
+                <span>Sound</span>
+              </label>
+              <label class="toggle">
+                <input id="hapticsToggle" type="checkbox" />
+                <span>Haptics</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="message" id="message" role="status" aria-live="polite">
+            Ready. Insert tokens. Press spin.
+          </div>
+
+          <div class="log" aria-label="Event log">
+            <ol id="logList"></ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="payouts" aria-label="Payout table">
+        <div class="payoutHead">
+          <h2>Payout Table</h2>
+          <div class="muted small">
+            House edge: <span class="mono">~12%</span> (measured in vibes)
+          </div>
+        </div>
+
+        <div class="table" role="table" aria-label="Payouts">
+          <div class="row head" role="row">
+            <div class="cell" role="columnheader">Combo</div>
+            <div class="cell" role="columnheader">Meaning</div>
+            <div class="cell right" role="columnheader">Payout</div>
+          </div>
+
+          <div class="row" role="row">
+            <div class="cell mono" role="cell">🌀 🌀 🌀</div>
+            <div class="cell" role="cell">Hallucinated alpha</div>
+            <div class="cell right mono" role="cell">50×</div>
+          </div>
+          <div class="row" role="row">
+            <div class="cell mono" role="cell">🧠 🧠 🧠</div>
+            <div class="cell" role="cell">Genius prompt engineer</div>
+            <div class="cell right mono" role="cell">20×</div>
+          </div>
+          <div class="row" role="row">
+            <div class="cell mono" role="cell">⚡ ⚡ ⚡</div>
+            <div class="cell" role="cell">GPU time secured</div>
+            <div class="cell right mono" role="cell">15×</div>
+          </div>
+          <div class="row" role="row">
+            <div class="cell mono" role="cell">🪙 🪙 🪙</div>
+            <div class="cell" role="cell">Token rain</div>
+            <div class="cell right mono" role="cell">10×</div>
+          </div>
+          <div class="row" role="row">
+            <div class="cell mono" role="cell">🤖 🤖 🤖</div>
+            <div class="cell" role="cell">Agent swarm achieved</div>
+            <div class="cell right mono" role="cell">8×</div>
+          </div>
+          <div class="row" role="row">
+            <div class="cell mono" role="cell">🧾 🧾 🧾</div>
+            <div class="cell" role="cell">Invoice accepted (oops)</div>
+            <div class="cell right mono" role="cell">6×</div>
+          </div>
+          <div class="row" role="row">
+            <div class="cell mono" role="cell">🔥 🔥 🔥</div>
+            <div class="cell" role="cell">Hot take went viral</div>
+            <div class="cell right mono" role="cell">5×</div>
+          </div>
+          <div class="row" role="row">
+            <div class="cell mono" role="cell">🐛 🐛 🐛</div>
+            <div class="cell" role="cell">Bug fixed on first try</div>
+            <div class="cell right mono" role="cell">4×</div>
+          </div>
+          <div class="row foot" role="row">
+            <div class="cell small muted" role="cell">
+              Wild: <span class="mono">🌀</span> substitutes for any symbol (except itself).
+            </div>
+            <div class="cell small muted" role="cell">Two-of-a-kind pays a consolation prize.</div>
+            <div class="cell right small muted mono" role="cell">2×</div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="muted small">
+          Built with HTML/CSS/JS + platform APIs: <span class="mono">localStorage</span>,
+          <span class="mono">Web Audio</span>, <span class="mono">Vibration</span>.
+        </div>
+      </footer>
+    </main>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
+
