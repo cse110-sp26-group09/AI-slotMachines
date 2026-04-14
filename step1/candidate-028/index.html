@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1020" />
+    <title>Token Tumbler 9000</title>
+    <meta
+      name="description"
+      content="A tiny, silly slot machine that mocks AI: win tokens, burn tokens, and occasionally hallucinate payouts."
+    />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div>
+          <h1>Token Tumbler 9000</h1>
+          <p class="subtitle">Where your “budget” becomes “learning.”</p>
+        </div>
+        <div class="stats" aria-label="Token stats">
+          <div class="stat">
+            <div class="statLabel">Balance</div>
+            <div class="statValue"><span id="balance">0</span> 🪙</div>
+          </div>
+          <div class="stat">
+            <div class="statLabel">Cost / spin</div>
+            <div class="statValue"><span id="costPerSpin">0</span> 🧾</div>
+          </div>
+        </div>
+      </header>
+
+      <main class="machine" aria-label="Slot machine">
+        <section class="cabinet" aria-label="Reels">
+          <div class="reels" role="group" aria-label="Three reels">
+            <div class="reel" aria-label="Reel 1">
+              <div class="window" id="reel0" aria-live="off">—</div>
+            </div>
+            <div class="reel" aria-label="Reel 2">
+              <div class="window" id="reel1" aria-live="off">—</div>
+            </div>
+            <div class="reel" aria-label="Reel 3">
+              <div class="window" id="reel2" aria-live="off">—</div>
+            </div>
+          </div>
+
+          <div class="result" aria-live="polite">
+            <div id="resultTitle" class="resultTitle">Insert prompt. Receive vibes.</div>
+            <div id="resultDetail" class="resultDetail">Spin to spend tokens and generate confidence.</div>
+          </div>
+        </section>
+
+        <section class="controls" aria-label="Controls">
+          <div class="controlRow">
+            <label class="control">
+              <span class="controlLabel">Temperature</span>
+              <input id="temperature" type="range" min="0" max="2" step="0.1" value="1" />
+              <span class="controlValue"><span id="temperatureValue">1.0</span> 🌡️</span>
+            </label>
+
+            <label class="control">
+              <span class="controlLabel">Context window</span>
+              <select id="context">
+                <option value="small">8K (cheap)</option>
+                <option value="medium" selected>32K (normal)</option>
+                <option value="large">128K (expensive)</option>
+              </select>
+              <span class="controlHint">affects cost</span>
+            </label>
+          </div>
+
+          <div class="controlRow">
+            <label class="control grow">
+              <span class="controlLabel">Prompt</span>
+              <input
+                id="prompt"
+                type="text"
+                inputmode="text"
+                maxlength="140"
+                placeholder="e.g. “Write a haiku about my burn rate.”"
+                autocomplete="off"
+              />
+              <span class="controlHint">purely decorative (mostly)</span>
+            </label>
+          </div>
+
+          <div class="buttons">
+            <button id="spin" class="primary" type="button">
+              Spin (generate)
+            </button>
+            <button id="autospin" class="ghost" type="button" aria-pressed="false" title="Auto-spin until stopped or broke">
+              Auto
+            </button>
+            <button id="reset" class="ghost danger" type="button" title="Reset balance and stats">
+              Reset
+            </button>
+          </div>
+
+          <div class="micro">
+            <button id="share" class="link" type="button">Share brag</button>
+            <span class="dot">•</span>
+            <button id="copy" class="link" type="button">Copy receipt</button>
+            <span class="dot">•</span>
+            <button id="installHint" class="link" type="button" hidden>Install app</button>
+          </div>
+
+          <div class="logWrap" aria-label="Run log">
+            <div class="logHeader">
+              <div class="logTitle">Audit log</div>
+              <div class="logMeta"><span id="spins">0</span> spins • <span id="wins">0</span> wins</div>
+            </div>
+            <ol id="log" class="log" aria-live="polite" aria-relevant="additions"></ol>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="fineprint">
+          Not financial advice. Not model advice. Definitely not alignment.
+        </div>
+      </footer>
+    </div>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
+
