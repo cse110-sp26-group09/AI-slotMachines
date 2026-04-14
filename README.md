@@ -28,3 +28,5 @@ Aditya: 11-15
 Jason: 16-20
 Woosik: 21-25
 Hieu: 26-30
+James: 31-35
+Waleed: 36-40
