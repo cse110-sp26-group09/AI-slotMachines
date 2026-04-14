@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1020" />
+    <title>AI Token Slots</title>
+    <meta
+      name="description"
+      content="A tiny vanilla slot machine that lovingly roasts AI: win tokens, spend tokens, and occasionally hallucinate your balance."
+    />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">AI</div>
+        <div>
+          <div class="title">AI Token Slots</div>
+          <div class="subtitle">Turn vibes into tokens. Then burn them on “upgrades”.</div>
+        </div>
+      </div>
+
+      <div class="hud" role="group" aria-label="Account">
+        <div class="pill">
+          <div class="pillLabel">Tokens</div>
+          <div class="pillValue" id="tokensValue">0</div>
+        </div>
+        <button class="btn subtle" id="claimDailyBtn" type="button" title="Once per day">
+          Claim Daily 42
+        </button>
+        <button class="btn ghost" id="resetBtn" type="button" title="Resets progress">
+          Reset
+        </button>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="card machine" aria-label="Slot machine">
+        <div class="machineTop">
+          <div class="bet">
+            <div class="row">
+              <label class="label" for="betSelect">Bet</label>
+              <select id="betSelect" class="select" aria-label="Bet amount">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="25">25</option>
+              </select>
+            </div>
+            <div class="row toggles">
+              <label class="toggle">
+                <input id="soundToggle" type="checkbox" checked />
+                <span>Sound</span>
+              </label>
+              <label class="toggle">
+                <input id="hapticsToggle" type="checkbox" />
+                <span>Haptics</span>
+              </label>
+              <label class="toggle">
+                <input id="reducedSnarkToggle" type="checkbox" />
+                <span>Less snark</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="cta">
+            <button class="btn primary" id="spinBtn" type="button">
+              Spin
+              <span class="kbdHint" aria-hidden="true">Space</span>
+            </button>
+            <label class="toggle autos">
+              <input id="autoSpinToggle" type="checkbox" />
+              <span>Auto</span>
+            </label>
+            <button class="btn ghost" id="shareBtn" type="button" disabled>
+              Share
+            </button>
+          </div>
+        </div>
+
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" id="reel0" aria-label="Reel 1">
+            <div class="glyph" aria-hidden="true">?</div>
+            <div class="label">...</div>
+          </div>
+          <div class="reel" id="reel1" aria-label="Reel 2">
+            <div class="glyph" aria-hidden="true">?</div>
+            <div class="label">...</div>
+          </div>
+          <div class="reel" id="reel2" aria-label="Reel 3">
+            <div class="glyph" aria-hidden="true">?</div>
+            <div class="label">...</div>
+          </div>
+        </div>
+
+        <div class="ticker" aria-live="polite" aria-atomic="true" id="ticker">
+          Insert tokens. Receive vibes.
+        </div>
+
+        <details class="paytable">
+          <summary>Paytable (aka “model card”)</summary>
+          <div class="payGrid" id="paytableGrid"></div>
+          <div class="payNote">
+            Two-of-a-kind pays <strong>2× bet</strong>. Three-of-a-kind pays the listed multiplier.
+            “Hallucination” pays… confidently incorrect.
+          </div>
+        </details>
+      </section>
+
+      <section class="card store" aria-label="Token store">
+        <div class="cardTitle">Spend Tokens</div>
+        <div class="cardSub">A questionable product roadmap, but it ships.</div>
+
+        <div class="storeGrid" id="storeGrid"></div>
+        <div class="storeFinePrint">
+          Upgrades are stored in your browser (localStorage). Clearing site data is the fastest “unsubscribe”.
+        </div>
+      </section>
+
+      <section class="card stats" aria-label="Stats">
+        <div class="cardTitle">Telemetry</div>
+        <div class="cardSub">Because what’s the point without dashboards?</div>
+
+        <div class="statsGrid">
+          <div class="stat">
+            <div class="statLabel">Spins</div>
+            <div class="statValue" id="spinsValue">0</div>
+          </div>
+          <div class="stat">
+            <div class="statLabel">Wins</div>
+            <div class="statValue" id="winsValue">0</div>
+          </div>
+          <div class="stat">
+            <div class="statLabel">Win Rate</div>
+            <div class="statValue" id="winRateValue">0%</div>
+          </div>
+          <div class="stat">
+            <div class="statLabel">Biggest Win</div>
+            <div class="statValue" id="biggestWinValue">0</div>
+          </div>
+        </div>
+
+        <div class="actionsRow">
+          <button class="btn subtle" id="exportBtn" type="button">Export stats</button>
+          <button class="btn subtle" id="installBtn" type="button" disabled>Install</button>
+        </div>
+
+        <pre class="exportBox" id="exportBox" hidden></pre>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <div>
+        Built with <span aria-hidden="true">HTML/CSS/JS</span> and a tiny amount of audacity.
+        <span class="sep" aria-hidden="true">•</span> Tip: press <kbd>Space</kbd> to spin.
+      </div>
+      <div class="muted">
+        Not affiliated with any AI lab, except spiritually.
+      </div>
+    </footer>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
