@@ -34,7 +34,7 @@ Daniel: 6-10 (done)
 Aditya: 11-15
 Jason: 16-20 (done)
 Woosik: 21-25 (done)
-Hieu: 26-30
+Hieu: 26-30 (done)
 James: 31-35 (done)
 Waleed: 36-40
 Hemendra: 42-46
