@@ -9,7 +9,7 @@
 - Wall-clock time (s):	10m 11s
 - Tool-reported time (s): 10m 11s
 - Files produced:	app.js, index.html, styles.css, README.md, icon.svg (4)
-- Lines of code: 	
+- Lines of code: 1523
 - Runs in browser?:	Yes
 - App Quality Notes: 
 - Code Quality Notes:
