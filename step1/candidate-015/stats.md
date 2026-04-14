@@ -10,7 +10,7 @@
 - Wall-clock time (s):	13m 33s
 - Tool-reported time (s): 13m 33s
 - Files produced:	app.js, icon.svg, index.html, manifest.json, styles.css, sw.js. (6)
-- Lines of code: 	
+- Lines of code: 	1020
 - Runs in browser?:	Yes
 - App Quality Notes: App works fine and has basic features. Interesting scrolling bar at the top.
 - Code Quality Notes: app.js code looks very long given the pretty basic functionality of the app.
