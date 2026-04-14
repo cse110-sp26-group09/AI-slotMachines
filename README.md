@@ -21,5 +21,8 @@ TODO:
 -Change all readme's for the candidates to stats.md since it is possible for the AI to
 make a readme
 
-
+Roles of candidates:
+James: 1-5
+Daniel: 6-10
+Aditya: 11-15
 
