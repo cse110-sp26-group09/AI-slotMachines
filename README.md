@@ -20,7 +20,7 @@ Take note of your best output so we may consider it for refining. (AI may take a
 
 For any problems, contact James or Aditya
 
-DUE Tueday by End of day
+Due Tuesday by End of day
 
 #IMPORTANT Read prompting.md for how to prompt and contribute to each candidate
 
@@ -29,11 +29,12 @@ TODO:
 make a readme
 
 Roles of candidates:
-James: 1-5
-Daniel: 6-10
+James: 1-5 (done)
+Daniel: 6-10 (done)
 Aditya: 11-15
 Jason: 16-20
-Woosik: 21-25
+Woosik: 21-25 (done)
 Hieu: 26-30
 James: 31-35
 Waleed: 36-40
+Hemendre: 42-46
