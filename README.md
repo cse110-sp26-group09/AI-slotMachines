@@ -23,8 +23,8 @@ make a readme
 
 Roles of candidates:
 Step 2:
-1 - 
+1 - James
 18 - Jason
-19 -
-24 -
-41 -
+19 - Jason
+24 - Hemendra
+41 - James
