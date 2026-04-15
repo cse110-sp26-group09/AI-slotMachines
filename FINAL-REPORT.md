@@ -56,6 +56,6 @@ but created new ones I had to catch and address.
 
 ## Appendices & Links
 
-  * RUBRIC.md: https://github.com/cse110-sp26-group09/AI-slotMachines/blob/main/RUBRIC.md
-  * Original Prompt: https://github.com/cse110-sp26-group09/AI-slotMachines/blob/main/prompts/original-prompt.txt
-  * Step 1 Results: https://github.com/cse110-sp26-group09/AI-slotMachines/tree/main/step1
+  * [`RUBRIC.md`](./RUBRIC.md)
+  * [`Original-Prompt.txt`](prompts/original-prompt.txt)
+  * [`Step 1 Results`](step1)
