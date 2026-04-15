@@ -33,24 +33,9 @@ TODO:
 make a readme
 
 Roles of candidates:
-James: 1-5 (done)
-Daniel: 6-10 (done)
-<<<<<<< HEAD
-Aditya: 11-15
-<<<<<<< HEAD
-Jason: 16-20
-Woosik: 21-25
-Hieu: 26-30
-James: 31-35
-Waleed: 36-40
-=======
-=======
-Aditya: 11-15 (done)
->>>>>>> 4811388a3dac1f22e1bccd07e1b1f55c7e603763
-Jason: 16-20 (done)
-Woosik: 21-25 (done)
-Hieu: 26-30 (done)
-James: 31-35 (done)
-Waleed: 36-39
-James: 40-41 
-Hemendra: 42-46
+Step 2:
+1 - 
+18 - Jason
+19 -
+24 -
+41 -
