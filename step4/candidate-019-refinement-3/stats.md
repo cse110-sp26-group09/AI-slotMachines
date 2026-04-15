@@ -11,5 +11,5 @@
 - Files produced:	app.js, index.html, README.md, styles.css. (4)
 - Lines of code: 	2731
 - Runs in browser?:	Yes
-- App Quality Notes: the quality is quite high. sound effects, colors.
+- App Quality Notes: the quality is quite low. the emoji's just throw up 404 when i spin
 - Code Quality Notes: code looks fine. It's definitely organized, but it's quite verbose.
