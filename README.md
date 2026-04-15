@@ -75,6 +75,7 @@ Each refinement round used a **single new prompt** in a **clean session**, while
 - [`STEP3-RESULTS.md`](./STEP3-RESULTS.md) — continued refinement analysis
 - [`STEP4-RESULTS.md`](./STEP4-RESULTS.md) — late-stage refinement results
 - [`FINAL-REPORT.md`](./FINAL-REPORT.md) — final conclusions and findings
+- [`presentation-video.mp4`](media/presentation-video.mp4) — Presentation video with slides and a demo
 
 ## Notes
 
