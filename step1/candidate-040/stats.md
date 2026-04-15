@@ -11,5 +11,5 @@
 - Files produced:	app.js, index.html, styles.css, README.md (4)
 - Lines of code: 	
 - Runs in browser?:	Yes
-- App Quality Notes: 
-- Code Quality Notes: 
+- App Quality Notes: App works and has sound. Includes a couple sliders but no options to change token amount.
+- Code Quality Notes: Code is reasonably well-formatted with understandable function names.
