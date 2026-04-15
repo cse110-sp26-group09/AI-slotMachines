@@ -11,5 +11,5 @@
 - Files produced:	app.js, index.html, styles.css. , Readme.md (folder)(4)
 - Lines of code: 	2203 total (index.html 186, styles.css 605, app.js 786, README.md 16)
 - Runs in browser?:	Yes
-- App Quality Notes: 
-- Code Quality Notes: 
+- App Quality Notes: Very nice UI, unfortunately no images on the slots, sound is bad
+- Code Quality Notes: Very organized code, could be a bit more descriptive though 
