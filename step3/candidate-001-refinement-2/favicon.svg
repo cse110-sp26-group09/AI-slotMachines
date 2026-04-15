@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="g" cx="30%" cy="25%" r="80%">
+      <stop offset="0" stop-color="#7c5cff" stop-opacity="1"/>
+      <stop offset="0.55" stop-color="#00d4ff" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#0b0e14" stop-opacity="1"/>
+    </radialGradient>
+  </defs>
+  <rect x="10" y="10" width="108" height="108" rx="24" fill="url(#g)"/>
+  <g fill="rgba(255,255,255,0.92)">
+    <path d="M42 55c0-10 8-18 18-18h8c10 0 18 8 18 18v10c0 10-8 18-18 18h-8c-10 0-18-8-18-18V55z" opacity="0.9"/>
+    <circle cx="58" cy="60" r="5"/>
+    <circle cx="78" cy="60" r="5"/>
+    <path d="M56 78c6 6 16 6 22 0" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M32 34l8 8M96 34l-8 8" fill="none" stroke="rgba(255,255,255,0.72)" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>
+
