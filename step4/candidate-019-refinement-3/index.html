@@ -37,14 +37,22 @@
             <div class="statLabel">Win Streak</div>
             <div class="statValue"><span id="streak">0</span> 🔥</div>
           </div>
+          <div class="stat">
+            <div class="statLabel">Last Win</div>
+            <div class="statValue">+<span id="lastWin">0</span> 🪙</div>
+          </div>
         </div>
       </header>
 
       <section class="machine reveal" aria-label="Slot machine" style="--d: 90ms">
-        <div class="reels" aria-label="Reels">
-          <div class="reel" id="reel0" aria-label="Reel 1" role="img"><span>🤖</span></div>
-          <div class="reel" id="reel1" aria-label="Reel 2" role="img"><span>🧠</span></div>
-          <div class="reel" id="reel2" aria-label="Reel 3" role="img"><span>🪙</span></div>
+        <div class="cabinetLights" id="cabinetLights" aria-hidden="true"></div>
+        <div class="reelsWrap" aria-label="Reels">
+          <div class="payline" id="payline" aria-hidden="true"></div>
+          <div class="reels" aria-label="Reels">
+            <div class="reel" id="reel0" aria-label="Reel 1" role="img"><span>🤖</span></div>
+            <div class="reel" id="reel1" aria-label="Reel 2" role="img"><span>🧠</span></div>
+            <div class="reel" id="reel2" aria-label="Reel 3" role="img"><span>🪙</span></div>
+          </div>
         </div>
 
         <div class="controls" aria-label="Controls">
@@ -163,6 +171,7 @@
 
         <section class="card" aria-label="Token shop">
           <h2>Token Shop (spend tokens)</h2>
+          <div class="buffBar" id="buffBar" aria-label="Active boosts"></div>
           <div class="shop" id="shop"></div>
           <p class="fineprint">All power-ups are local and unserious. No real money. No real AI.</p>
         </section>
