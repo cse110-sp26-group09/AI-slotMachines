@@ -22,6 +22,11 @@
   --t-med: 220ms;
   --t-slow: 560ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Live-updated by JS for interactive background */
+  --mx: 50%;
+  --my: 35%;
+  --hue: 0deg;
 }
 
 * {
@@ -39,6 +44,7 @@ body {
     "Segoe UI Emoji";
   color: var(--text);
   background:
+    radial-gradient(520px 380px at var(--mx) var(--my), rgba(255, 255, 255, 0.06), transparent 62%),
     radial-gradient(1000px 700px at 12% -5%, rgba(255, 61, 245, 0.17), transparent 60%),
     radial-gradient(900px 560px at 85% 5%, rgba(124, 92, 255, 0.26), transparent 60%),
     radial-gradient(1200px 760px at 55% 105%, rgba(0, 212, 255, 0.16), transparent 60%),
@@ -72,16 +78,30 @@ body::after {
     rgba(124, 92, 255, 0.09),
     rgba(255, 61, 245, 0.08)
   );
-  filter: blur(38px);
   opacity: 0.55;
   pointer-events: none;
   z-index: -3;
   transform: translate3d(0, 0, 0);
   animation: aurora 12s var(--ease-out) infinite alternate;
+  filter: blur(38px) hue-rotate(var(--hue)) saturate(1.05);
 }
 
 body.reduceMotion::after {
   animation: none;
+}
+
+body.isCelebrate::before {
+  opacity: 0.85;
+}
+
+body.isCelebrate::after {
+  opacity: 0.78;
+  animation-duration: 4.6s;
+  filter: blur(30px) hue-rotate(var(--hue)) saturate(1.35);
+}
+
+body.isCelebrate .machine {
+  border-color: rgba(255, 255, 255, 0.22);
 }
 
 .app {
@@ -373,6 +393,39 @@ output {
   border-radius: var(--r-md);
 }
 
+.ledger {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+  padding: 10px;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.ledgerRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ledgerLabel {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.ledgerValue {
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
 .logWrap {
   margin-top: 12px;
   background: rgba(0, 0, 0, 0.22);
@@ -468,6 +521,12 @@ kbd {
   outline: 2px solid rgba(255, 77, 109, 0.7);
   outline-offset: 2px;
   animation: badPulse 700ms var(--ease-out) 1;
+}
+
+.reel.isTease {
+  outline: 2px solid rgba(0, 212, 255, 0.72);
+  outline-offset: 2px;
+  filter: saturate(1.25) brightness(1.12);
 }
 
 .machine.isShake {
@@ -602,6 +661,25 @@ body.reduceMotion.isLoaded [data-reveal] {
   opacity: 1;
 }
 
+.screenFlash.isStrobe {
+  animation: strobe 220ms linear infinite;
+}
+
+@keyframes strobe {
+  0% {
+    opacity: 0.1;
+    filter: saturate(1) brightness(1);
+  }
+  50% {
+    opacity: 1;
+    filter: saturate(1.6) brightness(1.25);
+  }
+  100% {
+    opacity: 0.16;
+    filter: saturate(1) brightness(1);
+  }
+}
+
 .winBanner {
   position: absolute;
   left: 50%;
@@ -625,6 +703,18 @@ body.reduceMotion.isLoaded [data-reveal] {
 .winBanner.isOn {
   opacity: 1;
   transform: translateX(-50%) translateY(0) scale(1);
+}
+
+body[data-celebrate="big"] .winBanner,
+body[data-celebrate="jackpot"] .winBanner {
+  background: linear-gradient(90deg, rgba(255, 61, 245, 0.22), rgba(0, 212, 255, 0.16));
+  border-color: rgba(255, 255, 255, 0.32);
+  text-shadow: 0 18px 35px rgba(0, 0, 0, 0.65);
+}
+
+body[data-celebrate="jackpot"] .winBanner {
+  letter-spacing: 0.8px;
+  transform: translateX(-50%) translateY(0) scale(1.08);
 }
 
 .dialog {
@@ -782,6 +872,10 @@ body.reduceMotion.isLoaded [data-reveal] {
 
   .formGrid,
   .shopItems {
+    grid-template-columns: 1fr;
+  }
+
+  .ledger {
     grid-template-columns: 1fr;
   }
 }
