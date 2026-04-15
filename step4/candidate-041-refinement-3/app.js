@@ -32,6 +32,7 @@ const el = {
   reel0: document.getElementById("reel0"),
   reel1: document.getElementById("reel1"),
   reel2: document.getElementById("reel2"),
+  reels: document.querySelector(".reels"),
   message: document.getElementById("message"),
   spinBtn: document.getElementById("spinBtn"),
   spinMeta: document.getElementById("spinMeta"),
@@ -145,6 +146,17 @@ function normalizeState(raw) {
 
 let state = normalizeState(loadState());
 
+let balanceDisplayOverride = null;
+let balanceAnimRaf = 0;
+let balancePillEl = null;
+function stopBalanceAnim() {
+  if (balanceAnimRaf) cancelAnimationFrame(balanceAnimRaf);
+  balanceAnimRaf = 0;
+  balanceDisplayOverride = null;
+  if (balancePillEl) balancePillEl.classList.remove("is-counting");
+  balancePillEl = null;
+}
+
 function spinCost() {
   // Telemetry makes everything more expensive. For user benefit, of course.
   const bet = clampInt(state.bet, 1, maxBet);
@@ -189,7 +201,8 @@ function renderPayTable() {
 }
 
 function renderHUD() {
-  el.balance.textContent = formatInt(state.balance);
+  const shown = typeof balanceDisplayOverride === "number" ? balanceDisplayOverride : state.balance;
+  el.balance.textContent = formatInt(shown);
   const cost = spinCost();
   el.spinCost.textContent = formatInt(cost);
   el.telemetry.textContent = telemetryLabel();
@@ -240,8 +253,9 @@ function renderLedger() {
     const abs = Math.abs(delta);
     const reels = Array.isArray(h.ids) ? h.ids.join(" â€¢ ") : "";
     li.textContent = `${sign}${formatInt(abs)} TOK â€¢ ${reels || "spin"}${h.mode === "nearMiss" ? " â€¢ almost" : ""}`;
-    const reels2 = Array.isArray(h.ids) ? h.ids.join(" / ") : "";
-    li.textContent = `${sign}${formatInt(abs)} TOK - ${reels2 || "spin"}${h.mode === "nearMiss" ? " - almost" : ""}`;
+    const reels2 = Array.isArray(h.ids) ? h.ids.map((id) => labelFor(id)).join(" / ") : "spin";
+    const tag = h.kind === "win" ? "WIN" : h.kind === "bad" ? "HALL" : (h.mode === "nearMiss" ? "ALMOST" : "LOSS");
+    li.innerHTML = `<span class="log__tag">${tag}</span><span class="log__delta">${sign}${formatInt(abs)} <span class="unit">TOK</span></span><span class="log__reels">${reels2}</span>`;
     el.ledgerLog.appendChild(li);
   }
 }
@@ -335,175 +349,447 @@ function buildNearMissIds() {
   return { bait, ids: [bait, second, third] };
 }
 
-let audioCtx = null;
-let masterGain = null;
+function createAudioEngine() {
+  let ctx = null;
+  let master = null;
+  let comp = null;
+  let conv = null;
+  let enabled = false;
+  let volume = 0.7;
+  let noiseBuf = null;
+  let spinLoop = null; // { src, hum, lfo, gain }
+
+  function ensure() {
+    if (!enabled) return null;
+    if (ctx) return ctx;
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    master = ctx.createGain();
+    master.gain.value = Math.max(0, Math.min(1, volume));
+
+    comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -18;
+    comp.knee.value = 26;
+    comp.ratio.value = 6;
+    comp.attack.value = 0.004;
+    comp.release.value = 0.14;
+
+    conv = ctx.createConvolver();
+    conv.buffer = makeImpulse(ctx, 1.1, 0.25);
+
+    const sum = ctx.createGain();
+    const dry = ctx.createGain();
+    dry.gain.value = 0.92;
+    const wet = ctx.createGain();
+    wet.gain.value = 0.22;
+
+    dry.connect(sum);
+    conv.connect(wet).connect(sum);
+    sum.connect(comp).connect(master).connect(ctx.destination);
+
+    master._dry = dry;
+    master._verb = conv;
+
+    noiseBuf = makeNoiseBuffer(ctx, 1.0);
+    return ctx;
+  }
+
+  function makeNoiseBuffer(ac, seconds) {
+    const len = Math.max(1, Math.floor(ac.sampleRate * seconds));
+    const b = ac.createBuffer(1, len, ac.sampleRate);
+    const data = b.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * 0.9;
+    return b;
+  }
+
+  function makeImpulse(ac, seconds, decay) {
+    const len = Math.max(1, Math.floor(ac.sampleRate * seconds));
+    const b = ac.createBuffer(2, len, ac.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const data = b.getChannelData(ch);
+      for (let i = 0; i < len; i++) {
+        const t = i / len;
+        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, Math.max(0.2, decay));
+      }
+    }
+    return b;
+  }
+
+  function out({ wet = 0.22, pan = 0 } = {}) {
+    if (!ctx || !master) return null;
+    const g = ctx.createGain();
+    const p = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+    if (p) p.pan.value = Math.max(-1, Math.min(1, pan));
+
+    const dry = master._dry;
+    const verb = master._verb;
+
+    if (p) {
+      g.connect(p);
+      p.connect(dry);
+      const wetTap = ctx.createGain();
+      wetTap.gain.value = Math.max(0, Math.min(1, wet));
+      p.connect(wetTap).connect(verb);
+    } else {
+      g.connect(dry);
+      const wetTap = ctx.createGain();
+      wetTap.gain.value = Math.max(0, Math.min(1, wet));
+      g.connect(wetTap).connect(verb);
+    }
+    return g;
+  }
+
+  function env(param, at, { a = 0.003, d = 0.05, r = 0.10, peak = 0.12 } = {}) {
+    const t0 = Math.max(at, ctx?.currentTime ?? 0);
+    param.cancelScheduledValues(t0);
+    param.setValueAtTime(0.0001, t0);
+    param.exponentialRampToValueAtTime(Math.max(0.0002, peak), t0 + a);
+    param.exponentialRampToValueAtTime(0.0001, t0 + a + d + r);
+  }
+
+  function click({ t = null, pan = 0, bright = 1 } = {}) {
+    if (!ensure()) return;
+    const at = t ?? ctx.currentTime;
+    const o = out({ wet: 0.06, pan });
+    if (!o) return;
+
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuf;
+
+    const hp = ctx.createBiquadFilter();
+    hp.type = "highpass";
+    hp.frequency.value = 1600 + bright * 2600;
+    hp.Q.value = 0.7;
+
+    const g = ctx.createGain();
+    env(g.gain, at, { a: 0.001, d: 0.02, r: 0.04, peak: 0.12 });
+
+    src.connect(hp).connect(g).connect(o);
+    src.start(at);
+    src.stop(at + 0.06);
+  }
+
+  function thunk({ t = null, pan = 0, weight = 1 } = {}) {
+    if (!ensure()) return;
+    const at = t ?? ctx.currentTime;
+    const o = out({ wet: 0.12, pan });
+    if (!o) return;
+
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    const base = 88 + (Math.random() * 10 - 5);
+    osc.frequency.setValueAtTime(base * weight, at);
+    osc.frequency.exponentialRampToValueAtTime(Math.max(30, base * 0.6), at + 0.10);
+
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuf;
+    const lp = ctx.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.frequency.value = 520;
+
+    const mix = ctx.createGain();
+    mix.gain.value = 1;
+    const humGain = ctx.createGain();
+    humGain.gain.value = 0.32;
+    osc.connect(humGain).connect(mix);
+    src.connect(lp).connect(mix);
+
+    const g = ctx.createGain();
+    env(g.gain, at, { a: 0.001, d: 0.07, r: 0.16, peak: 0.16 });
+
+    mix.connect(g).connect(o);
+    osc.start(at);
+    osc.stop(at + 0.16);
+    src.start(at);
+    src.stop(at + 0.12);
+  }
+
+  function tone({ t = null, pan = 0, f0 = 440, f1 = null, dur = 0.12, type = "sine", peak = 0.10, wet = 0.22 } = {}) {
+    if (!ensure()) return;
+    const at = t ?? ctx.currentTime;
+    const o = out({ wet, pan });
+    if (!o) return;
+
+    const osc = ctx.createOscillator();
+    osc.type = type;
+    osc.frequency.setValueAtTime(Math.max(30, f0), at);
+    if (typeof f1 === "number" && Number.isFinite(f1)) osc.frequency.exponentialRampToValueAtTime(Math.max(30, f1), at + Math.max(0.01, dur));
+
+    const g = ctx.createGain();
+    env(g.gain, at, { a: 0.006, d: Math.min(0.10, dur * 0.7), r: 0.16, peak });
+
+    osc.connect(g).connect(o);
+    osc.start(at);
+    osc.stop(at + dur + 0.22);
+  }
+
+  function startSpinLoop(intensity = 1) {
+    if (!ensure()) return;
+    stopSpinLoop(0.02);
+
+    const at = ctx.currentTime;
+    const o = out({ wet: 0.08, pan: 0 });
+    if (!o) return;
+
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuf;
+    src.loop = true;
+
+    const bp = ctx.createBiquadFilter();
+    bp.type = "bandpass";
+    bp.frequency.value = 420;
+    bp.Q.value = 0.9;
+
+    const hum = ctx.createOscillator();
+    hum.type = "sine";
+    hum.frequency.value = 62;
+    const humG = ctx.createGain();
+    humG.gain.value = 0.03 * Math.max(0.7, Math.min(1.4, intensity));
+
+    const lfo = ctx.createOscillator();
+    lfo.type = "sine";
+    lfo.frequency.value = 3.4;
+    const lfoG = ctx.createGain();
+    lfoG.gain.value = 150;
+    lfo.connect(lfoG).connect(bp.frequency);
+
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(0.09 * Math.max(0.65, Math.min(1.4, intensity)), at + 0.05);
+
+    const mix = ctx.createGain();
+    mix.gain.value = 1;
+    src.connect(bp).connect(mix);
+    hum.connect(humG).connect(mix);
+    mix.connect(g).connect(o);
+
+    src.start(at);
+    hum.start(at);
+    lfo.start(at);
+
+    spinLoop = { src, hum, lfo, gain: g };
+  }
+
+  function stopSpinLoop(fade = 0.06) {
+    if (!ctx || !spinLoop) return;
+    const at = ctx.currentTime;
+    try { spinLoop.gain.gain.setTargetAtTime(0.0001, at, Math.max(0.01, fade)); } catch {}
+    const stopAt = at + Math.max(0.03, fade * 3);
+    try { spinLoop.src.stop(stopAt); } catch {}
+    try { spinLoop.hum.stop(stopAt); } catch {}
+    try { spinLoop.lfo.stop(stopAt); } catch {}
+    spinLoop = null;
+  }
+
+  function reelTick({ delayMs = 20, reelIndex = 0 } = {}) {
+    if (!ensure()) return;
+    const pan = reelIndex === 0 ? -0.35 : reelIndex === 2 ? 0.35 : 0;
+    const bright = delayMs > 70 ? 1 : delayMs > 40 ? 0.85 : 0.65;
+    const chance = delayMs > 70 ? 0.95 : delayMs > 40 ? 0.55 : 0.18;
+    if (Math.random() > chance) return;
+    click({ pan, bright });
+  }
+
+  function reelStop({ reelIndex = 0, symbolId = null } = {}) {
+    if (!ensure()) return;
+    const pan = reelIndex === 0 ? -0.35 : reelIndex === 2 ? 0.35 : 0;
+    thunk({ pan, weight: 1.0 + reelIndex * 0.08 });
+    if (symbolId) symbolLand({ symbolId, reelIndex });
+  }
+
+  function symbolLand({ symbolId, reelIndex = 0 } = {}) {
+    if (!ensure()) return;
+    const pan = reelIndex === 0 ? -0.35 : reelIndex === 2 ? 0.35 : 0;
+    const bump = reelIndex * 18;
+    if (symbolId === "TOKEN") return tone({ pan, f0: 880 + bump, f1: 1320 + bump, dur: 0.06, type: "triangle", peak: 0.07, wet: 0.30 });
+    if (symbolId === "PROMPT") return tone({ pan, f0: 560 + bump, f1: 420 + bump, dur: 0.05, type: "square", peak: 0.045, wet: 0.12 });
+    if (symbolId === "GPU") return tone({ pan, f0: 180 + bump, f1: 260 + bump, dur: 0.10, type: "sawtooth", peak: 0.05, wet: 0.08 });
+    if (symbolId === "AGENT") return tone({ pan, f0: 740 + bump, f1: 980 + bump, dur: 0.07, type: "sine", peak: 0.055, wet: 0.26 });
+    if (symbolId === "MODEL") return tone({ pan, f0: 420 + bump, f1: 620 + bump, dur: 0.10, type: "triangle", peak: 0.05, wet: 0.22 });
+    if (symbolId === "HALLUCINATION") {
+      tone({ pan, f0: 210 + bump, f1: 80 + bump, dur: 0.12, type: "square", peak: 0.05, wet: 0.10 });
+      click({ pan, bright: 0.9 });
+      return;
+    }
+    tone({ pan, f0: 520 + bump, f1: 420 + bump, dur: 0.06, type: "square", peak: 0.045, wet: 0.12 });
+  }
+
+  function win({ tier = "small", hasHall = false } = {}) {
+    if (!ensure()) return;
+    const at = ctx.currentTime;
+
+    if (hasHall) {
+      tone({ t: at, f0: 360, f1: 120, dur: 0.22, type: "square", peak: 0.045, wet: 0.12 });
+      tone({ t: at + 0.14, f0: 880, f1: 760, dur: 0.05, type: "triangle", peak: 0.035, wet: 0.22 });
+      return;
+    }
+
+    const arp =
+      tier === "jackpot" ? [523.25, 659.25, 783.99, 1046.5, 1318.5] :
+      tier === "big" ? [523.25, 659.25, 783.99, 988] :
+      tier === "mid" ? [523.25, 659.25, 783.99] :
+      tier === "small" ? [659.25, 783.99] :
+      [740];
+
+    const step = tier === "jackpot" ? 0.08 : tier === "big" ? 0.09 : 0.10;
+    for (let i = 0; i < arp.length; i++) tone({ t: at + i * step, f0: arp[i], dur: 0.10, type: "triangle", peak: 0.055, wet: 0.32 });
+
+    const coins = tier === "jackpot" ? 38 : tier === "big" ? 26 : tier === "mid" ? 16 : tier === "small" ? 10 : 6;
+    for (let i = 0; i < coins; i++) {
+      const t = at + i * (0.018 + Math.random() * 0.012);
+      const f0 = 900 + Math.random() * 900;
+      tone({ t, pan: (Math.random() * 0.5 - 0.25), f0, f1: f0 * 1.2, dur: 0.045, type: "triangle", peak: 0.03, wet: 0.18 });
+      if (Math.random() < 0.35) click({ t: t + 0.004, pan: (Math.random() * 0.6 - 0.3), bright: 0.85 });
+    }
+
+    if (tier === "jackpot") tone({ t: at + 0.10, f0: 220, f1: 1320, dur: 0.38, type: "sawtooth", peak: 0.03, wet: 0.14 });
+  }
+
+  function lose() {
+    if (!ensure()) return;
+    const at = ctx.currentTime;
+    thunk({ t: at, weight: 0.82 });
+    tone({ t: at + 0.01, f0: 180, f1: 110, dur: 0.18, type: "square", peak: 0.04, wet: 0.08 });
+    tone({ t: at + 0.08, f0: 220, f1: 160, dur: 0.14, type: "sine", peak: 0.02, wet: 0.18 });
+  }
+
+  function nearMissTease() {
+    if (!ensure()) return;
+    const at = ctx.currentTime;
+    tone({ t: at, f0: 220, f1: 520, dur: 0.24, type: "sawtooth", peak: 0.03, wet: 0.12 });
+    click({ t: at + 0.02, bright: 0.95 });
+    click({ t: at + 0.14, bright: 1.0 });
+  }
+
+  function nearMissSnap() {
+    if (!ensure()) return;
+    const at = ctx.currentTime;
+    click({ t: at, bright: 1.0 });
+    thunk({ t: at + 0.01, weight: 0.8 });
+    tone({ t: at + 0.015, f0: 620, f1: 120, dur: 0.14, type: "square", peak: 0.04, wet: 0.10 });
+  }
+
+  function ui() {
+    if (!ensure()) return;
+    click({ bright: 0.7 });
+    tone({ f0: 520, f1: 760, dur: 0.05, type: "triangle", peak: 0.05, wet: 0.12 });
+  }
+
+  function spinStart() {
+    if (!ensure()) return;
+    const at = ctx.currentTime;
+    thunk({ t: at, weight: 0.85 });
+    tone({ t: at + 0.01, f0: 180, f1: 320, dur: 0.10, type: "sawtooth", peak: 0.04, wet: 0.08 });
+  }
+
+  function setEnabled(on) {
+    enabled = !!on;
+    if (!enabled) stopSpinLoop(0.02);
+  }
+
+  function setVolume(v) {
+    volume = Math.max(0, Math.min(1, Number.isFinite(v) ? v : 0));
+    if (master && ctx) master.gain.setTargetAtTime(volume, ctx.currentTime, 0.01);
+  }
+
+  function resume() {
+    if (!ensure()) return;
+    try { ctx.resume?.(); } catch {}
+  }
+
+  return {
+    ensure,
+    setEnabled,
+    setVolume,
+    resume,
+    ui,
+    spinStart,
+    startSpinLoop,
+    stopSpinLoop,
+    reelTick,
+    reelStop,
+    nearMissTease,
+    nearMissSnap,
+    lose,
+    win,
+    tone,
+  };
+}
+
+const audio = createAudioEngine();
 
 function getAudio() {
-  if (!state.soundOn) return null;
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    masterGain = audioCtx.createGain();
-    masterGain.gain.value = clampInt(state.volume, 0, 100) / 100;
-    masterGain.connect(audioCtx.destination);
-  }
-  return audioCtx;
+  audio.setEnabled(!!state.soundOn);
+  return audio.ensure();
 }
 
 function setMasterVolume() {
-  if (!masterGain) return;
-  masterGain.gain.setTargetAtTime(clampInt(state.volume, 0, 100) / 100, audioCtx.currentTime, 0.01);
+  audio.setEnabled(!!state.soundOn);
+  audio.setVolume(clampInt(state.volume, 0, 100) / 100);
 }
 
 function beep({ freq = 440, dur = 0.06, type = "square", gain = 0.06 } = {}) {
-  const ctx = getAudio();
-  if (!ctx || !masterGain) return;
-  const osc = ctx.createOscillator();
-  const g = ctx.createGain();
-  osc.type = type;
-  osc.frequency.value = freq;
-  g.gain.value = gain;
-  osc.connect(g).connect(masterGain);
-  osc.start();
-  osc.stop(ctx.currentTime + dur);
+  if (!state.soundOn) return;
+  setMasterVolume();
+  audio.tone({ f0: freq, dur, type, peak: Math.max(0.0002, gain), wet: 0.10 });
 }
 
-function tone({
-  freqStart = 440,
-  freqEnd = null,
-  dur = 0.12,
-  type = "sine",
-  gain = 0.06,
-  attack = 0.008,
-  release = 0.06,
-} = {}) {
-  const ctx = getAudio();
-  if (!ctx || !masterGain) return;
-  const osc = ctx.createOscillator();
-  const g = ctx.createGain();
-  osc.type = type;
-  osc.frequency.setValueAtTime(Math.max(30, freqStart), ctx.currentTime);
-  if (typeof freqEnd === "number" && Number.isFinite(freqEnd)) {
-    osc.frequency.exponentialRampToValueAtTime(Math.max(30, freqEnd), ctx.currentTime + dur);
-  }
-  g.gain.setValueAtTime(0.0001, ctx.currentTime);
-  g.gain.exponentialRampToValueAtTime(Math.max(0.0002, gain), ctx.currentTime + attack);
-  g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur + release);
-  osc.connect(g).connect(masterGain);
-  osc.start();
-  osc.stop(ctx.currentTime + dur + release + 0.01);
-}
-
-function winChord() {
-  beep({ freq: 523.25, dur: 0.08, type: "triangle", gain: 0.07 });
-  setTimeout(() => beep({ freq: 659.25, dur: 0.08, type: "triangle", gain: 0.07 }), 80);
-  setTimeout(() => beep({ freq: 783.99, dur: 0.10, type: "triangle", gain: 0.07 }), 160);
+function tone({ freqStart = 440, freqEnd = null, dur = 0.12, type = "sine", gain = 0.06 } = {}) {
+  if (!state.soundOn) return;
+  setMasterVolume();
+  audio.tone({ f0: freqStart, f1: freqEnd, dur, type, peak: Math.max(0.0002, gain), wet: 0.22 });
 }
 
 function sfxWin(win, ids) {
   const tier = winTier(win);
   const hasHall = Array.isArray(ids) && ids.includes("HALLUCINATION");
-
-  if (hasHall) {
-    tone({ freqStart: 360, freqEnd: 120, dur: 0.18, type: "square", gain: 0.045, release: 0.12 });
-    setTimeout(() => beep({ freq: 880, dur: 0.03, type: "triangle", gain: 0.05 }), 110);
-    return;
-  }
-
-  if (tier === "tiny" || tier === "small") {
-    beep({ freq: 740, dur: 0.05, type: "triangle", gain: 0.05 });
-    setTimeout(() => beep({ freq: 988, dur: 0.06, type: "triangle", gain: 0.05 }), 55);
-    return;
-  }
-
-  if (tier === "mid") {
-    winChord();
-    setTimeout(() => beep({ freq: 988, dur: 0.08, type: "sine", gain: 0.04 }), 220);
-    return;
-  }
-
-  if (tier === "big") {
-    winChord();
-    setTimeout(() => tone({ freqStart: 520, freqEnd: 1040, dur: 0.22, type: "sawtooth", gain: 0.03, release: 0.14 }), 120);
-    setTimeout(() => beep({ freq: 1318.5, dur: 0.09, type: "triangle", gain: 0.05 }), 300);
-    return;
-  }
-
-  // jackpot
-  winChord();
-  setTimeout(() => winChord(), 230);
-  setTimeout(() => tone({ freqStart: 220, freqEnd: 1320, dur: 0.32, type: "sawtooth", gain: 0.035, release: 0.18 }), 140);
-  setTimeout(() => beep({ freq: 1760, dur: 0.12, type: "triangle", gain: 0.06 }), 560);
-}
-
-function tick() {
-  beep({ freq: 180 + Math.random() * 60, dur: 0.03, type: "square", gain: 0.045 });
+  if (!state.soundOn) return;
+  setMasterVolume();
+  audio.win({ tier, hasHall });
 }
 
 function sfxSpinStart() {
-  beep({ freq: 240, dur: 0.05, type: "sawtooth", gain: 0.03 });
-  setTimeout(() => beep({ freq: 360, dur: 0.06, type: "sawtooth", gain: 0.03 }), 40);
-  setTimeout(() => beep({ freq: 520, dur: 0.06, type: "triangle", gain: 0.03 }), 85);
-}
-
-function sfxSymbolLand(symbolId, reelIndex = 0) {
-  const bump = reelIndex * 28;
-  if (symbolId === "TOKEN") {
-    beep({ freq: 880 + bump, dur: 0.03, type: "triangle", gain: 0.055 });
-    setTimeout(() => beep({ freq: 1320 + bump, dur: 0.04, type: "triangle", gain: 0.05 }), 40);
-    return;
-  }
-  if (symbolId === "PROMPT") {
-    beep({ freq: 640 + bump, dur: 0.02, type: "square", gain: 0.05 });
-    setTimeout(() => beep({ freq: 520 + bump, dur: 0.02, type: "square", gain: 0.04 }), 24);
-    return;
-  }
-  if (symbolId === "GPU") {
-    beep({ freq: 220 + bump, dur: 0.05, type: "sawtooth", gain: 0.04 });
-    setTimeout(() => beep({ freq: 330 + bump, dur: 0.05, type: "sawtooth", gain: 0.032 }), 55);
-    return;
-  }
-  if (symbolId === "AGENT") {
-    beep({ freq: 740 + bump, dur: 0.035, type: "sine", gain: 0.048 });
-    setTimeout(() => beep({ freq: 980 + bump, dur: 0.04, type: "sine", gain: 0.042 }), 42);
-    return;
-  }
-  if (symbolId === "MODEL") {
-    beep({ freq: 420 + bump, dur: 0.06, type: "triangle", gain: 0.04 });
-    setTimeout(() => beep({ freq: 630 + bump, dur: 0.05, type: "triangle", gain: 0.035 }), 70);
-    return;
-  }
-  if (symbolId === "HALLUCINATION") {
-    beep({ freq: 180 + bump, dur: 0.04, type: "square", gain: 0.05 });
-    setTimeout(() => beep({ freq: 92 + bump, dur: 0.08, type: "square", gain: 0.05 }), 45);
-    return;
-  }
-
-  beep({ freq: 520 + bump, dur: 0.03, type: "square", gain: 0.05 });
+  if (!state.soundOn) return;
+  setMasterVolume();
+  audio.spinStart();
 }
 
 function sfxReelStop(i = 0, symbolId = null) {
-  const base = 520 + i * 60;
-  beep({ freq: base, dur: 0.02, type: "square", gain: 0.045 });
-  setTimeout(() => beep({ freq: base - 120, dur: 0.03, type: "square", gain: 0.03 }), 18);
-  if (symbolId) setTimeout(() => sfxSymbolLand(symbolId, i), 28);
+  if (!state.soundOn) return;
+  setMasterVolume();
+  audio.reelStop({ reelIndex: i, symbolId });
 }
 
 function sfxLose() {
-  beep({ freq: 160, dur: 0.08, type: "square", gain: 0.05 });
-  setTimeout(() => beep({ freq: 110, dur: 0.11, type: "square", gain: 0.05 }), 85);
+  if (!state.soundOn) return;
+  setMasterVolume();
+  audio.lose();
 }
 
 function sfxNearMiss() {
-  beep({ freq: 220, dur: 0.06, type: "sawtooth", gain: 0.03 });
-  setTimeout(() => beep({ freq: 320, dur: 0.06, type: "sawtooth", gain: 0.032 }), 70);
-  setTimeout(() => beep({ freq: 440, dur: 0.06, type: "sawtooth", gain: 0.035 }), 140);
-  setTimeout(() => beep({ freq: 620, dur: 0.07, type: "triangle", gain: 0.03 }), 210);
-  setTimeout(() => beep({ freq: 120, dur: 0.11, type: "square", gain: 0.05 }), 310);
+  if (!state.soundOn) return;
+  setMasterVolume();
+  audio.nearMissTease();
+}
+
+function sfxNearMissSnap() {
+  if (!state.soundOn) return;
+  setMasterVolume();
+  audio.nearMissSnap();
+}
+
+function sfxAnticipation() {
+  if (!state.soundOn) return;
+  setMasterVolume();
+  const t = audio.ensure()?.currentTime ?? 0;
+  audio.tone({ t, f0: 320, f1: 520, dur: 0.14, type: "sawtooth", peak: 0.022, wet: 0.12 });
+  audio.tone({ t: t + 0.10, f0: 660, f1: 880, dur: 0.10, type: "triangle", peak: 0.02, wet: 0.16 });
 }
 
 function sfxShop() {
-  beep({ freq: 680, dur: 0.05, type: "triangle", gain: 0.04 });
-  setTimeout(() => beep({ freq: 860, dur: 0.05, type: "triangle", gain: 0.04 }), 65);
+  if (!state.soundOn) return;
+  setMasterVolume();
+  audio.ui();
 }
 
 function setSpinning(on) {
@@ -692,6 +978,9 @@ function createBackgroundField(canvas) {
   let running = false;
   let lastT = 0;
   let energy = 0;
+  let spinning = false;
+  let hueShift = 0;
+  let hueShiftTarget = 0;
   const pts = [];
   const mouse = { x: 0, y: 0, has: false };
 
@@ -714,13 +1003,15 @@ function createBackgroundField(canvas) {
     pts.length = 0;
     const count = 74;
     for (let i = 0; i < count; i++) {
+      const baseHue = 35 + Math.random() * 160;
       pts.push({
         x: Math.random(),
         y: Math.random(),
         vx: (Math.random() - 0.5) * 0.010,
         vy: (Math.random() - 0.5) * 0.010,
         r: 1.2 + Math.random() * 2.4,
-        hue: 35 + Math.random() * 160,
+        hue: baseHue,
+        baseHue,
       });
     }
   }
@@ -738,9 +1029,39 @@ function createBackgroundField(canvas) {
   }
 
   function kick(kind) {
-    energy += kind === "jackpot" ? 1.25 : kind === "win" ? 0.75 : 0.45;
+    const boost = kind === "jackpot" ? 1.25 : kind === "win" ? 0.75 : kind === "spin" ? 0.25 : 0.45;
+    energy += boost;
     energy = Math.min(2.2, energy);
+    hueShiftTarget = kind === "jackpot" ? 42 : kind === "win" ? 22 : kind === "lose" ? -18 : hueShiftTarget;
+
+    const cw = canvas.width / dpr;
+    const ch = canvas.height / dpr;
+    const cx = cw * 0.5;
+    const cy = ch * 0.42;
+    const dir = kind === "lose" ? -1 : 1;
+    const push = kind === "jackpot" ? 0.034 : kind === "win" ? 0.024 : kind === "lose" ? 0.020 : 0.012;
+    for (const p of pts) {
+      const px = p.x * cw;
+      const py = p.y * ch;
+      const dx = px - cx;
+      const dy = py - cy;
+      const d = Math.sqrt(dx * dx + dy * dy) || 1;
+      const f = Math.min(1, 260 / d);
+      p.vx += (dx / d) * f * push * dir;
+      p.vy += (dy / d) * f * push * dir;
+      if (kind === "jackpot") {
+        // swirl
+        p.vx += (-dy / d) * f * 0.012;
+        p.vy += (dx / d) * f * 0.012;
+      }
+    }
     start();
+  }
+
+  function spin(on) {
+    spinning = !!on;
+    if (spinning) kick("spin");
+    else start();
   }
 
   function pointer(x, y) {
@@ -777,7 +1098,10 @@ function createBackgroundField(canvas) {
     const cw = canvas.width / dpr;
     const ch = canvas.height / dpr;
 
-    energy = Math.max(0, energy - dt * 0.35);
+    const baseline = spinning ? 0.55 : 0;
+    energy = Math.max(baseline, energy - dt * 0.35);
+    hueShiftTarget *= Math.max(0.0, 1 - dt * 0.85);
+    hueShift += (hueShiftTarget - hueShift) * Math.min(1, dt * 2.8);
 
     ctx.globalCompositeOperation = "source-over";
     ctx.fillStyle = "rgba(0,0,0,0.10)";
@@ -785,7 +1109,8 @@ function createBackgroundField(canvas) {
     ctx.globalCompositeOperation = "lighter";
 
     const pull = mouse.has ? (0.018 + energy * 0.020) : 0;
-    const speed = 0.22 + energy * 0.55;
+    const speed = 0.22 + energy * 0.58;
+    const swirl = (spinning ? 0.06 : 0.02) + energy * 0.12;
 
     for (const p of pts) {
       if (mouse.has) {
@@ -801,6 +1126,21 @@ function createBackgroundField(canvas) {
 
       p.vx *= 0.985;
       p.vy *= 0.985;
+
+      // subtle swirl around a center point to feel more “intentional” during spins/wins.
+      {
+        const cx = cw * 0.5;
+        const cy = ch * 0.42;
+        const px = p.x * cw;
+        const py = p.y * ch;
+        const dx = px - cx;
+        const dy = py - cy;
+        const d = Math.sqrt(dx * dx + dy * dy) || 1;
+        const f = Math.min(1, 220 / d);
+        p.vx += (-dy / d) * f * swirl * dt;
+        p.vy += (dx / d) * f * swirl * dt;
+      }
+
       p.x += p.vx * dt * speed;
       p.y += p.vy * dt * speed;
 
@@ -809,8 +1149,9 @@ function createBackgroundField(canvas) {
       if (p.y < -0.05) p.y = 1.05;
       if (p.y > 1.05) p.y = -0.05;
 
-      const alpha = 0.18 + energy * 0.55;
-      const size = p.r * (0.85 + energy * 0.75);
+      p.hue += (((p.baseHue + hueShift) - p.hue) * Math.min(1, dt * 2.2));
+      const alpha = 0.16 + energy * 0.56;
+      const size = p.r * (0.85 + energy * 0.78);
       ctx.fillStyle = `hsla(${p.hue}, 100%, 64%, ${alpha})`;
       ctx.beginPath();
       ctx.arc(p.x * cw, p.y * ch, size, 0, Math.PI * 2);
@@ -824,7 +1165,7 @@ function createBackgroundField(canvas) {
   seed();
   if (!state.reducedMotion) start();
 
-  return { resize, clear, kick, pointer, click, start, stop };
+  return { resize, clear, kick, spin, pointer, click, start, stop };
 }
 
 function fxFireworks(tier) {
@@ -932,16 +1273,42 @@ function easeOutCubic(t) {
   return 1 - Math.pow(1 - Math.max(0, Math.min(1, t)), 3);
 }
 
-function makeSpinDelays({ ticks, durationMs, minDelay = 18, maxDelay = 160 }) {
-  const steps = Math.max(1, Math.floor(ticks) - 1);
+function easeInOutCubic(t) {
+  const x = Math.max(0, Math.min(1, t));
+  return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+}
+
+function makeSpinDelays({ ticks, durationMs, minDelay = 14, maxDelay = 175, accel = 0.18, cruise = 0.52, jitter = 0.08 }) {
+  const steps = Math.max(2, Math.floor(ticks));
+  const n = steps - 1;
   const base = [];
-  for (let i = 0; i < steps; i++) {
-    const t = steps <= 1 ? 1 : i / (steps - 1);
-    base.push(minDelay + (maxDelay - minDelay) * easeOutCubic(t));
+
+  const accelN = Math.max(1, Math.floor(n * accel));
+  const cruiseN = Math.max(0, Math.floor(n * cruise));
+  const decelN = Math.max(1, n - accelN - cruiseN);
+
+  const startDelay = Math.min(maxDelay, Math.max(minDelay + 10, minDelay * 2.2));
+  const fastDelay = Math.max(minDelay, Math.floor(minDelay * 0.95));
+
+  for (let i = 0; i < accelN; i++) {
+    const t = accelN <= 1 ? 1 : i / (accelN - 1);
+    const d = startDelay - (startDelay - fastDelay) * easeInOutCubic(t);
+    base.push(d);
   }
+  for (let i = 0; i < cruiseN; i++) base.push(fastDelay);
+  for (let i = 0; i < decelN; i++) {
+    const t = decelN <= 1 ? 1 : i / (decelN - 1);
+    const d = fastDelay + (maxDelay - fastDelay) * easeOutCubic(t);
+    base.push(d);
+  }
+
   const sum = base.reduce((a, b) => a + b, 0) || 1;
   const scale = Math.max(0.1, durationMs / sum);
-  return base.map((d) => Math.max(10, Math.floor(d * scale)));
+  return base.map((d, i) => {
+    const t = base.length <= 1 ? 1 : i / (base.length - 1);
+    const j = 1 + (Math.random() * 2 - 1) * jitter * (0.25 + 0.75 * t);
+    return Math.max(10, Math.floor(d * scale * j));
+  });
 }
 
 function buildSpinSequence({ ticks, finalId, teaseId = null, teaseSteps = 0 }) {
@@ -972,6 +1339,9 @@ async function spinOneReel(index, outIds, plan) {
   const teaseId = plan?.teaseId ?? null;
   const teaseSteps = plan?.teaseSteps ?? 0;
   const onTease = typeof plan?.onTease === "function" ? plan.onTease : null;
+  const teaseHoldMs = clampInt(plan?.teaseHoldMs ?? 0, 0, 2000);
+  const stopHoldMs = clampInt(plan?.stopHoldMs ?? 0, 0, 2000);
+  const onStop = typeof plan?.onStop === "function" ? plan.onStop : null;
 
   const seq = buildSpinSequence({ ticks, finalId, teaseId, teaseSteps });
   const delays = makeSpinDelays({
@@ -989,9 +1359,10 @@ async function spinOneReel(index, outIds, plan) {
     if (!teased && teaseId && id === teaseId && i < seq.length - 1) {
       teased = true;
       onTease?.(index, teaseId);
+      if (teaseHoldMs > 0) await sleep(teaseHoldMs);
     }
 
-    if (i % 2 === 0) tick();
+    if (i < delays.length) audio.reelTick({ delayMs: delays[i], reelIndex: index });
     if (i < delays.length) await sleep(delays[i]);
   }
 
@@ -1001,6 +1372,8 @@ async function spinOneReel(index, outIds, plan) {
   reelFrame.classList.add("is-stopping");
   setTimeout(() => reelFrame.classList.remove("is-stopping"), state.reducedMotion ? 180 : 520);
   sfxReelStop(index, landed);
+  onStop?.(index, landed);
+  if (stopHoldMs > 0) await sleep(stopHoldMs);
 }
 
 async function doSpin() {
@@ -1023,7 +1396,15 @@ async function doSpin() {
 
   setSpinning(true);
   sfxSpinStart();
+  bgField?.spin?.(true);
+  if (state.soundOn) {
+    setMasterVolume();
+    audio.resume();
+    audio.startSpinLoop(0.95 + Math.min(0.6, state.bet / 18));
+  }
   tryVibrate([8]);
+  el.reels?.classList.remove("is-anticipating");
+  el.reel2?.classList.remove("is-anticipating");
   setMessage("Thinking… generating… definitely not gambling…", "neutral");
 
   let mode = "normal";
@@ -1041,6 +1422,9 @@ async function doSpin() {
 
   const out = ["TOKEN", "TOKEN", "TOKEN"];
   let teaseOnce = false;
+  let snapOnce = false;
+  let chaseOnce = false;
+  const chaseId = (!state.reducedMotion && mode !== "nearMiss" && planned[0] === planned[1] && planned[2] !== planned[0]) ? planned[0] : null;
 
   const ticksBase = state.reducedMotion ? 10 : 18;
   const plans = [
@@ -1050,6 +1434,10 @@ async function doSpin() {
       durationMs: state.reducedMotion ? 420 : 820,
       teaseId: mode === "nearMiss" ? bait : null,
       teaseSteps: mode === "nearMiss" ? 1 : 0,
+      onStop: () => {
+        el.reels?.classList.toggle("is-locked0", true);
+        setTimeout(() => el.reels?.classList.remove("is-locked0"), 520);
+      },
     },
     {
       finalId: planned[1],
@@ -1057,18 +1445,46 @@ async function doSpin() {
       durationMs: state.reducedMotion ? 500 : 1020,
       teaseId: mode === "nearMiss" ? bait : null,
       teaseSteps: mode === "nearMiss" ? 2 : 0,
+      onStop: () => {
+        const twoMatch = out[0] && out[1] && out[0] === out[1];
+        const anticipate = mode === "nearMiss" || twoMatch;
+        if (anticipate) {
+          el.reels?.classList.add("is-anticipating");
+          el.reel2?.classList.add("is-anticipating");
+          bgField?.kick?.("win");
+          if (!state.reducedMotion) tryVibrate([8, 24, 8]);
+        }
+        setTimeout(() => el.reels?.classList.remove("is-anticipating"), 1600);
+      },
     },
     {
       finalId: planned[2],
       ticks: state.reducedMotion ? 10 : ticksBase,
-      durationMs: state.reducedMotion ? 580 : 1240,
-      teaseId: mode === "nearMiss" ? bait : null,
-      teaseSteps: mode === "nearMiss" ? 4 : 0,
+      durationMs: state.reducedMotion ? 580 : (mode === "nearMiss" ? 1520 : chaseId ? 1480 : 1360),
+      teaseId: mode === "nearMiss" ? bait : chaseId,
+      teaseSteps: mode === "nearMiss" ? 5 : chaseId ? 2 : 0,
+      teaseHoldMs: mode === "nearMiss" ? 110 : chaseId ? 70 : 0,
+      stopHoldMs: mode === "nearMiss" ? 90 : chaseId ? 50 : 0,
       onTease: () => {
-        if (mode !== "nearMiss") return;
-        if (teaseOnce) return;
-        teaseOnce = true;
-        sfxNearMiss();
+        if (mode === "nearMiss") {
+          if (teaseOnce) return;
+          teaseOnce = true;
+          sfxNearMiss();
+          bgField?.kick?.("win");
+          return;
+        }
+        if (!chaseId) return;
+        if (chaseOnce) return;
+        chaseOnce = true;
+        sfxAnticipation();
+      },
+      onStop: () => {
+        el.reels?.classList.remove("is-anticipating");
+        el.reel2?.classList.remove("is-anticipating");
+        if (mode === "nearMiss" && !snapOnce) {
+          snapOnce = true;
+          sfxNearMissSnap();
+        }
       },
     },
   ];
@@ -1087,6 +1503,8 @@ async function doSpin() {
   ]);
 
   setSpinning(false);
+  bgField?.spin?.(false);
+  if (state.soundOn) audio.stopSpinLoop(0.06);
 
   const result = payoutFor(out);
 
@@ -1122,6 +1540,7 @@ async function doSpin() {
     state.spinWonTotal = clampInt(state.spinWonTotal + payout, 0, 1_000_000_000);
     state.winCount = clampInt(state.winCount + 1, 0, 1_000_000_000);
     state.biggestWin = Math.max(state.biggestWin, payout);
+    animateBalance(state.balance - payout, state.balance, { tier: winTier(payout) });
   } else {
     state.lossCount = clampInt(state.lossCount + 1, 0, 1_000_000_000);
   }
@@ -1149,6 +1568,55 @@ async function doSpin() {
   renderHUD();
 }
 
+function animateBalance(from, to, { tier = "small" } = {}) {
+  stopBalanceAnim();
+  const a = clampInt(from, 0, 1_000_000_000);
+  const b = clampInt(to, 0, 1_000_000_000);
+  if (a === b) return;
+
+  balancePillEl = el.balance?.closest?.(".pill") ?? null;
+  balancePillEl?.classList.add("is-counting");
+
+  const base =
+    tier === "jackpot" ? 1600 :
+    tier === "big" ? 1200 :
+    tier === "mid" ? 950 :
+    tier === "small" ? 720 :
+    520;
+  const dur = state.reducedMotion ? Math.min(480, base) : base;
+
+  const start = performance.now();
+  const delta = b - a;
+  let lastSfx = 0;
+
+  function step(t) {
+    const p = Math.max(0, Math.min(1, (t - start) / dur));
+    const eased = 1 - Math.pow(1 - p, 3);
+    const v = Math.round(a + delta * eased);
+    balanceDisplayOverride = v;
+    renderHUD();
+
+    if (state.soundOn && !state.reducedMotion) {
+      const every =
+        tier === "jackpot" ? 34 :
+        tier === "big" ? 42 :
+        tier === "mid" ? 52 :
+        tier === "small" ? 62 :
+        80;
+      if (t - lastSfx > every) {
+        lastSfx = t;
+        const f0 = 980 + Math.random() * 780;
+        audio.tone({ f0, f1: f0 * 1.15, dur: 0.04, type: "triangle", peak: 0.018, wet: 0.10, pan: (Math.random() * 0.6 - 0.3) });
+      }
+    }
+
+    if (p < 1) balanceAnimRaf = requestAnimationFrame(step);
+    else stopBalanceAnim();
+  }
+
+  balanceAnimRaf = requestAnimationFrame(step);
+}
+
 function doFineTune() {
   if (isSpinning) return;
   if (state.balance < fineTuneCost) {
@@ -1161,8 +1629,10 @@ function doFineTune() {
   renderHUD();
   setMessage(`Fine-tuned. Accuracy not guaranteed. Luck boost for ${fineTuneSpins} spins.`, "win");
   tryVibrate([12, 40, 12]);
-  beep({ freq: 420, dur: 0.08, type: "sine", gain: 0.06 });
-  beep({ freq: 840, dur: 0.06, type: "sine", gain: 0.05 });
+  if (state.soundOn) {
+    setMasterVolume();
+    audio.ui();
+  }
 }
 
 function doSellData() {
@@ -1172,14 +1642,18 @@ function doSellData() {
   );
   if (!ok) return;
 
+  const prev = state.balance;
   state.balance += sellDataGrant;
   state.telemetryLevel = clampInt(state.telemetryLevel + 1, 0, 999);
   saveState();
   renderHUD();
   setMessage("Thank you for your trust. We have monetized it.", "lose");
   tryVibrate([15, 30, 15]);
-  beep({ freq: 220, dur: 0.06, type: "square", gain: 0.05 });
-  beep({ freq: 160, dur: 0.10, type: "square", gain: 0.05 });
+  if (state.soundOn) {
+    setMasterVolume();
+    audio.win({ tier: "small", hasHall: false });
+  }
+  animateBalance(prev, state.balance, { tier: "small" });
 }
 
 function doReset() {
@@ -1201,7 +1675,10 @@ function setBet(next, { save = true, beepOn = true } = {}) {
   if (save) saveState();
   renderPayTable();
   renderHUD();
-  if (beepOn) beep({ freq: 520, dur: 0.04, type: "triangle", gain: 0.03 });
+  if (beepOn && state.soundOn) {
+    setMasterVolume();
+    audio.ui();
+  }
 }
 
 const shopItems = [
@@ -1244,7 +1721,9 @@ function renderShop() {
 
   for (const item of shopItems) {
     const card = document.createElement("div");
-    card.className = "shop__item";
+    const canBuy = item.canBuy();
+    const enough = state.balance >= item.cost;
+    card.className = `shop__item ${canBuy ? "" : "is-owned"} ${canBuy && enough ? "is-afford" : ""}`.trim();
 
     const name = document.createElement("div");
     name.className = "shop__name";
@@ -1266,8 +1745,6 @@ function renderShop() {
     btn.type = "button";
     btn.dataset.item = item.id;
 
-    const canBuy = item.canBuy();
-    const enough = state.balance >= item.cost;
     const disabled = !canBuy || !enough || isSpinning;
     btn.disabled = disabled;
     let label = "Buy";
@@ -1346,7 +1823,7 @@ function wireUI() {
       const ctx = getAudio();
       try { ctx?.resume?.(); } catch {}
       setMasterVolume();
-      beep({ freq: 440, dur: 0.05, type: "sine", gain: 0.05 });
+      audio.ui();
       setMessage("Sound on. Your mistakes now have audio.", "neutral");
     } else {
       setMessage("Sound off. Silent failures, classic.", "neutral");
