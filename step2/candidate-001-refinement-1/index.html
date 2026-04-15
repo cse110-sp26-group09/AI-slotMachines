@@ -9,8 +9,14 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div class="fxLayer" aria-hidden="true">
+      <canvas id="fxCanvas" class="fxCanvas"></canvas>
+      <div id="screenFlash" class="screenFlash"></div>
+      <div id="winBanner" class="winBanner" role="presentation"></div>
+    </div>
+
     <main class="app" aria-labelledby="title">
-      <header class="header">
+      <header class="header" data-reveal style="--d: 0ms">
         <div class="titleWrap">
           <h1 id="title">AI Token Slot Machine</h1>
           <p class="subtitle">Spend tokens. Win tokens. Pretend it’s “alignment”.</p>
@@ -27,7 +33,7 @@
         </div>
       </header>
 
-      <section class="machine" aria-label="Slot machine">
+      <section class="machine" aria-label="Slot machine" data-reveal style="--d: 120ms">
         <div class="reels" role="group" aria-label="Reels">
           <div class="reel" id="reel0" aria-label="Reel 1"><span class="symbol">🪙</span></div>
           <div class="reel" id="reel1" aria-label="Reel 2"><span class="symbol">🤖</span></div>
@@ -36,19 +42,28 @@
         <div class="machineFooter">
           <div class="controls" role="group" aria-label="Controls">
             <button id="spinBtn" class="primary" type="button">Spin</button>
+            <button id="autoBtn" type="button" class="isHidden" title="Auto-spin (unlock in Shop)">Auto</button>
+            <button id="shopBtn" type="button" title="Spend tokens in the shop">Shop</button>
             <button id="maxBtn" type="button" title="Set bet to max">Max</button>
             <button id="dailyBtn" type="button" title="Claim once per day">Daily</button>
             <button id="borrowBtn" type="button" title="Borrow tokens (with interest)">Borrow</button>
           </div>
           <div class="betRow" role="group" aria-label="Bet controls">
             <label for="bet">Bet</label>
-            <input id="bet" type="range" min="1" max="25" value="5" />
-            <output id="betOut" for="bet">5</output>
+            <div class="betCtl" aria-label="Bet adjustment">
+              <button id="betMinus" class="iconBtn" type="button" aria-label="Decrease bet">−</button>
+              <input id="bet" type="range" min="1" max="25" value="5" />
+              <button id="betPlus" class="iconBtn" type="button" aria-label="Increase bet">+</button>
+            </div>
+            <div class="betReadout">
+              <output id="betOut" for="bet">5</output>
+              <input id="betNum" type="number" inputmode="numeric" min="1" max="25" value="5" aria-label="Bet amount" />
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="panel" aria-label="Results and paytable">
+      <section class="panel" aria-label="Results and paytable" data-reveal style="--d: 220ms">
         <div class="panelGrid">
           <div class="card">
             <div class="cardHeader">
@@ -57,6 +72,7 @@
                 <button id="muteBtn" type="button" aria-pressed="false" title="Toggle sound">
                   Sound: On
                 </button>
+                <button id="settingsBtn" type="button" title="Open settings">Settings</button>
                 <button id="shareBtn" type="button" title="Copy/share latest result">Share</button>
                 <button id="resetBtn" type="button" title="Reset everything">Reset</button>
               </div>
@@ -130,7 +146,7 @@
         </div>
       </section>
 
-      <footer class="footer">
+      <footer class="footer" data-reveal style="--d: 320ms">
         <p>
           Tip: press <kbd>Space</kbd> to spin. Uses platform APIs: Local Storage, Web Audio, Clipboard/Share,
           and Crypto RNG.
@@ -138,6 +154,69 @@
         <p class="srOnly" id="srStatus" aria-live="assertive"></p>
       </footer>
     </main>
+
+    <dialog id="settingsDialog" class="dialog">
+      <form method="dialog" class="dialogInner">
+        <div class="dialogHeader">
+          <h2 class="dialogTitle">Settings</h2>
+          <button class="iconBtn" value="close" aria-label="Close">✕</button>
+        </div>
+
+        <div class="formGrid" role="group" aria-label="Sound and feedback">
+          <label class="field">
+            <span class="fieldLabel">Sound</span>
+            <input id="soundEnabled" type="checkbox" />
+          </label>
+          <label class="field">
+            <span class="fieldLabel">Volume</span>
+            <input id="volume" type="range" min="0" max="100" value="80" />
+          </label>
+          <label class="field">
+            <span class="fieldLabel">Haptics</span>
+            <input id="haptics" type="checkbox" />
+          </label>
+          <label class="field">
+            <span class="fieldLabel">FX Intensity</span>
+            <input id="fxIntensity" type="range" min="30" max="140" value="100" />
+          </label>
+          <label class="field">
+            <span class="fieldLabel">Reduce Motion</span>
+            <input id="reduceMotion" type="checkbox" />
+          </label>
+          <label class="field isLocked" id="turboField" title="Unlock Turbo Spin in the Shop">
+            <span class="fieldLabel">Turbo Spin</span>
+            <input id="turbo" type="checkbox" />
+          </label>
+        </div>
+
+        <p class="dialogHint" id="settingsHint">
+          Tip: if sound doesn’t play until you interact, that’s the browser protecting you from joy.
+        </p>
+
+        <menu class="dialogActions">
+          <button value="close" type="submit">Done</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <dialog id="shopDialog" class="dialog">
+      <form method="dialog" class="dialogInner">
+        <div class="dialogHeader">
+          <h2 class="dialogTitle">Shop</h2>
+          <button class="iconBtn" value="close" aria-label="Close">✕</button>
+        </div>
+
+        <p class="dialogHint">
+          Spend tokens to unlock ethically questionable “features”. Everything is cosmetic or quality-of-life.
+        </p>
+
+        <div id="shopItems" class="shopItems" aria-label="Shop items"></div>
+
+        <menu class="dialogActions">
+          <button value="close" type="submit">Back</button>
+        </menu>
+      </form>
+    </dialog>
 
     <script src="app.js"></script>
     <noscript>
