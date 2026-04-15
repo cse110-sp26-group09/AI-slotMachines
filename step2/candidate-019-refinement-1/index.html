@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AI Token Slot Machine</title>
+    <meta
+      name="description"
+      content="A tiny vanilla-web slot machine that satirizes AI token economies."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg"></div>
+    <main class="app" aria-label="AI Token Slot Machine">
+      <header class="top">
+        <div>
+          <h1>AI Token Slot Machine</h1>
+          <p class="subtitle">Pay tokens. Win tokens. Blame “temperature.”</p>
+        </div>
+
+        <div class="stats" role="group" aria-label="Balances">
+          <div class="stat">
+            <div class="statLabel">Balance</div>
+            <div class="statValue"><span id="tokens">0</span> 🪙</div>
+          </div>
+          <div class="stat">
+            <div class="statLabel">Win Streak</div>
+            <div class="statValue"><span id="streak">0</span> 🔥</div>
+          </div>
+        </div>
+      </header>
+
+      <section class="machine" aria-label="Slot machine">
+        <div class="reels" aria-label="Reels">
+          <div class="reel" id="reel0" aria-label="Reel 1" role="img">🤖</div>
+          <div class="reel" id="reel1" aria-label="Reel 2" role="img">🧠</div>
+          <div class="reel" id="reel2" aria-label="Reel 3" role="img">🪙</div>
+        </div>
+
+        <div class="controls" aria-label="Controls">
+          <div class="controlRow">
+            <label class="control">
+              <span class="controlLabel">Prompt tokens (bet)</span>
+              <span class="controlValue"><span id="betValue">5</span> 🪙</span>
+              <input
+                id="bet"
+                type="range"
+                min="1"
+                max="25"
+                step="1"
+                value="5"
+                aria-label="Bet in tokens"
+              />
+            </label>
+
+            <label class="control">
+              <span class="controlLabel">Temperature</span>
+              <span class="controlValue"><span id="tempValue">1.0</span></span>
+              <input
+                id="temp"
+                type="range"
+                min="0"
+                max="2"
+                step="0.1"
+                value="1"
+                aria-label="Temperature"
+              />
+            </label>
+          </div>
+
+          <div class="buttonRow">
+            <button id="spin" class="primary" type="button">SPIN (pay tokens)</button>
+            <button id="auto" type="button" aria-pressed="false">Auto-spin: OFF</button>
+            <button id="claim" type="button">Claim daily grant</button>
+            <button id="reset" class="danger" type="button" title="Resets local progress">
+              Reset
+            </button>
+          </div>
+
+          <div class="statusWrap">
+            <div id="status" class="status" role="status" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <section class="card" aria-label="Paytable">
+          <h2>Paytable (satire)</h2>
+          <ul class="paytable" id="paytable">
+            <li>
+              <span class="combo">🪙🪙🪙</span>
+              <span class="payout">×20</span>
+              <span class="note">“Investor deck found.”</span>
+            </li>
+            <li>
+              <span class="combo">🤖🤖🤖</span>
+              <span class="payout">×12</span>
+              <span class="note">“The model agrees with itself.”</span>
+            </li>
+            <li>
+              <span class="combo">🧠🧠🧠</span>
+              <span class="payout">×10</span>
+              <span class="note">“Genuine reasoning (probably).”</span>
+            </li>
+            <li>
+              <span class="combo">404404404</span>
+              <span class="payout">×9</span>
+              <span class="note">“Docs updated… yesterday.”</span>
+            </li>
+            <li>
+              <span class="combo">🔥🔥🔥</span>
+              <span class="payout">×8</span>
+              <span class="note">“Production-ready (for 4 minutes).”</span>
+            </li>
+            <li>
+              <span class="combo">any two</span>
+              <span class="payout">×2</span>
+              <span class="note">“Close enough for a demo.”</span>
+            </li>
+            <li>
+              <span class="combo">🐛 anywhere</span>
+              <span class="payout">−3</span>
+              <span class="note">“Bug tax.”</span>
+            </li>
+          </ul>
+          <p class="fineprint">
+            Payouts are multiplied by your bet. Negative payouts are deducted.
+          </p>
+        </section>
+
+        <section class="card" aria-label="Token shop">
+          <h2>Token Shop (spend tokens)</h2>
+          <div class="shop" id="shop"></div>
+          <p class="fineprint">
+            All power-ups are local and unserious. No real money. No real AI.
+          </p>
+        </section>
+      </section>
+
+      <footer class="footer">
+        <p>
+          Uses platform APIs: <strong>localStorage</strong>, <strong>Web Audio</strong>,
+          and <strong>Vibration</strong> (if available).
+        </p>
+      </footer>
+    </main>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
+

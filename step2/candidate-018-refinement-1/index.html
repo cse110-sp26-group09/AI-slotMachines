@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#080912" />
+    <title>Token Slots: The AI Casino</title>
+    <meta
+      name="description"
+      content="A vanilla web slot machine that turns AI hype into tokens you can win and spend."
+    />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app" data-js="app">
+      <header class="header">
+        <div>
+          <h1>Token Slots</h1>
+          <p class="subtitle">Win tokens. Spend tokens. Blame the model either way.</p>
+        </div>
+
+        <div class="wallet" role="status" aria-live="polite">
+          <div class="wallet__row">
+            <span class="wallet__label">Balance</span>
+            <span class="wallet__value"
+              ><span data-js="balance">0</span> <span class="muted">TOK</span></span
+            >
+          </div>
+          <div class="wallet__row">
+            <span class="wallet__label">Last spin</span>
+            <span class="wallet__value"
+              ><span data-js="delta">—</span> <span class="muted">TOK</span></span
+            >
+          </div>
+        </div>
+      </header>
+
+      <main class="main">
+        <section class="machine" aria-label="Slot machine">
+          <div class="marquee" aria-hidden="true">
+            <span>•</span> <span>LATENCY</span> <span>•</span> <span>HALLUCINATIONS</span>
+            <span>•</span> <span>GPU HEAT</span> <span>•</span> <span>DISRUPTION</span>
+            <span>•</span>
+          </div>
+
+          <div class="reels" role="group" aria-label="Reels">
+            <div class="reel" data-js="reel" aria-label="Reel 1">
+              <div class="reel__window" data-js="reelWindow">🤖</div>
+            </div>
+            <div class="reel" data-js="reel" aria-label="Reel 2">
+              <div class="reel__window" data-js="reelWindow">🪙</div>
+            </div>
+            <div class="reel" data-js="reel" aria-label="Reel 3">
+              <div class="reel__window" data-js="reelWindow">🔥</div>
+            </div>
+          </div>
+
+          <div class="controls" aria-label="Controls">
+            <div class="control">
+              <label for="bet" class="control__label"
+                >Prompt budget (bet): <span class="mono"><span data-js="betLabel">10</span> TOK</span></label
+              >
+              <input
+                id="bet"
+                data-js="bet"
+                type="range"
+                min="1"
+                max="50"
+                step="1"
+                value="10"
+              />
+              <div class="control__hint">
+                Costs <span class="mono"><span data-js="spinCostLabel">10</span> TOK</span> per spin. (Taxes not
+                included. Neither is truth.)
+              </div>
+            </div>
+
+            <div class="buttons">
+              <button class="btn btn--primary" data-js="spin" type="button">
+                <span class="btn__title">Spin</span>
+                <span class="btn__subtitle">Generate “value”</span>
+              </button>
+              <button class="btn" data-js="refill" type="button">
+                <span class="btn__title">Ask VC for tokens</span>
+                <span class="btn__subtitle">One-time bailout</span>
+              </button>
+              <button class="btn btn--ghost" data-js="reset" type="button">
+                <span class="btn__title">Factory reset</span>
+                <span class="btn__subtitle">Erase the “learning”</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="result" role="status" aria-live="polite">
+            <div class="result__headline" data-js="headline">Ready to spend tokens responsibly?</div>
+            <div class="result__detail" data-js="detail">
+              Tip: matching “🪙” is statistically “unlikely” (like good benchmarks).
+            </div>
+          </div>
+        </section>
+
+        <aside class="sidebar">
+          <section class="card">
+            <h2>Payouts</h2>
+            <div class="table" role="table" aria-label="Payouts table">
+              <div class="table__row table__row--head" role="row">
+                <div role="columnheader">Match</div>
+                <div role="columnheader">Payout</div>
+                <div role="columnheader">Notes</div>
+              </div>
+              <div class="table__row" role="row">
+                <div role="cell">🪙🪙🪙</div>
+                <div role="cell"><span class="mono">×25</span></div>
+                <div role="cell">Tokenomics “working as intended”</div>
+              </div>
+              <div class="table__row" role="row">
+                <div role="cell">🤖🤖🤖</div>
+                <div role="cell"><span class="mono">×12</span></div>
+                <div role="cell">Agentic synergy achieved</div>
+              </div>
+              <div class="table__row" role="row">
+                <div role="cell">🧠🧠🧠</div>
+                <div role="cell"><span class="mono">×10</span></div>
+                <div role="cell">Definitely not overfitting</div>
+              </div>
+              <div class="table__row" role="row">
+                <div role="cell">📈📈📈</div>
+                <div role="cell"><span class="mono">×8</span></div>
+                <div role="cell">Slide deck momentum</div>
+              </div>
+              <div class="table__row" role="row">
+                <div role="cell">Any 3 same (other)</div>
+                <div role="cell"><span class="mono">×6</span></div>
+                <div role="cell">A “small model” win</div>
+              </div>
+              <div class="table__row" role="row">
+                <div role="cell">Any 2 same</div>
+                <div role="cell"><span class="mono">×2</span></div>
+                <div role="cell">Close enough for a demo</div>
+              </div>
+              <div class="table__row" role="row">
+                <div role="cell">💥 anywhere</div>
+                <div role="cell"><span class="mono">×0</span></div>
+                <div role="cell">Outage. Please refresh your feelings.</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <h2>Settings</h2>
+            <div class="settings">
+              <label class="toggle">
+                <input data-js="sound" type="checkbox" checked />
+                <span>Sound (Web Audio)</span>
+              </label>
+              <label class="toggle">
+                <input data-js="haptics" type="checkbox" checked />
+                <span>Haptics (Vibration API)</span>
+              </label>
+              <label class="toggle">
+                <input data-js="speech" type="checkbox" />
+                <span>Announcer (SpeechSynthesis)</span>
+              </label>
+            </div>
+            <div class="small muted">
+              No logins. No ads. No cloud. Just vibes, locally stored with <span class="mono">localStorage</span>.
+            </div>
+          </section>
+
+          <section class="card">
+            <h2>Stats</h2>
+            <div class="stats">
+              <div class="stats__row"><span>Spins</span><span class="mono" data-js="spins">0</span></div>
+              <div class="stats__row"><span>Wins</span><span class="mono" data-js="wins">0</span></div>
+              <div class="stats__row"><span>Big wins (×10+)</span><span class="mono" data-js="bigWins">0</span></div>
+              <div class="stats__row"><span>Outages (💥)</span><span class="mono" data-js="outages">0</span></div>
+            </div>
+          </section>
+        </aside>
+      </main>
+
+      <footer class="footer">
+        <button class="link" type="button" data-js="share">Share results</button>
+        <span class="muted">•</span>
+        <button class="link" type="button" data-js="copy">Copy state</button>
+        <span class="muted">•</span>
+        <span class="muted">Built with HTML/CSS/JS + platform APIs</span>
+      </footer>
+
+      <div class="toast" role="status" aria-live="polite" aria-atomic="true" data-js="toast" hidden></div>
+    </div>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
