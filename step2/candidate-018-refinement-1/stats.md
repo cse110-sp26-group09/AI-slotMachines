@@ -11,5 +11,5 @@
 - Files produced:	app.js, icon.svg, index.html, manifest.webmanifest, README.md, styles.css, sw.js. (7)
 - Lines of code: 	1851
 - Runs in browser?:	Yes
-- App Quality Notes: App self destructs and breaks after a certain amount of spins. Shop and settings are added as desired. Layout is ok.
+- App Quality Notes: App self destructs and breaks after a certain amount of spins. Shop and settings are added as desired. Layout is okay.
 - Code Quality Notes: Code is very long, especially for styles.css despite lack of UI updates. Code correctness is apparently poor given program not functioning correctly.
