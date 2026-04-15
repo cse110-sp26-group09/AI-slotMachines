@@ -11,11 +11,14 @@
     <div class="bg" aria-hidden="true">
       <div class="bg-grid"></div>
       <div class="bg-glow"></div>
+      <div class="bg-prism"></div>
       <div class="bg-noise"></div>
     </div>
 
+    <div class="fx" id="fxLayer" aria-hidden="true"></div>
+
     <main class="app" id="app">
-      <header class="topbar">
+      <header class="topbar reveal" style="--d: 40ms">
         <div class="brand">
           <div class="brand__mark" aria-hidden="true">TC</div>
           <div class="brand__text">
@@ -40,8 +43,8 @@
         </div>
       </header>
 
-      <section class="machine" aria-label="Slot machine">
-        <div class="machine__frame">
+      <section class="machine reveal" aria-label="Slot machine" style="--d: 120ms">
+        <div class="machine__frame" id="machineFrame">
           <div class="marquee" aria-hidden="true">
             <span>NOW WITH 200% MORE CONFIDENCE</span>
             <span>NO REFUNDS</span>
@@ -82,6 +85,18 @@
               <span class="btn__meta"><span id="spinMeta">cost 0 TOK</span></span>
             </button>
 
+            <div class="bet" aria-label="Spin amount">
+              <div class="bet__top">
+                <div class="bet__label">Spin amount</div>
+                <div class="bet__value"><span id="betValue">1</span>×</div>
+              </div>
+              <div class="bet__row">
+                <input id="betRange" class="range" type="range" min="1" max="20" step="1" value="1" />
+                <input id="betNumber" class="num" type="number" min="1" max="20" step="1" value="1" inputmode="numeric" />
+              </div>
+              <div class="bet__hint">Bigger bets unlock bigger ego boosts (and bigger fireworks).</div>
+            </div>
+
             <div class="controlrow">
               <button class="btn" id="fineTuneBtn" type="button" title="Spend tokens to make the model 'better'.">
                 Fine-tune (cost <span id="fineTuneCost">0</span>)
@@ -89,9 +104,10 @@
               <button class="btn" id="sellDataBtn" type="button" title="Exchange privacy for tokens. Classic.">
                 Sell my data
               </button>
-              <button class="btn" id="resetBtn" type="button" title="Hard reset. No regrets. No learning.">
-                Reset
+              <button class="btn" id="shopBtn" type="button" title="Spend tokens on upgrades that should have been free.">
+                Shop
               </button>
+              <button class="btn" id="resetBtn" type="button" title="Hard reset. No regrets. No learning.">Reset</button>
             </div>
 
             <div class="toggles" aria-label="Preferences">
@@ -99,6 +115,15 @@
                 <input id="soundToggle" type="checkbox" />
                 <span class="toggle__ui" aria-hidden="true"></span>
                 <span class="toggle__text">Sound</span>
+              </label>
+              <label class="toggle toggle--slider" id="volumeWrap">
+                <span class="toggle__text">Volume</span>
+                <input id="volume" class="range range--sm" type="range" min="0" max="100" step="1" value="70" />
+              </label>
+              <label class="toggle">
+                <input id="hapticsToggle" type="checkbox" />
+                <span class="toggle__ui" aria-hidden="true"></span>
+                <span class="toggle__text">Haptics</span>
               </label>
               <label class="toggle">
                 <input id="reducedMotionToggle" type="checkbox" />
@@ -109,9 +134,9 @@
           </div>
         </div>
 
-        <aside class="paytable" aria-label="Payouts">
+        <aside class="paytable reveal" aria-label="Payouts" style="--d: 220ms">
           <div class="card">
-            <div class="card__title">Payouts (3 of a kind)</div>
+            <div class="card__title">Payouts (3 of a kind • scales with bet)</div>
             <ul class="table" id="payTable"></ul>
             <div class="card__note">
               Two of a kind pays a small “confidence bonus”. Hallucinations pay in vibes.
@@ -130,11 +155,31 @@
         </aside>
       </section>
 
-      <footer class="footer">
+      <footer class="footer reveal" style="--d: 280ms">
         <div class="footer__left">Built with HTML/CSS/JS and platform APIs. No frameworks. No warranties.</div>
         <div class="footer__right"><span id="sessionStats">0 spins</span></div>
       </footer>
     </main>
+
+    <dialog class="shop" id="shopDialog" aria-label="Token shop">
+      <form method="dialog" class="shop__frame">
+        <header class="shop__top">
+          <div class="shop__title">The Shop</div>
+          <button class="btn btn--icon" id="shopClose" value="cancel" aria-label="Close shop" type="submit">✕</button>
+        </header>
+
+        <div class="shop__sub">
+          Spend tokens on “features” that should have been your default rights.
+        </div>
+
+        <div class="shop__grid" id="shopGrid" aria-label="Shop items"></div>
+
+        <div class="shop__foot">
+          <div class="shop__hint">Pro tip: buying “Telemetry Opt‑Out” is like paying a ransom to yourself.</div>
+          <button class="btn" value="cancel" type="submit">Back to slots</button>
+        </div>
+      </form>
+    </dialog>
 
     <script src="./app.js" defer></script>
   </body>
