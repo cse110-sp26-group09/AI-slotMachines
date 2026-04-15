@@ -35,6 +35,7 @@ make a readme
 Roles of candidates:
 James: 1-5 (done)
 Daniel: 6-10 (done)
+<<<<<<< HEAD
 Aditya: 11-15
 <<<<<<< HEAD
 Jason: 16-20
@@ -43,6 +44,9 @@ Hieu: 26-30
 James: 31-35
 Waleed: 36-40
 =======
+=======
+Aditya: 11-15 (done)
+>>>>>>> 4811388a3dac1f22e1bccd07e1b1f55c7e603763
 Jason: 16-20 (done)
 Woosik: 21-25 (done)
 Hieu: 26-30 (done)

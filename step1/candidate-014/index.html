@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Token Tombola — The AI Slot Machine</title>
+    <meta
+      name="description"
+      content="A vanilla HTML/CSS/JS slot machine that satirizes AI token economies. Win tokens, lose tokens, and get rate-limited with style."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand" aria-label="Token Tombola">
+        <div class="brand__logo" aria-hidden="true">🤖</div>
+        <div class="brand__text">
+          <div class="brand__title">Token Tombola</div>
+          <div class="brand__subtitle">the AI slot machine economy you deserve</div>
+        </div>
+      </div>
+
+      <div class="hud" role="status" aria-live="polite">
+        <div class="hud__item">
+          <div class="hud__label">Balance</div>
+          <div class="hud__value">
+            <span id="balanceTokens">0</span> <span class="muted">tokens</span>
+          </div>
+        </div>
+        <div class="hud__item">
+          <div class="hud__label">Spin cost</div>
+          <div class="hud__value">
+            <span id="spinCost">0</span> <span class="muted">tokens</span>
+          </div>
+        </div>
+        <div class="hud__item">
+          <div class="hud__label">Economy</div>
+          <div class="hud__value">
+            <span id="inflation">stable-ish</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="machine" aria-label="Slot machine">
+        <div class="marquee" aria-hidden="true">
+          <div class="marquee__inner">
+            <span>WIN TOKENS</span>
+            <span>SPEND TOKENS</span>
+            <span>GET RATE-LIMITED</span>
+            <span>HALLUCINATE PROFIT</span>
+            <span>WIN TOKENS</span>
+            <span>SPEND TOKENS</span>
+            <span>GET RATE-LIMITED</span>
+            <span>HALLUCINATE PROFIT</span>
+          </div>
+        </div>
+
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" id="reel0" aria-label="Reel 1">
+            <div class="reel__symbol" data-reel-symbol aria-hidden="true">🪙</div>
+            <div class="reel__label" data-reel-label>Token</div>
+          </div>
+          <div class="reel" id="reel1" aria-label="Reel 2">
+            <div class="reel__symbol" data-reel-symbol aria-hidden="true">🪙</div>
+            <div class="reel__label" data-reel-label>Token</div>
+          </div>
+          <div class="reel" id="reel2" aria-label="Reel 3">
+            <div class="reel__symbol" data-reel-symbol aria-hidden="true">🪙</div>
+            <div class="reel__label" data-reel-label>Token</div>
+          </div>
+        </div>
+
+        <div class="controls" aria-label="Controls">
+          <button class="btn btn--primary" id="spinBtn" type="button">
+            Spin
+            <span class="btn__sub" id="spinHint">pay tokens, maybe win vibes</span>
+          </button>
+          <button class="btn" id="auto10Btn" type="button" title="Spin 10 times">
+            Auto ×10
+          </button>
+          <button class="btn btn--ghost" id="muteBtn" type="button" aria-pressed="false">
+            Sound: on
+          </button>
+        </div>
+
+        <div class="panel" aria-label="Result panel">
+          <div class="resultline">
+            <div class="resultline__tag" id="resultTag" aria-hidden="true">READY</div>
+            <div class="resultline__text" id="resultText">Insert tokens. Apply optimism.</div>
+          </div>
+          <div class="fineprint" id="finePrint">
+            Tip: triple <span class="chip">GPU</span> is a jackpot, triple
+            <span class="chip chip--bad">Hallucination</span> is… a learning opportunity.
+          </div>
+        </div>
+      </section>
+
+      <aside class="sidebar" aria-label="Token economy tools">
+        <section class="card">
+          <h2 class="card__title">Token Economy</h2>
+          <div class="card__body">
+            <div class="kpi">
+              <div class="kpi__label">Spins</div>
+              <div class="kpi__value" id="statSpins">0</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi__label">Wins</div>
+              <div class="kpi__value" id="statWins">0</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi__label">Best payout</div>
+              <div class="kpi__value" id="statBest">0</div>
+            </div>
+
+            <div class="actions">
+              <button class="btn" id="dailyBtn" type="button">Claim daily grant</button>
+              <button class="btn" id="vcBtn" type="button">Ask VC for runway</button>
+              <button class="btn btn--ghost" id="resetEconomyBtn" type="button">
+                Reboot economy
+              </button>
+            </div>
+            <p class="small muted" id="economyNote">
+              Everything is persisted in your browser via <code>localStorage</code>. The economy is fake; your
+              choices are real.
+            </p>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2 class="card__title">Brag (ethically optional)</h2>
+          <div class="card__body">
+            <p class="small muted">Generate a post that definitely wasn’t written by a bot.</p>
+            <div class="actions">
+              <button class="btn" id="copyBtn" type="button">Copy brag</button>
+              <button class="btn" id="shareBtn" type="button">Share</button>
+            </div>
+            <p class="small muted" id="shareNote"></p>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2 class="card__title">Accessibility</h2>
+          <div class="card__body">
+            <label class="toggle">
+              <input id="reducedMotionToggle" type="checkbox" />
+              <span>Reduce motion (off = system)</span>
+            </label>
+            <label class="toggle">
+              <input id="notificationsToggle" type="checkbox" />
+              <span>Allow notifications (for rate limits)</span>
+            </label>
+          </div>
+        </section>
+
+        <footer class="footer">
+          <div class="small muted">
+            Built with vanilla HTML/CSS/JS + platform APIs (Audio, Vibration, Notifications, Clipboard/Share).
+          </div>
+        </footer>
+      </aside>
+    </main>
+
+    <div class="sr-only" aria-live="assertive" id="liveAnnounce"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
