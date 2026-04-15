@@ -80,6 +80,27 @@ body{
   mix-blend-mode: overlay;
   opacity:.12;
 }
+.bg-canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:.8;
+  mix-blend-mode: screen;
+  filter: saturate(1.05) contrast(1.05);
+}
+
+body.mood-win .bg-glow{ opacity: 1.15; }
+body.mood-win .bg-grid{ opacity: .7; }
+body.mood-win .bg-prism{ opacity: .8; animation-duration: 6s; filter: blur(26px) saturate(1.15); }
+
+body.mood-jackpot .bg-glow{ opacity: 1.35; }
+body.mood-jackpot .bg-grid{ opacity: .85; }
+body.mood-jackpot .bg-prism{ opacity: .95; animation-duration: 3.6s; filter: blur(20px) saturate(1.25); }
+
+body.mood-lose .bg-glow{ opacity: .65; filter: blur(34px) saturate(.92); }
+body.mood-lose .bg-grid{ opacity: .35; }
+body.mood-lose .bg-prism{ opacity: .35; animation-duration: 18s; filter: blur(40px) saturate(.85); }
 
 .app{
   max-width: 1180px;
@@ -395,6 +416,66 @@ body.is-neon .brand__mark{
   z-index: 40;
   overflow: hidden;
 }
+.fx__canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:.95;
+  mix-blend-mode: screen;
+  filter: saturate(1.1);
+}
+.win-overlay{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  transform: translateZ(0);
+}
+.win-overlay.is-on{
+  animation: winOverlay 920ms var(--ease-out) both;
+}
+.win-overlay.is-jackpot{
+  animation: winOverlayJackpot 1250ms var(--ease-out) both;
+}
+@keyframes winOverlay{
+  0%{ opacity: 0; }
+  20%{ opacity: .85; }
+  40%{ opacity: .12; }
+  55%{ opacity: .75; }
+  100%{ opacity: 0; }
+}
+@keyframes winOverlayJackpot{
+  0%{ opacity: 0; transform: scale(.98); }
+  18%{ opacity: .95; transform: scale(1.01); }
+  40%{ opacity: .18; }
+  55%{ opacity: .88; }
+  75%{ opacity: .22; }
+  100%{ opacity: 0; transform: scale(1.02); }
+}
+.win-overlay::before,
+.win-overlay::after{
+  content:"";
+  position:absolute;
+  inset:-10%;
+  background:
+    radial-gradient(circle at 35% 35%, rgba(255,204,51,.22), rgba(255,204,51,0) 55%),
+    radial-gradient(circle at 65% 55%, rgba(40,242,194,.18), rgba(40,242,194,0) 55%),
+    radial-gradient(circle at 50% 50%, rgba(255,77,109,.14), rgba(0,0,0,0) 62%);
+  mix-blend-mode: screen;
+  filter: blur(22px);
+}
+.win-overlay::after{
+  background:
+    conic-gradient(from 180deg at 50% 50%,
+      rgba(255,204,51,.18),
+      rgba(40,242,194,.14),
+      rgba(255,77,109,.14),
+      rgba(69,107,196,.14),
+      rgba(255,204,51,.18)
+    );
+  opacity:.65;
+  filter: blur(34px);
+}
 .spark{
   position:absolute;
   left: var(--x);
@@ -445,6 +526,64 @@ body.is-neon .brand__mark{
   text-shadow: 0 18px 40px rgba(0,0,0,.55);
 }
 .banner__v span{ color: rgba(255,204,51,.98); }
+
+.ledger{
+  margin-top: 12px;
+  border-top: 1px solid rgba(255,255,255,.10);
+  padding-top: 12px;
+}
+.ledger__title{
+  font-weight: 950;
+  letter-spacing: .2px;
+  margin-bottom: 10px;
+}
+.ledger__grid{
+  display:grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+.ledger__item{
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  padding: 10px 10px 9px;
+}
+.ledger__k{
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing:.7px;
+  text-transform: uppercase;
+}
+.ledger__v{
+  margin-top: 2px;
+  font-weight: 950;
+  font-variant-numeric: tabular-nums;
+  display:flex;
+  gap:6px;
+  align-items:baseline;
+}
+.ledger__log{
+  list-style:none;
+  margin: 10px 0 0;
+  padding: 0;
+  display:grid;
+  gap: 6px;
+  max-height: 148px;
+  overflow:auto;
+  scrollbar-color: rgba(255,255,255,.20) rgba(0,0,0,.18);
+}
+.ledger__log li{
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+  padding: 8px 10px;
+  font-size: 12px;
+  color: rgba(255,255,255,.86);
+  line-height: 1.3;
+}
+.ledger__log .is-win{ color: rgba(51,226,138,.95); }
+.ledger__log .is-lose{ color: rgba(255,204,51,.95); }
+.ledger__log .is-bad{ color: rgba(255,77,109,.95); }
 @keyframes spark{
   0%{ transform: translate(-50%, -50%) scale(.8); opacity:1; }
   55%{ opacity: .98; }
@@ -591,6 +730,7 @@ body.is-reduced .machine__frame.is-jackpot{ animation:none; }
   .hud{ justify-content:flex-start; }
   .shop__grid{ grid-template-columns: 1fr; }
   .range--sm{ width: 120px; }
+  .ledger__grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (prefers-reduced-motion: reduce){

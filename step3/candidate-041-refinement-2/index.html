@@ -13,9 +13,13 @@
       <div class="bg-glow"></div>
       <div class="bg-prism"></div>
       <div class="bg-noise"></div>
+      <canvas class="bg-canvas" id="bgCanvas" aria-hidden="true"></canvas>
     </div>
 
-    <div class="fx" id="fxLayer" aria-hidden="true"></div>
+    <div class="fx" id="fxLayer" aria-hidden="true">
+      <canvas class="fx__canvas" id="fxCanvas" aria-hidden="true"></canvas>
+      <div class="win-overlay" id="winOverlay" aria-hidden="true"></div>
+    </div>
 
     <main class="app" id="app">
       <header class="topbar reveal" style="--d: 40ms">
@@ -138,6 +142,32 @@
           <div class="card">
             <div class="card__title">Payouts (3 of a kind • scales with bet)</div>
             <ul class="table" id="payTable"></ul>
+            <div class="ledger" aria-label="Win/loss log">
+              <div class="ledger__title">Ledger (We Remember Everything)</div>
+              <div class="ledger__grid">
+                <div class="ledger__item">
+                  <div class="ledger__k">Won</div>
+                  <div class="ledger__v"><span id="totalWon">0</span> <span class="unit">TOK</span></div>
+                </div>
+                <div class="ledger__item">
+                  <div class="ledger__k">Spent</div>
+                  <div class="ledger__v"><span id="totalSpent">0</span> <span class="unit">TOK</span></div>
+                </div>
+                <div class="ledger__item">
+                  <div class="ledger__k">Net</div>
+                  <div class="ledger__v"><span id="totalNet">0</span> <span class="unit">TOK</span></div>
+                </div>
+                <div class="ledger__item">
+                  <div class="ledger__k">W/L</div>
+                  <div class="ledger__v"><span id="wlCount">0/0</span></div>
+                </div>
+                <div class="ledger__item">
+                  <div class="ledger__k">Biggest</div>
+                  <div class="ledger__v"><span id="biggestWin">0</span> <span class="unit">TOK</span></div>
+                </div>
+              </div>
+              <ol class="ledger__log" id="ledgerLog" aria-label="Recent spins"></ol>
+            </div>
             <div class="card__note">
               Two of a kind pays a small “confidence bonus”. Hallucinations pay in vibes.
             </div>
