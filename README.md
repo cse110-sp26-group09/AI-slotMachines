@@ -26,7 +26,7 @@ To reduce context contamination between runs, we used `/clear` before each promp
 
 ```text
 AI-slotMachines/
-├── media/
+├── media/                      # Video to our presentation
 ├── prompts/                    # Original and refinement prompts
 ├── slides/                     # Presentation slides
 ├── step1/                      # 50 baseline candidates
