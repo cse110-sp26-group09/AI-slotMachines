@@ -8,7 +8,7 @@
 - Total tokens: 10.7m
 - Wall-clock time (s): 25 minutes 35 seconds
 - Tool-reported time (s): 25 minutes 35 seconds
-- Files produced:	app.js, index.html, styles.css. , Readme.md (folder)(4)
+- Files produced:	app.js, index.html, styles.css, Readme.md (4)
 - Lines of code: 	2400 total (index.html 216, styles.css 844, app.js 1900, README.md 16)
 - Runs in browser?:	Yes
 - App Quality Notes: Very nice UI, good spins and background, nice shop, wish it had better sounds
