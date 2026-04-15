@@ -9,7 +9,7 @@
 - Wall-clock time (s):	14m 30s
 - Tool-reported time (s): 14m 30s
 - Files produced:	app.js, index.html, README.md, styles.css. (4)
-- Lines of code: 	1599
+- Lines of code: 	2242
 - Runs in browser?:	Yes
-- App Quality Notes: App functions well and features such as settings, subtle animations, sound, and shop are implemented. UI has more interesting elements.
-- Code Quality Notes: Code looks reasonable and most of it is coherent.
+- App Quality Notes: App functions well and includes better sounds and screen flashing after each spin. Better animations according to prompt. Aura of lighting that follows cursor.
+- Code Quality Notes: Code looks reasonable and most of it is coherent. styles.css file is very long but that is reasonable given the extra effects.
