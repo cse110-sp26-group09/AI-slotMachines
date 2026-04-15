@@ -1,10 +1,10 @@
 ## Token Fortune — AI Slot Machine (Vanilla Web)
 
-A tiny slot machine app made with plain **HTML + CSS + JavaScript**.
+A slot machine web app made with plain **HTML + CSS + JavaScript**.
 
 - You **spend tokens** (bet + a satirical “prompt tax”) to spin
-- You **win tokens** via the payout table
-- If you go broke, you can **Raise Seed** (because of course you can)
+- You **win tokens** with big win animations, sound, and haptics
+- You can **shop** to spend tokens on cosmetics and small upgrades
 
 ### Run it
 
@@ -16,18 +16,19 @@ python3 -m http.server 8000
 
 Then open:
 
-- `http://localhost:8000/`
+- `http://localhost:8000/token-fortune/`
 
 ### Controls
 
 - Click **Spin** or press **Space**
-- Adjust bet with the slider or **↑/↓**
-- Toggle **Sound**, **Haptics**, and **Auto-spin**
-- **Share** copies a braggy message to the clipboard (with a fallback prompt)
+- Adjust bet with the slider, number input, quick chips, or **↑/↓**
+- **Hold Spin** to auto‑spin while held
+- Open **Settings** for sound/haptics/volume
 
 ### Files
 
-- `index.html` — UI
-- `styles.css` — styling/animation
-- `app.js` — game logic, localStorage, Web Audio, vibration
-- `sw.js` + `manifest.webmanifest` — offline/PWA bits
+- `token-fortune/index.html` — UI
+- `token-fortune/styles.css` — theme + animation
+- `token-fortune/app.js` — game logic, effects, localStorage, WebAudio, vibration
+- `token-fortune/sw.js` + `token-fortune/manifest.webmanifest` — offline/PWA bits
+

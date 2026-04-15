@@ -3,38 +3,46 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="dark light" />
+    <meta name="color-scheme" content="dark" />
     <meta
       name="description"
-      content="A vanilla-web slot machine that satirizes AI: spend tokens to spin, win tokens to keep prompting."
+      content="A vanilla-web slot machine that roasts AI: spend prompt tokens to spin, win compute credits to keep prompting."
     />
     <title>Token Fortune — AI Slot Machine</title>
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#0b0b16" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <canvas id="fxCanvas" aria-hidden="true"></canvas>
+
     <div class="app" id="app">
-      <header class="topbar">
+      <header class="topbar reveal" style="--d: 60ms">
         <div class="brand">
-          <div class="logo" aria-hidden="true">TF</div>
+          <div class="logo" aria-hidden="true">
+            <span class="logo-mark">TF</span>
+          </div>
           <div class="brand-text">
             <h1>Token Fortune</h1>
             <p class="subtitle">Spend tokens. Win tokens. Blame the model.</p>
           </div>
         </div>
+
         <div class="top-actions">
-          <button class="ghost" id="shareBtn" type="button" title="Copy a share message">
-            Share
+          <button class="iconbtn" id="shopBtn" type="button" title="Shop (spend tokens)">
+            <span aria-hidden="true">🛒</span><span class="sr">Shop</span>
           </button>
-          <button class="ghost" id="resetBtn" type="button" title="Reset balance and settings">
-            Reset
+          <button class="iconbtn" id="settingsBtn" type="button" title="Settings">
+            <span aria-hidden="true">⚙️</span><span class="sr">Settings</span>
           </button>
+          <button class="ghost" id="shareBtn" type="button" title="Copy a share message">Share</button>
+          <button class="ghost" id="resetBtn" type="button" title="Reset balance and settings">Reset</button>
         </div>
       </header>
 
       <main class="grid">
-        <section class="panel stats" aria-label="Stats">
+        <section class="panel stats reveal" aria-label="Stats" style="--d: 120ms">
           <div class="stat">
             <div class="label">Balance</div>
             <div class="value">
@@ -59,69 +67,89 @@
           </div>
         </section>
 
-        <section class="panel machine" aria-label="Slot machine">
+        <section class="panel machine reveal" aria-label="Slot machine" style="--d: 180ms">
           <div class="marquee" aria-hidden="true">
             <div class="marquee-track">
               <span>ALIGNMENT SOLD SEPARATELY</span>
               <span>NO REFUNDS FOR HALLUCINATIONS</span>
-              <span>GPU TIME IS NON-TRANSFERABLE</span>
+              <span>GPU TIME IS NON‑TRANSFERABLE</span>
               <span>PROMPT ENGINEERING IS A LIFESTYLE</span>
               <span>ALIGNMENT SOLD SEPARATELY</span>
               <span>NO REFUNDS FOR HALLUCINATIONS</span>
-              <span>GPU TIME IS NON-TRANSFERABLE</span>
+              <span>GPU TIME IS NON‑TRANSFERABLE</span>
               <span>PROMPT ENGINEERING IS A LIFESTYLE</span>
             </div>
           </div>
 
           <div class="reels" role="group" aria-label="Reels">
             <div class="reel" data-reel="0" aria-label="Reel 1">
-              <div class="reel-face" id="reel0">🤖</div>
+              <div class="reel-window">
+                <div class="reel-strip" id="reel0" aria-hidden="true"></div>
+              </div>
               <div class="reel-glass" aria-hidden="true"></div>
             </div>
             <div class="reel" data-reel="1" aria-label="Reel 2">
-              <div class="reel-face" id="reel1">🪙</div>
+              <div class="reel-window">
+                <div class="reel-strip" id="reel1" aria-hidden="true"></div>
+              </div>
               <div class="reel-glass" aria-hidden="true"></div>
             </div>
             <div class="reel" data-reel="2" aria-label="Reel 3">
-              <div class="reel-face" id="reel2">⚡️</div>
+              <div class="reel-window">
+                <div class="reel-strip" id="reel2" aria-hidden="true"></div>
+              </div>
               <div class="reel-glass" aria-hidden="true"></div>
             </div>
           </div>
 
           <div class="controls">
             <div class="bet">
-              <label for="betRange">Bet</label>
+              <div class="bet-head">
+                <label for="betRange">Bet</label>
+                <div class="bet-inline">
+                  <input
+                    id="betNumber"
+                    type="number"
+                    inputmode="numeric"
+                    min="1"
+                    step="1"
+                    value="25"
+                    aria-label="Bet amount"
+                  />
+                  <span class="bet-unit">tokens</span>
+                </div>
+              </div>
               <input id="betRange" type="range" min="1" max="250" step="1" value="25" />
-              <div class="bet-hint">Tip: spacebar to spin • ↑/↓ bet</div>
+              <div class="chips" aria-label="Quick bet">
+                <button class="chip" data-chip="5" type="button">+5</button>
+                <button class="chip" data-chip="25" type="button">+25</button>
+                <button class="chip" data-chip="100" type="button">+100</button>
+                <button class="chip" data-chip="max" type="button">Max</button>
+              </div>
+              <div class="bet-hint">Tip: spacebar to spin • ↑/↓ bet • hold “Spin” to auto</div>
             </div>
+
             <div class="buttons">
-              <button class="primary" id="spinBtn" type="button">Spin (Space)</button>
+              <button class="primary" id="spinBtn" type="button">Spin</button>
               <button class="secondary" id="fundBtn" type="button" title="Inject capital, dilute dignity">
                 Raise Seed
               </button>
             </div>
           </div>
 
-          <div class="toggles" aria-label="Settings">
-            <label class="toggle">
-              <input id="soundToggle" type="checkbox" checked />
-              <span>Sound</span>
-            </label>
-            <label class="toggle">
-              <input id="hapticsToggle" type="checkbox" checked />
-              <span>Haptics</span>
-            </label>
-            <label class="toggle">
-              <input id="autoSpinToggle" type="checkbox" />
-              <span>Auto-spin</span>
-            </label>
-          </div>
-
           <div class="statusline" id="statusline" aria-live="polite"></div>
+
+          <div class="win-banner" id="winBanner" aria-live="polite" aria-atomic="true">
+            <div class="win-title" id="winTitle">WIN</div>
+            <div class="win-sub" id="winSub">+0 tokens</div>
+          </div>
         </section>
 
-        <section class="panel paytable" aria-label="Pay table">
-          <h2>Pay Table</h2>
+        <section class="panel paytable reveal" aria-label="Pay table" style="--d: 240ms">
+          <div class="panel-head">
+            <h2>Pay Table</h2>
+            <div class="pill" id="luckPill" hidden>Luck: +0%</div>
+          </div>
           <div class="table" role="table" aria-label="Payouts">
             <div class="row header" role="row">
               <div class="cell" role="columnheader">Combo</div>
@@ -146,7 +174,7 @@
             <div class="row" role="row">
               <div class="cell" role="cell">🧪🧪🧪</div>
               <div class="cell" role="cell">×6</div>
-              <div class="cell" role="cell">Fine-tune complete (it learned sarcasm)</div>
+              <div class="cell" role="cell">Fine‑tune complete (it learned sarcasm)</div>
             </div>
             <div class="row" role="row">
               <div class="cell" role="cell">✨✨✨</div>
@@ -174,18 +202,82 @@
           </p>
         </section>
 
-        <section class="panel log" aria-label="Event log">
+        <section class="panel log reveal" aria-label="Event log" style="--d: 300ms">
           <h2>Model Output</h2>
           <div class="logbox" id="logbox" role="log" aria-live="polite" aria-relevant="additions"></div>
         </section>
       </main>
 
-      <footer class="footer">
-        <p>
-          Vanilla web tech only • Works offline after first load • Built to roast AI (lovingly)
-        </p>
+      <footer class="footer reveal" style="--d: 360ms">
+        <p>Vanilla web only • Works offline after first load • Built to roast AI (lovingly)</p>
       </footer>
     </div>
+
+    <dialog class="dialog" id="settingsDialog" aria-label="Settings">
+      <form method="dialog" class="dialog-card">
+        <header class="dialog-head">
+          <h3>Settings</h3>
+          <button class="iconbtn" value="close" aria-label="Close settings" type="submit">✕</button>
+        </header>
+
+        <div class="dialog-body">
+          <div class="field">
+            <label class="toggle">
+              <input id="soundToggle" type="checkbox" checked />
+              <span>Sound</span>
+            </label>
+            <label class="toggle">
+              <input id="hapticsToggle" type="checkbox" checked />
+              <span>Haptics</span>
+            </label>
+          </div>
+
+          <div class="field">
+            <label for="volumeRange">Volume</label>
+            <input id="volumeRange" type="range" min="0" max="100" step="1" value="70" />
+            <div class="help">WebAudio only. Some browsers require a click before sound plays.</div>
+          </div>
+
+          <div class="field">
+            <label class="toggle">
+              <input id="reelTicksToggle" type="checkbox" checked />
+              <span>Reel ticks</span>
+            </label>
+            <label class="toggle">
+              <input id="reduceFlashToggle" type="checkbox" />
+              <span>Reduce flash</span>
+            </label>
+          </div>
+        </div>
+
+        <footer class="dialog-foot">
+          <button class="ghost" id="testSoundBtn" type="button">Test sound</button>
+          <button class="primary" value="close" type="submit">Done</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog class="dialog" id="shopDialog" aria-label="Shop">
+      <form method="dialog" class="dialog-card">
+        <header class="dialog-head">
+          <h3>Shop</h3>
+          <button class="iconbtn" value="close" aria-label="Close shop" type="submit">✕</button>
+        </header>
+
+        <div class="dialog-body">
+          <p class="shop-lede">
+            Spend tokens on cosmetics and “totally scientific” upgrades.
+            <span class="muted">(Not financial advice.)</span>
+          </p>
+
+          <div class="shop-grid" id="shopGrid" aria-label="Shop items"></div>
+        </div>
+
+        <footer class="dialog-foot">
+          <button class="primary" value="close" type="submit">Back to machine</button>
+        </footer>
+      </form>
+    </dialog>
 
     <script src="./app.js" defer></script>
   </body>

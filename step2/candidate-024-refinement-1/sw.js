@@ -1,5 +1,12 @@
-const CACHE_NAME = "token-fortune-static-v1";
-const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.webmanifest", "./icons/icon.svg"];
+const CACHE_NAME = "token-fortune-static-v2";
+const ASSETS = [
+  "./",
+  "./index.html",
+  "./styles.css",
+  "./app.js",
+  "./manifest.webmanifest",
+  "./icons/icon.svg",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -29,16 +36,14 @@ self.addEventListener("fetch", (event) => {
       if (cached) return cached;
       try {
         const fresh = await fetch(req);
-        // Best-effort runtime caching for same-origin assets.
         if (new URL(req.url).origin === self.location.origin) {
           const cache = await caches.open(CACHE_NAME);
           cache.put(req, fresh.clone()).catch(() => {});
         }
         return fresh;
       } catch {
-        // Offline fallback: index for navigation.
         const url = new URL(req.url);
-        if (url.origin === self.location.origin && (req.mode === "navigate" || url.pathname.endsWith("/"))) {
+        if (url.origin === self.location.origin && req.mode === "navigate") {
           const fallback = await caches.match("./index.html");
           if (fallback) return fallback;
         }
