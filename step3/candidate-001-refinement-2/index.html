@@ -80,6 +80,40 @@
             <p id="message" class="message" aria-live="polite">
               Insert tokens to begin. (We already did. You’re welcome.)
             </p>
+            <div class="ledger" aria-label="Lifetime wins and losses">
+              <div class="ledgerRow">
+                <span class="ledgerLabel">Spins</span>
+                <span id="totalSpins" class="ledgerValue">0</span>
+              </div>
+              <div class="ledgerRow">
+                <span class="ledgerLabel">Wagered</span>
+                <span id="totalWagered" class="ledgerValue">0</span>
+              </div>
+              <div class="ledgerRow">
+                <span class="ledgerLabel">Won (net)</span>
+                <span id="totalWon" class="ledgerValue">0</span>
+              </div>
+              <div class="ledgerRow">
+                <span class="ledgerLabel">Lost (net)</span>
+                <span id="totalLost" class="ledgerValue">0</span>
+              </div>
+              <div class="ledgerRow">
+                <span class="ledgerLabel">Net</span>
+                <span id="netTotal" class="ledgerValue">0</span>
+              </div>
+              <div class="ledgerRow">
+                <span class="ledgerLabel">Biggest win</span>
+                <span id="biggestWin" class="ledgerValue">0</span>
+              </div>
+              <div class="ledgerRow">
+                <span class="ledgerLabel">Biggest loss</span>
+                <span id="biggestLoss" class="ledgerValue">0</span>
+              </div>
+              <div class="ledgerRow">
+                <span class="ledgerLabel">Near-misses</span>
+                <span id="nearMisses" class="ledgerValue">0</span>
+              </div>
+            </div>
             <div class="logWrap" aria-label="Activity log">
               <ol id="log" class="log" aria-live="polite"></ol>
             </div>
