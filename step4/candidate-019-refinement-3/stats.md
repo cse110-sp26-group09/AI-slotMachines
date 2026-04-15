@@ -3,9 +3,9 @@
 - Run ID: candidate-019
 - Timestamp: 9:54 (finish time)
 - Model + version string	GPT 5.2 medium
-- Input tokens:	3.84m
-- Output tokens: 38.7k
-- Total tokens: 3.88m
+- Input tokens:	10.2m
+- Output tokens: 90.8k
+- Total tokens: 10.3m
 - Wall-clock time (s):	21m 56s
 - Tool-reported time (s): 21m 56s
 - Files produced:	app.js, index.html, README.md, styles.css. (4)
