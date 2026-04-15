@@ -1,13 +1,13 @@
 ## Field	Notes
 
 - Run ID: candidate-019
-- Timestamp: 7:47 (finish time)
+- Timestamp: 9:02 (finish time)
 - Model + version string	GPT 5.2 medium
-- Input tokens:	1.91m
-- Output tokens: 35.4k
-- Total tokens: 1.94m
-- Wall-clock time (s):	12m 06s
-- Tool-reported time (s): 12m 06s
+- Input tokens:	3.84m
+- Output tokens: 38.7k
+- Total tokens: 3.88m
+- Wall-clock time (s):	14m 30s
+- Tool-reported time (s): 14m 30s
 - Files produced:	app.js, index.html, README.md, styles.css. (4)
 - Lines of code: 	1599
 - Runs in browser?:	Yes

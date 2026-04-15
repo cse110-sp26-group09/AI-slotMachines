@@ -34,6 +34,13 @@
     bigWin: document.getElementById("bigWin"),
     bigWinTitle: document.getElementById("bigWinTitle"),
     bigWinSub: document.getElementById("bigWinSub"),
+
+    totalSpins: document.getElementById("totalSpins"),
+    winLoss: document.getElementById("winLoss"),
+    totalWon: document.getElementById("totalWon"),
+    totalLost: document.getElementById("totalLost"),
+    bestWin: document.getElementById("bestWin"),
+    history: document.getElementById("history"),
   };
 
   const STORAGE_KEY = "aiSlots.v2";
@@ -107,12 +114,18 @@
     },
   ];
 
-  /** @type {{tokens:number, streak:number, auto:boolean, bestWin:number, buffs:{payoutBoostSpins:number, refundChanceSpins:number, bugShield:number, luckSpins:number, bugTaxHalfSpins:number}, settings:{soundOn:boolean, volume:number, haptics:boolean, reducedFx:boolean, speed:number}, lastDailyClaimISO:string|null}} */
+  /** @type {{tokens:number, streak:number, auto:boolean, bestWin:number, totalSpins:number, winSpins:number, lossSpins:number, totalWon:number, totalLost:number, history:{ts:number, bet:number, payout:number, refund:boolean, net:number, faces:string, headline:string, tier:string}[], buffs:{payoutBoostSpins:number, refundChanceSpins:number, bugShield:number, luckSpins:number, bugTaxHalfSpins:number}, settings:{soundOn:boolean, volume:number, haptics:boolean, reducedFx:boolean, speed:number}, lastDailyClaimISO:string|null}} */
   let state = {
     tokens: START_TOKENS,
     streak: 0,
     auto: false,
     bestWin: 0,
+    totalSpins: 0,
+    winSpins: 0,
+    lossSpins: 0,
+    totalWon: 0,
+    totalLost: 0,
+    history: [],
     buffs: {
       payoutBoostSpins: 0,
       refundChanceSpins: 0,
@@ -134,6 +147,17 @@
   let autoTimer = null;
   let audio = null;
   let fx = null;
+  let bg = {
+    mx: 0.5,
+    my: 0.5,
+    mood: 0,
+    hue: 0,
+    raf: 0,
+    lastTs: 0,
+    ptrRaf: 0,
+    nextMx: 0.5,
+    nextMy: 0.5,
+  };
 
   function todayISO() {
     const now = new Date();
@@ -154,6 +178,92 @@
     return Math.max(min, Math.min(max, value));
   }
 
+  function syncBgVars() {
+    document.documentElement.style.setProperty("--mx", String(bg.mx));
+    document.documentElement.style.setProperty("--my", String(bg.my));
+    document.documentElement.style.setProperty("--mood", String(bg.mood));
+    document.documentElement.style.setProperty("--hue", String(bg.hue));
+
+    document.body.classList.toggle("moodWin", bg.mood > 0.06);
+    document.body.classList.toggle("moodLoss", bg.mood < -0.06);
+  }
+
+  function kickBg() {
+    if (bg.raf) return;
+    bg.lastTs = performance.now();
+    bg.raf = requestAnimationFrame(tickBg);
+  }
+
+  function tickBg(ts) {
+    bg.raf = 0;
+    const dt = Math.max(0, ts - bg.lastTs);
+    bg.lastTs = ts;
+    const decay = Math.pow(0.0008, dt / 1600);
+    bg.mood *= decay;
+    if (Math.abs(bg.mood) < 0.004) bg.mood = 0;
+    syncBgVars();
+    if (bg.mood !== 0) bg.raf = requestAnimationFrame(tickBg);
+  }
+
+  function pulseBg({ moodDelta = 0, hueDelta = 0, nearMiss = false } = {}) {
+    bg.mood = clamp(bg.mood + moodDelta, -1, 1);
+    bg.hue = ((bg.hue + hueDelta) % 360 + 360) % 360;
+    syncBgVars();
+    kickBg();
+    if (nearMiss) {
+      document.body.classList.add("nearMiss");
+      setTimeout(() => document.body.classList.remove("nearMiss"), 520);
+    }
+  }
+
+  function flashScreen(tier) {
+    if (state.settings.reducedFx) return;
+    const cls =
+      tier === "jackpot" ? "flashJackpot" : tier === "mega" || tier === "big" ? "flashMega" : tier === "win" ? "flashWin" : null;
+    if (!cls) return;
+    document.body.classList.add(cls);
+    setTimeout(() => document.body.classList.remove(cls), tier === "jackpot" ? 1320 : tier === "mega" || tier === "big" ? 1020 : 820);
+  }
+
+  function wireBackground() {
+    const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reducedMotion) {
+      window.addEventListener(
+        "pointermove",
+        (ev) => {
+          bg.nextMx = clamp(ev.clientX / Math.max(1, window.innerWidth), 0, 1);
+          bg.nextMy = clamp(ev.clientY / Math.max(1, window.innerHeight), 0, 1);
+          if (bg.ptrRaf) return;
+          bg.ptrRaf = requestAnimationFrame(() => {
+            bg.ptrRaf = 0;
+            bg.mx = bg.nextMx;
+            bg.my = bg.nextMy;
+            syncBgVars();
+          });
+        },
+        { passive: true },
+      );
+    }
+
+    window.addEventListener(
+      "pointerdown",
+      (ev) => {
+        if (state.settings.reducedFx) return;
+        if (!fx) return;
+        const x = clamp(ev.clientX, 0, window.innerWidth);
+        const y = clamp(ev.clientY, 0, window.innerHeight);
+        fx.burst({
+          x,
+          y,
+          count: 14 + Math.round(Math.abs(bg.mood) * 18),
+          power: 4.2 + Math.abs(bg.mood) * 2.2,
+          colors: ["rgba(0,229,255,0.85)", "rgba(255,43,214,0.82)", "rgba(125,255,139,0.78)", "rgba(255,200,87,0.80)"],
+        });
+      },
+      { passive: true },
+    );
+  }
+
   function load() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -165,6 +275,38 @@
       if (typeof parsed.streak === "number") state.streak = clampInt(parsed.streak, 0, 999999);
       if (typeof parsed.auto === "boolean") state.auto = parsed.auto;
       if (typeof parsed.bestWin === "number") state.bestWin = clampInt(parsed.bestWin, 0, 999999);
+      if (typeof parsed.totalSpins === "number") state.totalSpins = clampInt(parsed.totalSpins, 0, 99999999);
+      if (typeof parsed.winSpins === "number") state.winSpins = clampInt(parsed.winSpins, 0, 99999999);
+      if (typeof parsed.lossSpins === "number") state.lossSpins = clampInt(parsed.lossSpins, 0, 99999999);
+      if (typeof parsed.totalWon === "number") state.totalWon = clampInt(parsed.totalWon, 0, 999999999);
+      if (typeof parsed.totalLost === "number") state.totalLost = clampInt(parsed.totalLost, 0, 999999999);
+
+      if (Array.isArray(parsed.history)) {
+        const next = [];
+        for (const item of parsed.history) {
+          if (!item || typeof item !== "object") continue;
+          const ts = Number(item.ts);
+          const bet = Number(item.bet);
+          const payout = Number(item.payout);
+          const net = Number(item.net);
+          const refund = Boolean(item.refund);
+          const faces = typeof item.faces === "string" ? item.faces : "";
+          const headline = typeof item.headline === "string" ? item.headline : "";
+          const tier = typeof item.tier === "string" ? item.tier : "";
+          if (!Number.isFinite(ts) || !Number.isFinite(bet) || !Number.isFinite(payout) || !Number.isFinite(net)) continue;
+          next.push({
+            ts: clampInt(ts, 0, 9999999999999),
+            bet: clampInt(bet, 1, 999),
+            payout: clampInt(payout, -999999, 999999),
+            refund,
+            net: clampInt(net, -999999, 999999),
+            faces,
+            headline,
+            tier,
+          });
+        }
+        state.history = next.slice(-28);
+      }
 
       if (parsed.buffs && typeof parsed.buffs === "object") {
         state.buffs.payoutBoostSpins = clampInt(parsed.buffs.payoutBoostSpins ?? 0, 0, 999);
@@ -211,8 +353,27 @@
       const ctx = new AudioCtx();
       const master = ctx.createGain();
       master.gain.value = state.settings.volume * 0.35;
-      master.connect(ctx.destination);
-      audio = { ctx, master };
+      const comp = ctx.createDynamicsCompressor();
+      comp.threshold.value = -20;
+      comp.knee.value = 22;
+      comp.ratio.value = 10;
+      comp.attack.value = 0.005;
+      comp.release.value = 0.16;
+      master.connect(comp);
+      comp.connect(ctx.destination);
+
+      const noiseSeconds = 1;
+      const noiseLen = Math.max(1, Math.floor(ctx.sampleRate * noiseSeconds));
+      const noiseBuf = ctx.createBuffer(1, noiseLen, ctx.sampleRate);
+      const data = noiseBuf.getChannelData(0);
+      let last = 0;
+      for (let i = 0; i < noiseLen; i++) {
+        const white = Math.random() * 2 - 1;
+        last = last * 0.92 + white * 0.08;
+        data[i] = last;
+      }
+
+      audio = { ctx, master, noiseBuf };
     } catch {
       audio = null;
     }
@@ -238,26 +399,182 @@
     return state.settings.soundOn && state.settings.volume > 0.001;
   }
 
-  function beep({ type = "sine", freq = 440, ms = 80, gain = 0.35, sweepTo = null } = {}) {
+  function beep({ type = "sine", freq = 440, ms = 80, gain = 0.35, sweepTo = null, at = 0, pan = 0 } = {}) {
     if (!audio || !sfxOk()) return;
     const { ctx, master } = audio;
     const o = ctx.createOscillator();
     const g = ctx.createGain();
+    const p = typeof ctx.createStereoPanner === "function" ? ctx.createStereoPanner() : null;
     o.type = type;
     o.frequency.value = freq;
     g.gain.value = 0.0001;
     o.connect(g);
-    g.connect(master);
-    const now = ctx.currentTime;
-    g.gain.setValueAtTime(0.0001, now);
-    g.gain.exponentialRampToValueAtTime(Math.max(0.0001, gain), now + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001, now + ms / 1000);
-    if (sweepTo && Number.isFinite(sweepTo)) {
-      o.frequency.setValueAtTime(freq, now);
-      o.frequency.exponentialRampToValueAtTime(sweepTo, now + ms / 1000);
+    if (p) {
+      p.pan.value = clamp(Number(pan), -1, 1);
+      g.connect(p);
+      p.connect(master);
+    } else {
+      g.connect(master);
     }
-    o.start(now);
-    o.stop(now + ms / 1000 + 0.02);
+    const now = ctx.currentTime;
+    const t0 = now + Math.max(0, Number(at) || 0);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0001, gain), t0 + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + ms / 1000);
+    if (sweepTo && Number.isFinite(sweepTo)) {
+      o.frequency.setValueAtTime(freq, t0);
+      o.frequency.exponentialRampToValueAtTime(sweepTo, t0 + ms / 1000);
+    }
+    o.start(t0);
+    o.stop(t0 + ms / 1000 + 0.03);
+  }
+
+  function noise({
+    ms = 90,
+    gain = 0.22,
+    at = 0,
+    pan = 0,
+    filterFrom = 1200,
+    filterTo = 260,
+    q = 0.8,
+    hp = 50,
+  } = {}) {
+    if (!audio || !sfxOk()) return;
+    const { ctx, master, noiseBuf } = audio;
+    if (!noiseBuf) return;
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuf;
+    src.loop = true;
+    const g = ctx.createGain();
+    const lp = ctx.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.Q.value = clamp(Number(q), 0.0001, 24);
+    const hpF = ctx.createBiquadFilter();
+    hpF.type = "highpass";
+    hpF.frequency.value = clamp(Number(hp), 0, 12000);
+    const p = typeof ctx.createStereoPanner === "function" ? ctx.createStereoPanner() : null;
+
+    g.gain.value = 0.0001;
+    src.connect(hpF);
+    hpF.connect(lp);
+    lp.connect(g);
+    if (p) {
+      p.pan.value = clamp(Number(pan), -1, 1);
+      g.connect(p);
+      p.connect(master);
+    } else {
+      g.connect(master);
+    }
+
+    const now = ctx.currentTime;
+    const t0 = now + Math.max(0, Number(at) || 0);
+    const dur = Math.max(0.02, ms / 1000);
+
+    lp.frequency.setValueAtTime(Math.max(30, Number(filterFrom) || 1200), t0);
+    lp.frequency.exponentialRampToValueAtTime(Math.max(30, Number(filterTo) || 260), t0 + dur);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0001, gain), t0 + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+
+    src.start(t0);
+    src.stop(t0 + dur + 0.03);
+  }
+
+  function panForReel(i) {
+    if (i === 0) return -0.25;
+    if (i === 2) return 0.25;
+    return 0;
+  }
+
+  function playSpinStartSfx() {
+    noise({ ms: 150, gain: 0.12, filterFrom: 2200, filterTo: 420, q: 0.8 });
+    beep({ type: "square", freq: 180, ms: 60, gain: 0.10, sweepTo: 260 });
+  }
+
+  function playIconStopSfx(symbolKey, reelIndex) {
+    const pan = panForReel(reelIndex);
+    switch (symbolKey) {
+      case "coin":
+        beep({ type: "triangle", freq: 1040, ms: 70, gain: 0.20, sweepTo: 720, pan });
+        beep({ type: "sine", freq: 1560, ms: 35, gain: 0.08, at: 0.02, pan });
+        return;
+      case "bot":
+        beep({ type: "square", freq: 260, ms: 55, gain: 0.14, sweepTo: 520, pan });
+        return;
+      case "brain":
+        beep({ type: "sine", freq: 420, ms: 55, gain: 0.13, sweepTo: 740, pan });
+        beep({ type: "sine", freq: 740, ms: 40, gain: 0.09, at: 0.03, pan });
+        return;
+      case "fire":
+        noise({ ms: 110, gain: 0.12, filterFrom: 1600, filterTo: 320, pan, hp: 120 });
+        beep({ type: "sawtooth", freq: 210, ms: 85, gain: 0.12, sweepTo: 110, pan });
+        return;
+      case "docs":
+        noise({ ms: 70, gain: 0.10, filterFrom: 1000, filterTo: 240, pan, q: 1.1, hp: 90 });
+        beep({ type: "square", freq: 480, ms: 55, gain: 0.10, sweepTo: 404, pan });
+        return;
+      case "bug":
+        noise({ ms: 90, gain: 0.10, filterFrom: 520, filterTo: 180, pan, q: 0.6, hp: 60 });
+        beep({ type: "sawtooth", freq: 120, ms: 120, gain: 0.11, sweepTo: 78, pan });
+        return;
+      case "gpu":
+        beep({ type: "square", freq: 220, ms: 40, gain: 0.11, sweepTo: 880, pan });
+        beep({ type: "square", freq: 880, ms: 35, gain: 0.08, at: 0.03, pan });
+        return;
+      case "chart":
+        beep({ type: "triangle", freq: 330, ms: 45, gain: 0.12, sweepTo: 660, pan });
+        beep({ type: "triangle", freq: 660, ms: 45, gain: 0.10, at: 0.03, sweepTo: 990, pan });
+        return;
+      default:
+        beep({ type: "square", freq: 380, ms: 32, gain: 0.08, sweepTo: 260, pan });
+    }
+  }
+
+  function playOutcomeSfx(tier, opts = {}) {
+    const { nearMiss = false } = opts;
+    if (nearMiss) {
+      noise({ ms: 120, gain: 0.12, filterFrom: 2600, filterTo: 300, q: 1.2, hp: 140 });
+      beep({ type: "square", freq: 740, ms: 55, gain: 0.12, sweepTo: 180 });
+      beep({ type: "square", freq: 180, ms: 65, gain: 0.12, at: 0.06, sweepTo: 90 });
+      return;
+    }
+
+    if (tier === "win") {
+      beep({ type: "triangle", freq: 440, ms: 90, gain: 0.18, sweepTo: 660 });
+      beep({ type: "triangle", freq: 550, ms: 120, gain: 0.14, at: 0.02, sweepTo: 880 });
+      return;
+    }
+    if (tier === "big") {
+      beep({ type: "triangle", freq: 440, ms: 120, gain: 0.20, sweepTo: 880 });
+      beep({ type: "triangle", freq: 660, ms: 140, gain: 0.14, at: 0.03, sweepTo: 1320 });
+      noise({ ms: 110, gain: 0.10, at: 0.02, filterFrom: 2400, filterTo: 900, hp: 180 });
+      return;
+    }
+    if (tier === "mega") {
+      beep({ type: "triangle", freq: 520, ms: 140, gain: 0.22, sweepTo: 1040 });
+      beep({ type: "triangle", freq: 780, ms: 160, gain: 0.16, at: 0.03, sweepTo: 1560 });
+      beep({ type: "sine", freq: 1040, ms: 200, gain: 0.10, at: 0.06, sweepTo: 2080 });
+      noise({ ms: 160, gain: 0.12, at: 0.03, filterFrom: 3200, filterTo: 1100, hp: 220 });
+      return;
+    }
+    if (tier === "jackpot") {
+      beep({ type: "triangle", freq: 520, ms: 160, gain: 0.25, sweepTo: 1560 });
+      beep({ type: "triangle", freq: 780, ms: 210, gain: 0.18, at: 0.03, sweepTo: 2340 });
+      beep({ type: "triangle", freq: 1040, ms: 260, gain: 0.12, at: 0.06, sweepTo: 3120 });
+      noise({ ms: 240, gain: 0.14, at: 0.04, filterFrom: 3600, filterTo: 1200, hp: 260 });
+      for (let i = 0; i < 4; i++) {
+        beep({ type: "sine", freq: 1560 + i * 90, ms: 55, gain: 0.07, at: 0.12 + i * 0.07 });
+      }
+      return;
+    }
+    if (tier === "loss") {
+      noise({ ms: 140, gain: 0.10, filterFrom: 520, filterTo: 180, q: 0.7, hp: 70 });
+      beep({ type: "sawtooth", freq: 220, ms: 160, gain: 0.15, sweepTo: 120 });
+      beep({ type: "sawtooth", freq: 150, ms: 200, gain: 0.10, at: 0.08, sweepTo: 90 });
+      return;
+    }
+    // none
+    beep({ type: "square", freq: 260, ms: 70, gain: 0.14, sweepTo: 240 });
   }
 
   function vibrate(pattern) {
@@ -467,17 +784,79 @@
     return symbolKeys.map((k) => SYMBOLS.find((s) => s.key === k)?.face ?? k).join(" ");
   }
 
-  function spinReel(reelEl, finalFace, durationMs, onStop) {
+  function pad2(n) {
+    return String(n).padStart(2, "0");
+  }
+
+  function formatStamp(ts) {
+    const d = new Date(ts);
+    return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+  }
+
+  function renderHistory() {
+    if (!els.history) return;
+    els.history.innerHTML = "";
+    if (!state.history || state.history.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "historyItem";
+      empty.innerHTML = `<span class="historyStamp">—</span><span class="historyMsg">No spins logged yet. Feed the model some tokens.</span><span class="historyDelta"> </span>`;
+      els.history.appendChild(empty);
+      return;
+    }
+
+    const frag = document.createDocumentFragment();
+    const rows = [...state.history].slice(-24).reverse();
+    for (const h of rows) {
+      const row = document.createElement("div");
+      const tone = h.net > 0 ? "good" : h.net < 0 ? "bad" : "";
+      row.className = `historyItem ${tone}`.trim();
+
+      const stamp = document.createElement("span");
+      stamp.className = "historyStamp";
+      stamp.textContent = formatStamp(h.ts);
+
+      const msg = document.createElement("span");
+      msg.className = "historyMsg";
+      const refundTag = h.refund ? " (refund)" : "";
+      msg.textContent = `${h.faces} — bet ${h.bet} 🪙 — ${h.headline}${refundTag}`;
+
+      const delta = document.createElement("span");
+      delta.className = "historyDelta";
+      delta.textContent = h.net > 0 ? `+${h.net} 🪙` : h.net < 0 ? `−${Math.abs(h.net)} 🪙` : "±0";
+
+      row.appendChild(stamp);
+      row.appendChild(msg);
+      row.appendChild(delta);
+      frag.appendChild(row);
+    }
+    els.history.appendChild(frag);
+  }
+
+  function spinReel(reelEl, finalFace, durationMs, onStop, opts = {}) {
     const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const totalMs = reduced ? Math.min(220, durationMs) : durationMs;
 
     reelEl.classList.add("spinning");
     reelEl.classList.remove("win", "lose", "pop");
 
-    const intervalMs = reduced ? 60 : 46;
     const start = performance.now();
+    const minDelay = reduced ? 65 : 26;
+    const maxDelay = reduced ? 65 : 145;
+    const nearMissFace = typeof opts.nearMissFace === "string" ? opts.nearMissFace : null;
+    const nearStartMs = Number.isFinite(opts.nearMissStartMs) ? Number(opts.nearMissStartMs) : totalMs * 0.84;
+    const nearEndMs = Number.isFinite(opts.nearMissEndMs) ? Number(opts.nearMissEndMs) : totalMs * 0.93;
+
+    function easeOutCubic(x) {
+      const t = clamp(x, 0, 1);
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
 
     return new Promise((resolve) => {
+      let lastFace = "";
       const tick = () => {
         const now = performance.now();
         const t = now - start;
@@ -490,8 +869,22 @@
           resolve();
           return;
         }
-        setReelFace(reelEl, SYMBOLS[(Math.random() * SYMBOLS.length) | 0].face);
-        setTimeout(tick, intervalMs);
+
+        const p = clamp(t / totalMs, 0, 1);
+        const slow = easeOutCubic(p);
+        const delay = lerp(minDelay, maxDelay, slow * slow);
+
+        let face = "";
+        if (nearMissFace && t >= nearStartMs && t <= nearEndMs) {
+          face = nearMissFace;
+        } else {
+          face = SYMBOLS[(Math.random() * SYMBOLS.length) | 0].face;
+          if (face === lastFace) face = SYMBOLS[(Math.random() * SYMBOLS.length) | 0].face;
+        }
+        if (face !== lastFace) setReelFace(reelEl, face);
+        lastFace = face;
+
+        setTimeout(tick, delay);
       };
       tick();
     });
@@ -708,6 +1101,13 @@
 
     els.speed.value = String(state.settings.speed);
     els.speedValue.textContent = state.settings.speed.toFixed(2);
+
+    if (els.totalSpins) els.totalSpins.textContent = String(state.totalSpins);
+    if (els.winLoss) els.winLoss.textContent = `${state.winSpins} / ${state.lossSpins}`;
+    if (els.totalWon) els.totalWon.textContent = String(state.totalWon);
+    if (els.totalLost) els.totalLost.textContent = String(state.totalLost);
+    if (els.bestWin) els.bestWin.textContent = String(state.bestWin);
+    renderHistory();
   }
 
   async function doSpin() {
@@ -739,22 +1139,42 @@
     const symbolKeys = picked.map((s) => s.key);
 
     setStatus(`Spinning… spending ${bet} tokens on “inference”.`, null);
-    beep({ type: "square", freq: 190, ms: 70, gain: 0.18, sweepTo: 260 });
+    playSpinStartSfx();
     vibrate(12);
 
     const speed = spinSpeed();
-    const base = 780 / speed;
+    const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const allDistinct = new Set(symbolKeys).size === 3;
+    const wantNearMiss = allDistinct && !reducedMotion && Math.random() < 0.86;
+    const nearKeys = ["coin", "bot", "brain", "docs", "fire"];
+    const nearKey = wantNearMiss ? nearKeys[(Math.random() * nearKeys.length) | 0] : null;
+    const nearFace = nearKey ? SYMBOLS.find((s) => s.key === nearKey)?.face ?? null : null;
+
+    const total = clamp(1480 / speed, 860, 1750);
+    const durations = [total - 110 / speed, total - 30 / speed, total + 60 / speed];
+    const nearStart = total - 240 / speed;
+    const nearEnd = total - 130 / speed;
+
+    const nearMissUsed = Boolean(nearFace);
     const promises = picked.map((sym, i) =>
-      spinReel(els.reels[i], sym.face, base + i * (240 / speed), () => {
-        beep({ type: "square", freq: 380 + i * 60, ms: 32, gain: 0.08, sweepTo: 260 + i * 40 });
-      }),
+      spinReel(
+        els.reels[i],
+        sym.face,
+        durations[i],
+        () => {
+          playIconStopSfx(sym.key, i);
+        },
+        nearFace ? { nearMissFace: nearFace, nearMissStartMs: nearStart, nearMissEndMs: nearEnd } : {},
+      ),
     );
     await Promise.all(promises);
 
     // Buff: refund chance (latency discount)
+    let refundApplied = false;
     if (state.buffs.refundChanceSpins > 0) {
       const refund = Math.random() < 0.2;
       if (refund) {
+        refundApplied = true;
         state.tokens += bet;
         setStatus("Latency discount applied: bet refunded. The GPU was… “busy”.", "good");
         beep({ type: "triangle", freq: 520, ms: 90, gain: 0.22, sweepTo: 820 });
@@ -772,36 +1192,48 @@
     state.tokens = clampInt(state.tokens + payout, 0, 999999);
 
     const tier = winTier(payout, bet);
+    const faces = formatFaces(symbolKeys);
+    const net = payout - bet + (refundApplied ? bet : 0);
+
+    state.totalSpins += 1;
+    if (net > 0) state.winSpins += 1;
+    else if (net < 0) state.lossSpins += 1;
+    state.totalWon = clampInt(state.totalWon + Math.max(0, net), 0, 999999999);
+    state.totalLost = clampInt(state.totalLost + Math.max(0, -net), 0, 999999999);
+    state.bestWin = Math.max(state.bestWin, Math.max(0, net));
+    state.history.push({ ts: Date.now(), bet, payout, refund: refundApplied, net, faces, headline, tier });
+    state.history = state.history.slice(-28);
 
     if (tier === "win" || tier === "big" || tier === "mega" || tier === "jackpot") {
       state.streak += 1;
-      state.bestWin = Math.max(state.bestWin, payout);
-      setStatus(`${headline} You won +${payout} 🪙. Result: ${formatFaces(symbolKeys)}`, "good");
+      setStatus(`${headline} You won +${payout} 🪙. Result: ${faces}`, "good");
+      flashScreen(tier);
+      pulseBg({ moodDelta: clamp(0.28 + (bet > 0 ? payout / bet : 0) * 0.04, 0.25, 1), hueDelta: 16 + Math.random() * 34 });
 
       for (const r of els.reels) r.classList.add("win");
       setTimeout(() => els.reels.forEach((r) => r.classList.remove("win")), 650);
 
-      const fanfareBase = tier === "jackpot" ? 520 : tier === "mega" ? 480 : tier === "big" ? 440 : 420;
-      beep({ type: "triangle", freq: fanfareBase, ms: 95, gain: 0.26, sweepTo: fanfareBase * 1.5 });
-      setTimeout(
-        () => beep({ type: "triangle", freq: fanfareBase * 1.5, ms: 120, gain: 0.26, sweepTo: fanfareBase * 2.25 }),
-        70,
-      );
+      playOutcomeSfx(tier);
       vibrate(tier === "jackpot" ? [25, 20, 35, 18, 45] : tier === "mega" ? [22, 18, 32, 16, 38] : [20, 18, 30]);
 
       showBigWin(tier, payout);
       celebrateWin(tier, payout, bet);
     } else if (tier === "loss") {
       state.streak = 0;
-      setStatus(`${headline} You paid an extra ${Math.abs(payout)} 🪙. Result: ${formatFaces(symbolKeys)}`, "bad");
+      setStatus(
+        `${headline}${nearMissUsed ? " Almost a win—then the model “corrected” itself." : ""} You paid an extra ${Math.abs(payout)} 🪙. Result: ${faces}`,
+        "bad",
+      );
+      pulseBg({ moodDelta: nearMissUsed ? -0.42 : -0.30, hueDelta: -(10 + Math.random() * 16), nearMiss: nearMissUsed });
       for (const r of els.reels) r.classList.add("lose");
       setTimeout(() => els.reels.forEach((r) => r.classList.remove("lose")), 520);
-      beep({ type: "sawtooth", freq: 220, ms: 110, gain: 0.18, sweepTo: 120 });
+      playOutcomeSfx("loss", { nearMiss: nearMissUsed });
       vibrate([40, 30, 20]);
     } else {
       state.streak = 0;
-      setStatus(`${headline} Result: ${formatFaces(symbolKeys)}`, null);
-      beep({ type: "square", freq: 260, ms: 70, gain: 0.14, sweepTo: 240 });
+      setStatus(`${headline}${nearMissUsed ? " Almost. The AI refused to comply." : ""} Result: ${faces}`, null);
+      pulseBg({ moodDelta: nearMissUsed ? -0.26 : -0.14, hueDelta: nearMissUsed ? -(8 + Math.random() * 10) : -(4 + Math.random() * 8), nearMiss: nearMissUsed });
+      playOutcomeSfx("none", { nearMiss: nearMissUsed });
       vibrate(8);
     }
 
@@ -905,6 +1337,12 @@
         streak: 0,
         auto: false,
         bestWin: 0,
+        totalSpins: 0,
+        winSpins: 0,
+        lossSpins: 0,
+        totalWon: 0,
+        totalLost: 0,
+        history: [],
         buffs: { payoutBoostSpins: 0, refundChanceSpins: 0, bugShield: 0, luckSpins: 0, bugTaxHalfSpins: 0 },
         settings: { ...state.settings },
         lastDailyClaimISO: null,
@@ -928,6 +1366,8 @@
     load();
     fx = createFx(els.fx);
     window.addEventListener("resize", () => fx && fx.resize(), { passive: true });
+    syncBgVars();
+    wireBackground();
     renderShop();
     wire();
     updateUI();

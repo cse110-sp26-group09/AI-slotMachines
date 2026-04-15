@@ -13,6 +13,7 @@
   <body class="preload">
     <div class="bg" aria-hidden="true"></div>
     <canvas class="fx" id="fx" aria-hidden="true"></canvas>
+    <div class="flashLayer" id="flashLayer" aria-hidden="true"></div>
     <div class="bigWin" id="bigWin" aria-hidden="true">
       <div class="bigWinInner">
         <div class="bigWinTitle" id="bigWinTitle">BIG WIN</div>
@@ -164,6 +165,34 @@
           <h2>Token Shop (spend tokens)</h2>
           <div class="shop" id="shop"></div>
           <p class="fineprint">All power-ups are local and unserious. No real money. No real AI.</p>
+        </section>
+
+        <section class="card" aria-label="Ledger">
+          <h2>Ledger (wins/losses)</h2>
+          <div class="ledger">
+            <div class="ledgerStat">
+              <div class="statLabel">Spins</div>
+              <div class="statValue"><span id="totalSpins">0</span></div>
+            </div>
+            <div class="ledgerStat">
+              <div class="statLabel">Win / Loss</div>
+              <div class="statValue"><span id="winLoss">0 / 0</span></div>
+            </div>
+            <div class="ledgerStat">
+              <div class="statLabel">Won</div>
+              <div class="statValue">+<span id="totalWon">0</span> 🪙</div>
+            </div>
+            <div class="ledgerStat">
+              <div class="statLabel">Lost</div>
+              <div class="statValue">−<span id="totalLost">0</span> 🪙</div>
+            </div>
+            <div class="ledgerStat">
+              <div class="statLabel">Best cashout</div>
+              <div class="statValue">+<span id="bestWin">0</span> 🪙</div>
+            </div>
+          </div>
+          <div class="history" id="history" aria-label="Spin history" role="log" aria-live="polite"></div>
+          <p class="fineprint">Local-only stats. The house always wins… at satire.</p>
         </section>
       </section>
 
