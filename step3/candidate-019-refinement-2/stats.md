@@ -11,5 +11,5 @@
 - Files produced:	app.js, index.html, README.md, styles.css. (4)
 - Lines of code: 	2242
 - Runs in browser?:	Yes
-- App Quality Notes: App functions well and includes better sounds and screen flashing after each spin. Better animations according to prompt.
+- App Quality Notes: App functions well and includes better sounds and screen flashing after each spin. Better animations according to prompt. Aura of lighting that follows cursor.
 - Code Quality Notes: Code looks reasonable and most of it is coherent. styles.css file is very long but that is reasonable given the extra effects.
