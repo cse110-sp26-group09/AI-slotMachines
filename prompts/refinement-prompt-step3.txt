@@ -1,0 +1,13 @@
+Improve the slot machine implementation while maintaining same technology.
+- Features:
+- Full Screen animations when winning a spin. Flashing colours. 
+Independent sounds for each icon. Each type of win and icon should have different sounds
+- Needs to feel flashy. The screen should light up with fireworks and colours.
+- Implement a slow down effect on spins (less than 2 seconds for the whole animation). For losing spins the loser needs to be tricked into thinking they almost win. 
+The spin needs to slowly reach a winning combination but stop right before 
+- The slot machine should make fun of AI, as in you are winning tokens and spending tokens.
+- The user should feel good when playing, when winning the lottery there should be a clear visual and sound feedback. 
+- Using fireworks, custom effects and bigger and fancier animations the bigger the cash out.
+- The game should focus on keeping the user hooked on it. Make sure to include sound effects with each spin and shop to spend tokens. 
+- Empahsises: [attention here] Make the background more fun. Let the background be interactive and be affected by wins and losses
+- Have a log of the total wins and losses

@@ -3,8 +3,8 @@
   "short_name": "Token Fortune",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#070914",
-  "theme_color": "#0b1024",
+  "background_color": "#070715",
+  "theme_color": "#0b0b16",
   "icons": [
     {
       "src": "./icons/icon.svg",
