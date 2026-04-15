@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-Playable app: see [ai-slot-machine/README.md](ai-slot-machine/README.md).
-=======
-## AI Token Slot Machine (vanilla web app)
-
-- Open `index.html` directly to play (no install needed).
-- For offline/PWA caching, serve the folder (e.g. VS Code “Live Server”) so the service worker can register.
-
----
->>>>>>> 73280ca64dd41c7d5d1600c0193f07746fd5a169
-
 This is the 50 runs of the AI slot machine. 
 
 Model that will be used: GPT-5.2
