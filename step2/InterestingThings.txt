@@ -1,0 +1,4 @@
+AI seems to take more tokens during peak hours
+
+AI seems to take longer during peak hours
+
