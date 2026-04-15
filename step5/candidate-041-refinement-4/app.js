@@ -57,6 +57,8 @@ const el = {
   shopBtn: document.getElementById("shopBtn"),
   shopDialog: document.getElementById("shopDialog"),
   shopGrid: document.getElementById("shopGrid"),
+  shopBalance: document.getElementById("shopBalance"),
+  shopTelemetry: document.getElementById("shopTelemetry"),
 
   volumeWrap: document.getElementById("volumeWrap"),
   volume: document.getElementById("volume"),
@@ -94,7 +96,9 @@ function loadState() {
 }
 
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {}
 }
 
 function defaultState() {
@@ -109,6 +113,7 @@ function defaultState() {
     history: [],
     telemetryLevel: 0,
     fineTuneRemaining: 0,
+    nearMissCooldown: 0,
     soundOn: false,
     volume: 70,
     bet: 1,
@@ -133,6 +138,7 @@ function normalizeState(raw) {
   s.history = s.history.slice(-40).filter((x) => x && typeof x === "object");
   s.telemetryLevel = clampInt(s.telemetryLevel, 0, 999);
   s.fineTuneRemaining = clampInt(s.fineTuneRemaining, 0, 999);
+  s.nearMissCooldown = clampInt(s.nearMissCooldown, 0, 999);
   s.volume = clampInt(s.volume, 0, 100);
   s.bet = clampInt(s.bet, 1, maxBet);
   s.hapticsOn = !!s.hapticsOn;
@@ -210,6 +216,9 @@ function renderHUD() {
   el.spinMeta.textContent = `cost ${formatInt(cost)} TOK • bet ${formatInt(state.bet)}×`;
   el.sessionStats.textContent = `${formatInt(state.spins)} spins`;
 
+  const balancePill = el.balance?.closest?.(".pill") ?? null;
+  balancePill?.classList.toggle("is-low", state.balance < cost && !isSpinning);
+
   el.soundToggle.checked = !!state.soundOn;
   el.reducedMotionToggle.checked = !!state.reducedMotion;
   el.hapticsToggle.checked = !!state.hapticsOn;
@@ -223,11 +232,12 @@ function renderHUD() {
   document.body.classList.toggle("is-neon", !!state.neonMode);
   document.body.classList.toggle("is-reduced", !!state.reducedMotion);
 
-  const canSpin = !isSpinning && state.balance >= cost;
+  const inShop = !!el.shopDialog?.open;
+  const canSpin = !isSpinning && !inShop && state.balance >= cost;
   el.spinBtn.disabled = !canSpin;
   el.fineTuneBtn.disabled = isSpinning || state.balance < fineTuneCost;
   el.sellDataBtn.disabled = isSpinning;
-  el.shopBtn.disabled = isSpinning;
+  el.shopBtn.disabled = isSpinning || inShop;
   el.resetBtn.disabled = isSpinning;
 
   renderLedger();
@@ -237,7 +247,11 @@ function renderLedger() {
   if (!el.totalWon || !el.totalSpent || !el.totalNet || !el.wlCount || !el.biggestWin) return;
   el.totalWon.textContent = formatInt(state.spinWonTotal);
   el.totalSpent.textContent = formatInt(state.spinSpentTotal);
-  el.totalNet.textContent = formatInt(state.spinWonTotal - state.spinSpentTotal);
+  const net = state.spinWonTotal - state.spinSpentTotal;
+  el.totalNet.textContent = formatInt(net);
+  const netItem = el.totalNet?.closest?.(".ledger__item") ?? null;
+  netItem?.classList.toggle("is-pos", net > 0);
+  netItem?.classList.toggle("is-neg", net < 0);
   el.wlCount.textContent = `${formatInt(state.winCount)}/${formatInt(state.lossCount)}`;
   el.biggestWin.textContent = formatInt(state.biggestWin);
 
@@ -555,7 +569,7 @@ function createAudioEngine() {
 
     const g = ctx.createGain();
     g.gain.setValueAtTime(0.0001, at);
-    g.gain.exponentialRampToValueAtTime(0.09 * Math.max(0.65, Math.min(1.4, intensity)), at + 0.05);
+    g.gain.exponentialRampToValueAtTime(0.082 * Math.max(0.65, Math.min(1.4, intensity)), at + 0.05);
 
     const mix = ctx.createGain();
     mix.gain.value = 1;
@@ -601,10 +615,10 @@ function createAudioEngine() {
     if (!ensure()) return;
     const pan = reelIndex === 0 ? -0.35 : reelIndex === 2 ? 0.35 : 0;
     const bump = reelIndex * 18;
-    if (symbolId === "TOKEN") return tone({ pan, f0: 880 + bump, f1: 1320 + bump, dur: 0.06, type: "triangle", peak: 0.07, wet: 0.30 });
+    if (symbolId === "TOKEN") return tone({ pan, f0: 880 + bump, f1: 1320 + bump, dur: 0.06, type: "triangle", peak: 0.062, wet: 0.28 });
     if (symbolId === "PROMPT") return tone({ pan, f0: 560 + bump, f1: 420 + bump, dur: 0.05, type: "square", peak: 0.045, wet: 0.12 });
     if (symbolId === "GPU") return tone({ pan, f0: 180 + bump, f1: 260 + bump, dur: 0.10, type: "sawtooth", peak: 0.05, wet: 0.08 });
-    if (symbolId === "AGENT") return tone({ pan, f0: 740 + bump, f1: 980 + bump, dur: 0.07, type: "sine", peak: 0.055, wet: 0.26 });
+    if (symbolId === "AGENT") return tone({ pan, f0: 740 + bump, f1: 980 + bump, dur: 0.07, type: "sine", peak: 0.052, wet: 0.26 });
     if (symbolId === "MODEL") return tone({ pan, f0: 420 + bump, f1: 620 + bump, dur: 0.10, type: "triangle", peak: 0.05, wet: 0.22 });
     if (symbolId === "HALLUCINATION") {
       tone({ pan, f0: 210 + bump, f1: 80 + bump, dur: 0.12, type: "square", peak: 0.05, wet: 0.10 });
@@ -632,13 +646,13 @@ function createAudioEngine() {
       [740];
 
     const step = tier === "jackpot" ? 0.08 : tier === "big" ? 0.09 : 0.10;
-    for (let i = 0; i < arp.length; i++) tone({ t: at + i * step, f0: arp[i], dur: 0.10, type: "triangle", peak: 0.055, wet: 0.32 });
+    for (let i = 0; i < arp.length; i++) tone({ t: at + i * step, f0: arp[i], dur: 0.10, type: "triangle", peak: 0.052, wet: 0.32 });
 
     const coins = tier === "jackpot" ? 38 : tier === "big" ? 26 : tier === "mid" ? 16 : tier === "small" ? 10 : 6;
     for (let i = 0; i < coins; i++) {
       const t = at + i * (0.018 + Math.random() * 0.012);
       const f0 = 900 + Math.random() * 900;
-      tone({ t, pan: (Math.random() * 0.5 - 0.25), f0, f1: f0 * 1.2, dur: 0.045, type: "triangle", peak: 0.03, wet: 0.18 });
+      tone({ t, pan: (Math.random() * 0.5 - 0.25), f0, f1: f0 * 1.2, dur: 0.045, type: "triangle", peak: 0.028, wet: 0.18 });
       if (Math.random() < 0.35) click({ t: t + 0.004, pan: (Math.random() * 0.6 - 0.3), bright: 0.85 });
     }
 
@@ -651,6 +665,15 @@ function createAudioEngine() {
     thunk({ t: at, weight: 0.82 });
     tone({ t: at + 0.01, f0: 180, f1: 110, dur: 0.18, type: "square", peak: 0.04, wet: 0.08 });
     tone({ t: at + 0.08, f0: 220, f1: 160, dur: 0.14, type: "sine", peak: 0.02, wet: 0.18 });
+  }
+
+  function bad() {
+    if (!ensure()) return;
+    const at = ctx.currentTime;
+    thunk({ t: at, weight: 0.78 });
+    tone({ t: at + 0.01, f0: 520, f1: 92, dur: 0.20, type: "square", peak: 0.042, wet: 0.10 });
+    click({ t: at + 0.06, bright: 1.0 });
+    tone({ t: at + 0.08, f0: 180, f1: 60, dur: 0.16, type: "sawtooth", peak: 0.028, wet: 0.08 });
   }
 
   function nearMissTease() {
@@ -711,6 +734,7 @@ function createAudioEngine() {
     nearMissTease,
     nearMissSnap,
     lose,
+    bad,
     win,
     tone,
   };
@@ -764,6 +788,12 @@ function sfxLose() {
   if (!state.soundOn) return;
   setMasterVolume();
   audio.lose();
+}
+
+function sfxBad() {
+  if (!state.soundOn) return;
+  setMasterVolume();
+  audio.bad();
 }
 
 function sfxNearMiss() {
@@ -1342,6 +1372,7 @@ async function spinOneReel(index, outIds, plan) {
   const teaseHoldMs = clampInt(plan?.teaseHoldMs ?? 0, 0, 2000);
   const stopHoldMs = clampInt(plan?.stopHoldMs ?? 0, 0, 2000);
   const onStop = typeof plan?.onStop === "function" ? plan.onStop : null;
+  const dramaticStop = !!plan?.dramaticStop;
 
   const seq = buildSpinSequence({ ticks, finalId, teaseId, teaseSteps });
   const delays = makeSpinDelays({
@@ -1350,6 +1381,10 @@ async function spinOneReel(index, outIds, plan) {
     minDelay: state.reducedMotion ? 30 : 16,
     maxDelay: state.reducedMotion ? 90 : 190,
   });
+  if (dramaticStop && delays.length >= 3 && !state.reducedMotion) {
+    delays[delays.length - 2] = Math.max(delays[delays.length - 2], 110);
+    delays[delays.length - 1] = Math.max(delays[delays.length - 1], 140);
+  }
 
   let teased = false;
   for (let i = 0; i < seq.length; i++) {
@@ -1378,6 +1413,10 @@ async function spinOneReel(index, outIds, plan) {
 
 async function doSpin() {
   if (isSpinning) return;
+  if (el.shopDialog?.open) {
+    setMessage("Close the shop to spin. (Capitalism is patient.)", "neutral");
+    return;
+  }
   const cost = spinCost();
   if (state.balance < cost) {
     setMessage(`Insufficient tokens for ${formatInt(cost)} TOK. Lower your bet or sell your data.`, "bad");
@@ -1413,11 +1452,13 @@ async function doSpin() {
   // Decide the outcome up-front so we can choreograph the slowdown/near-miss.
   let planned = [chooseWeightedSymbol().id, chooseWeightedSymbol().id, chooseWeightedSymbol().id];
   const pre = payoutFor(planned);
-  if (!state.reducedMotion && pre.win === 0 && pre.kind === "lose") {
+  const canNearMiss = !state.reducedMotion && pre.win === 0 && pre.kind === "lose" && state.nearMissCooldown <= 0;
+  if (canNearMiss && Math.random() < 0.24) {
     const nm = buildNearMissIds();
     planned = nm.ids;
     bait = nm.bait;
     mode = "nearMiss";
+    state.nearMissCooldown = 2;
   }
 
   const out = ["TOKEN", "TOKEN", "TOKEN"];
@@ -1465,6 +1506,7 @@ async function doSpin() {
       teaseSteps: mode === "nearMiss" ? 5 : chaseId ? 2 : 0,
       teaseHoldMs: mode === "nearMiss" ? 110 : chaseId ? 70 : 0,
       stopHoldMs: mode === "nearMiss" ? 90 : chaseId ? 50 : 0,
+      dramaticStop: mode === "nearMiss" || !!chaseId,
       onTease: () => {
         if (mode === "nearMiss") {
           if (teaseOnce) return;
@@ -1506,13 +1548,18 @@ async function doSpin() {
   bgField?.spin?.(false);
   if (state.soundOn) audio.stopSpinLoop(0.06);
 
+  // Micro-beat to let the cabinet settle before the verdict.
+  if (!state.reducedMotion) await sleep(mode === "nearMiss" || chaseId ? 110 : 75);
+
   const result = payoutFor(out);
 
   // “Production incident”: tiny chance to invert a good outcome when hallucination is involved.
   const hasHall = out.includes("HALLUCINATION");
   const insured = state.insuranceRemaining > 0;
   let paid = false;
+  let abRollback = false;
   if (hasHall && result.win > 0 && !insured && Math.random() < 0.18) {
+    abRollback = true;
     setMessage("A/B test says you didn’t like that win. rolling back. payout: 0 TOK.", "bad");
   } else {
     if (result.win > 0) {
@@ -1533,6 +1580,7 @@ async function doSpin() {
 
   if (state.insuranceRemaining > 0) state.insuranceRemaining -= 1;
   if (state.fineTuneRemaining > 0) state.fineTuneRemaining -= 1;
+  if (state.nearMissCooldown > 0 && mode !== "nearMiss") state.nearMissCooldown -= 1;
   state.last = out;
 
   const payout = paid ? result.win : 0;
@@ -1550,7 +1598,7 @@ async function doSpin() {
     ids: out.slice(),
     cost,
     payout,
-    kind: paid ? "win" : (mode === "nearMiss" ? "lose" : result.kind),
+    kind: paid ? "win" : (abRollback ? "bad" : (mode === "nearMiss" ? "lose" : result.kind)),
     mode,
   });
   state.history = state.history.slice(-40);
@@ -1560,7 +1608,8 @@ async function doSpin() {
     sfxWin(result.win, out);
     celebrate(result.win);
   } else {
-    sfxLose();
+    if (abRollback || result.kind === "bad" || (hasHall && result.win <= 0)) sfxBad();
+    else sfxLose();
     tryVibrate([10]);
     pulseMood("lose");
   }
@@ -1717,6 +1766,8 @@ const shopItems = [
 ];
 
 function renderShop() {
+  if (el.shopBalance) el.shopBalance.textContent = formatInt(state.balance);
+  if (el.shopTelemetry) el.shopTelemetry.textContent = telemetryLabel();
   el.shopGrid.innerHTML = "";
 
   for (const item of shopItems) {
@@ -1766,6 +1817,7 @@ function openShop() {
   renderShop();
   sfxShop();
   try { el.shopDialog.showModal(); } catch {}
+  renderHUD();
 }
 
 function purchase(id) {
@@ -1807,6 +1859,7 @@ function wireUI() {
   window.addEventListener("keydown", (e) => {
     if (e.repeat) return;
     if (e.key !== " " && e.key !== "Enter") return;
+    if (el.shopDialog?.open) return;
     const tag = document.activeElement?.tagName?.toLowerCase();
     const isControl = tag === "button" || tag === "input" || tag === "a" || tag === "textarea" || tag === "select";
     if (isControl) return;

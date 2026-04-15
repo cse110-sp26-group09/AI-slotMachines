@@ -32,11 +32,11 @@
         </div>
 
         <div class="hud" role="status" aria-live="polite">
-          <div class="pill">
+          <div class="pill pill--balance">
             <div class="pill__k">Balance</div>
             <div class="pill__v"><span id="balance">0</span> <span class="unit">TOK</span></div>
           </div>
-          <div class="pill">
+          <div class="pill pill--cost">
             <div class="pill__k">Spin Cost</div>
             <div class="pill__v"><span id="spinCost">0</span> <span class="unit">TOK</span></div>
           </div>
@@ -197,6 +197,17 @@
           <div class="shop__title">The Shop</div>
           <button class="btn btn--icon" id="shopClose" value="cancel" aria-label="Close shop" type="submit">✕</button>
         </header>
+
+        <div class="shop__meta" aria-label="Shop status">
+          <div class="shop__stat">
+            <div class="shop__k">Balance</div>
+            <div class="shop__v"><span id="shopBalance">0</span> <span class="unit">TOK</span></div>
+          </div>
+          <div class="shop__stat">
+            <div class="shop__k">Telemetry</div>
+            <div class="shop__v"><span id="shopTelemetry">Off</span></div>
+          </div>
+        </div>
 
         <div class="shop__sub">
           Spend tokens on “features” that should have been your default rights.
