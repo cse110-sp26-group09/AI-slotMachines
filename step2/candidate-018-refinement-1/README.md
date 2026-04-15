@@ -10,7 +10,9 @@ Vanilla HTML/CSS/JS slot machine that makes fun of AI economics: you **spend tok
 
 - Token balance + betting (“prompt budget”) + stats saved via `localStorage`
 - Reel animations (respects `prefers-reduced-motion`)
-- Sound effects (Web Audio), optional haptics (Vibration API), optional announcer (SpeechSynthesis)
+- Sound effects (Web Audio) with volume + spin ticks
+- Optional haptics (Vibration API) + optional announcer (SpeechSynthesis)
+- Token shop: spend tokens on “upgrades” (luck patch, outage insurance, turbo unlock)
+- Big-win FX: banner + fireworks/confetti burst that scales with payout
 - Share + copy buttons (Web Share / Clipboard APIs)
 - Offline-friendly via `sw.js` + `manifest.webmanifest`
-
