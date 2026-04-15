@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Token Casino: Definitely Not AI</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg" aria-hidden="true">
+      <div class="bg-grid"></div>
+      <div class="bg-glow"></div>
+      <div class="bg-prism"></div>
+      <div class="bg-noise"></div>
+      <canvas class="bg-canvas" id="bgCanvas" aria-hidden="true"></canvas>
+    </div>
+
+    <div class="fx" id="fxLayer" aria-hidden="true">
+      <canvas class="fx__canvas" id="fxCanvas" aria-hidden="true"></canvas>
+      <div class="win-overlay" id="winOverlay" aria-hidden="true"></div>
+    </div>
+
+    <main class="app" id="app">
+      <header class="topbar reveal" style="--d: 40ms">
+        <div class="brand">
+          <div class="brand__mark" aria-hidden="true">TC</div>
+          <div class="brand__text">
+            <div class="brand__title">Token Casino</div>
+            <div class="brand__sub">Spend tokens. Win tokens. Become the product.</div>
+          </div>
+        </div>
+
+        <div class="hud" role="status" aria-live="polite">
+          <div class="pill">
+            <div class="pill__k">Balance</div>
+            <div class="pill__v"><span id="balance">0</span> <span class="unit">TOK</span></div>
+          </div>
+          <div class="pill">
+            <div class="pill__k">Spin Cost</div>
+            <div class="pill__v"><span id="spinCost">0</span> <span class="unit">TOK</span></div>
+          </div>
+          <div class="pill">
+            <div class="pill__k">Telemetry</div>
+            <div class="pill__v"><span id="telemetry">Off</span></div>
+          </div>
+        </div>
+      </header>
+
+      <section class="machine reveal" aria-label="Slot machine" style="--d: 120ms">
+        <div class="machine__frame" id="machineFrame">
+          <div class="marquee" aria-hidden="true">
+            <span>NOW WITH 200% MORE CONFIDENCE</span>
+            <span>NO REFUNDS</span>
+            <span>LIMITED-TIME “TRUST ME” BONUS</span>
+            <span>HALLUCINATIONS SOLD SEPARATELY</span>
+          </div>
+
+          <div class="reels" role="group" aria-label="Reels">
+            <div class="reel" id="reel0" aria-label="Reel 1">
+              <div class="reel__window">
+                <div class="reel__symbol" id="sym0">…</div>
+              </div>
+              <div class="reel__shine" aria-hidden="true"></div>
+            </div>
+
+            <div class="reel" id="reel1" aria-label="Reel 2">
+              <div class="reel__window">
+                <div class="reel__symbol" id="sym1">…</div>
+              </div>
+              <div class="reel__shine" aria-hidden="true"></div>
+            </div>
+
+            <div class="reel" id="reel2" aria-label="Reel 3">
+              <div class="reel__window">
+                <div class="reel__symbol" id="sym2">…</div>
+              </div>
+              <div class="reel__shine" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <div class="message" id="message" role="status" aria-live="polite">
+            Insert tokens to begin. Or don’t. The model will still ship.
+          </div>
+
+          <div class="controls" aria-label="Controls">
+            <button class="btn btn--primary" id="spinBtn" type="button">
+              <span class="btn__label">Spin</span>
+              <span class="btn__meta"><span id="spinMeta">cost 0 TOK</span></span>
+            </button>
+
+            <div class="bet" aria-label="Spin amount">
+              <div class="bet__top">
+                <div class="bet__label">Spin amount</div>
+                <div class="bet__value"><span id="betValue">1</span>×</div>
+              </div>
+              <div class="bet__row">
+                <input id="betRange" class="range" type="range" min="1" max="20" step="1" value="1" />
+                <input id="betNumber" class="num" type="number" min="1" max="20" step="1" value="1" inputmode="numeric" />
+              </div>
+              <div class="bet__hint">Bigger bets unlock bigger ego boosts (and bigger fireworks).</div>
+            </div>
+
+            <div class="controlrow">
+              <button class="btn" id="fineTuneBtn" type="button" title="Spend tokens to make the model 'better'.">
+                Fine-tune (cost <span id="fineTuneCost">0</span>)
+              </button>
+              <button class="btn" id="sellDataBtn" type="button" title="Exchange privacy for tokens. Classic.">
+                Sell my data
+              </button>
+              <button class="btn" id="shopBtn" type="button" title="Spend tokens on upgrades that should have been free.">
+                Shop
+              </button>
+              <button class="btn" id="resetBtn" type="button" title="Hard reset. No regrets. No learning.">Reset</button>
+            </div>
+
+            <div class="toggles" aria-label="Preferences">
+              <label class="toggle">
+                <input id="soundToggle" type="checkbox" />
+                <span class="toggle__ui" aria-hidden="true"></span>
+                <span class="toggle__text">Sound</span>
+              </label>
+              <label class="toggle toggle--slider" id="volumeWrap">
+                <span class="toggle__text">Volume</span>
+                <input id="volume" class="range range--sm" type="range" min="0" max="100" step="1" value="70" />
+              </label>
+              <label class="toggle">
+                <input id="hapticsToggle" type="checkbox" />
+                <span class="toggle__ui" aria-hidden="true"></span>
+                <span class="toggle__text">Haptics</span>
+              </label>
+              <label class="toggle">
+                <input id="reducedMotionToggle" type="checkbox" />
+                <span class="toggle__ui" aria-hidden="true"></span>
+                <span class="toggle__text">Reduced motion</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <aside class="paytable reveal" aria-label="Payouts" style="--d: 220ms">
+          <div class="card">
+            <div class="card__title">Payouts (3 of a kind • scales with bet)</div>
+            <ul class="table" id="payTable"></ul>
+            <div class="ledger" aria-label="Win/loss log">
+              <div class="ledger__title">Ledger (We Remember Everything)</div>
+              <div class="ledger__grid">
+                <div class="ledger__item">
+                  <div class="ledger__k">Won</div>
+                  <div class="ledger__v"><span id="totalWon">0</span> <span class="unit">TOK</span></div>
+                </div>
+                <div class="ledger__item">
+                  <div class="ledger__k">Spent</div>
+                  <div class="ledger__v"><span id="totalSpent">0</span> <span class="unit">TOK</span></div>
+                </div>
+                <div class="ledger__item">
+                  <div class="ledger__k">Net</div>
+                  <div class="ledger__v"><span id="totalNet">0</span> <span class="unit">TOK</span></div>
+                </div>
+                <div class="ledger__item">
+                  <div class="ledger__k">W/L</div>
+                  <div class="ledger__v"><span id="wlCount">0/0</span></div>
+                </div>
+                <div class="ledger__item">
+                  <div class="ledger__k">Biggest</div>
+                  <div class="ledger__v"><span id="biggestWin">0</span> <span class="unit">TOK</span></div>
+                </div>
+              </div>
+              <ol class="ledger__log" id="ledgerLog" aria-label="Recent spins"></ol>
+            </div>
+            <div class="card__note">
+              Two of a kind pays a small “confidence bonus”. Hallucinations pay in vibes.
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__title">How This “Works”</div>
+            <ul class="facts">
+              <li>Each spin costs tokens.</li>
+              <li>Wins mint tokens because numbers are easy.</li>
+              <li>Fine-tune spends tokens for a temporary luck boost.</li>
+              <li>“Sell my data” increases telemetry and your balance.</li>
+            </ul>
+          </div>
+        </aside>
+      </section>
+
+      <footer class="footer reveal" style="--d: 280ms">
+        <div class="footer__left">Built with HTML/CSS/JS and platform APIs. No frameworks. No warranties.</div>
+        <div class="footer__right"><span id="sessionStats">0 spins</span></div>
+      </footer>
+    </main>
+
+    <dialog class="shop" id="shopDialog" aria-label="Token shop">
+      <form method="dialog" class="shop__frame">
+        <header class="shop__top">
+          <div class="shop__title">The Shop</div>
+          <button class="btn btn--icon" id="shopClose" value="cancel" aria-label="Close shop" type="submit">✕</button>
+        </header>
+
+        <div class="shop__sub">
+          Spend tokens on “features” that should have been your default rights.
+        </div>
+
+        <div class="shop__grid" id="shopGrid" aria-label="Shop items"></div>
+
+        <div class="shop__foot">
+          <div class="shop__hint">Pro tip: buying “Telemetry Opt‑Out” is like paying a ransom to yourself.</div>
+          <button class="btn" value="cancel" type="submit">Back to slots</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
+
