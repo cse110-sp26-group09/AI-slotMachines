@@ -51,6 +51,6 @@ Jason: 16-20 (done)
 Woosik: 21-25 (done)
 Hieu: 26-30 (done)
 James: 31-35 (done)
-Waleed: 36-40
+Waleed: 36-39
+James: 40-41 
 Hemendra: 42-46
->>>>>>> 73280ca64dd41c7d5d1600c0193f07746fd5a169

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Token Temple — An AI Slot Machine</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg" aria-hidden="true"></div>
+
+    <main class="app" role="application" aria-label="Token Temple slot machine">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">🪙</div>
+          <div>
+            <h1>Token Temple</h1>
+            <p class="tagline">Win tokens. Spend tokens. Hallucinate responsibly.</p>
+          </div>
+        </div>
+
+        <section class="wallet" aria-label="Token wallet">
+          <div class="walletRow">
+            <span class="label">Balance</span>
+            <span class="value" id="balance">0</span>
+            <span class="unit">tokens</span>
+          </div>
+          <div class="walletRow subtle">
+            <span class="label">Spin cost</span>
+            <span class="value" id="spinCost">0</span>
+            <span class="unit">tokens</span>
+          </div>
+        </section>
+      </header>
+
+      <section class="machine" aria-label="Slot machine reels">
+        <div class="reels" aria-live="off">
+          <div class="reel" id="reel0" aria-label="Reel 1">
+            <div class="symbol" id="sym0" aria-hidden="true">—</div>
+            <div class="symbolLabel" id="lbl0">Ready</div>
+          </div>
+          <div class="reel" id="reel1" aria-label="Reel 2">
+            <div class="symbol" id="sym1" aria-hidden="true">—</div>
+            <div class="symbolLabel" id="lbl1">Set</div>
+          </div>
+          <div class="reel" id="reel2" aria-label="Reel 3">
+            <div class="symbol" id="sym2" aria-hidden="true">—</div>
+            <div class="symbolLabel" id="lbl2">Spin</div>
+          </div>
+        </div>
+
+        <div class="status" role="status" aria-live="polite" aria-atomic="true">
+          <div class="headline" id="headline">Insert tokens. Summon hype.</div>
+          <div class="subline" id="subline">Tip: Press <kbd>Space</kbd> to spin.</div>
+        </div>
+
+        <div class="controls" aria-label="Controls">
+          <button class="primary" id="spinBtn" type="button">Spin (⌁ prompt)</button>
+          <button class="ghost" id="refillBtn" type="button" title="Definitely not microtransactions">
+            Claim “Free” Tokens
+          </button>
+          <button class="ghost" id="resetBtn" type="button" title="Wipes localStorage">Factory Reset</button>
+        </div>
+
+        <details class="panel" open>
+          <summary>Inference settings</summary>
+          <div class="grid">
+            <label class="field">
+              <span class="fieldLabel">Model</span>
+              <select id="model">
+                <option value="frontier">Frontier Deluxe</option>
+                <option value="budget">Budget Bot</option>
+                <option value="opensource">Open‑Source‑ish</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span class="fieldLabel">Prompt length</span>
+              <input id="promptLen" type="range" min="1" max="10" value="5" />
+              <span class="fieldHint" id="promptHint">Medium verbosity, medium regret.</span>
+            </label>
+
+            <label class="field">
+              <span class="fieldLabel">Temperature</span>
+              <input id="temp" type="range" min="0" max="100" value="35" />
+              <span class="fieldHint" id="tempHint">0.35 — mostly factual-ish.</span>
+            </label>
+
+            <label class="field checkbox">
+              <input id="voice" type="checkbox" checked />
+              <span class="fieldLabel">AI commentator (speech)</span>
+            </label>
+
+            <label class="field checkbox">
+              <input id="sound" type="checkbox" checked />
+              <span class="fieldLabel">Sound (Web Audio)</span>
+            </label>
+          </div>
+        </details>
+
+        <details class="panel">
+          <summary>Pay table (approx.)</summary>
+          <div class="paytable" id="paytable" aria-label="Pay table"></div>
+          <p class="fineprint">“Approx.” because the odds are proprietary, stochastic, and sometimes vibes-based.</p>
+        </details>
+      </section>
+
+      <footer class="footer">
+        <div class="stats" aria-label="Stats">
+          <div><span class="label">Spins</span> <span class="value" id="spins">0</span></div>
+          <div><span class="label">Lifetime won</span> <span class="value" id="won">0</span></div>
+          <div><span class="label">Lifetime spent</span> <span class="value" id="spent">0</span></div>
+        </div>
+        <div class="legal">
+          <span class="pill">No real money</span>
+          <span class="pill">Local-only</span>
+          <span class="pill">May contain hallucinations</span>
+        </div>
+      </footer>
+
+      <div class="toasts" id="toasts" aria-live="polite" aria-relevant="additions"></div>
+    </main>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
+
