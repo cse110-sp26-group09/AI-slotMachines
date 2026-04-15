@@ -1,6 +1,6 @@
-Candidates:
+Candidates::wq
 
-(NOT CHOSEN) 18 → Broken on win, ok UI
+24 → Rendering error for animation of spins
 
 1 → Has most of the features: settings with sound, haptics, and motion control, token shop, and animations. Sound is satifying, but shop items are not purchasable. Very interesting borrowing/debt mechanic as well.
 
