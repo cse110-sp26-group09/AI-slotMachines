@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TokenGacha 3000 — Definitely Not AI</title>
+    <meta
+      name="description"
+      content="A vanilla web slot machine that turns AI hype into tokens."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app" aria-labelledby="title">
+      <header class="header">
+        <div>
+          <h1 id="title">TokenGacha 3000</h1>
+          <p class="tagline">Win tokens. Lose dignity. Blame the model.</p>
+        </div>
+
+        <section class="wallet" aria-label="Wallet">
+          <div class="wallet__row">
+            <span class="wallet__label">Tokens</span>
+            <output id="tokens" class="wallet__value" aria-live="polite">—</output>
+          </div>
+          <div class="wallet__row">
+            <span class="wallet__label">Cost / spin</span>
+            <span id="cost" class="wallet__value">—</span>
+          </div>
+        </section>
+      </header>
+
+      <section class="machine" aria-label="Slot machine">
+        <div class="reels" role="group" aria-label="Reels">
+          <div class="reel" aria-label="Reel 1"><div id="r0" class="reel__face">?</div></div>
+          <div class="reel" aria-label="Reel 2"><div id="r1" class="reel__face">?</div></div>
+          <div class="reel" aria-label="Reel 3"><div id="r2" class="reel__face">?</div></div>
+        </div>
+
+        <div class="controls" role="group" aria-label="Controls">
+          <button id="spin" class="btn btn--primary" type="button">
+            Spin (generate value)
+          </button>
+          <button id="autospin" class="btn" type="button" aria-pressed="false">
+            Auto-spin: Off
+          </button>
+          <button id="sellData" class="btn" type="button">
+            Sell your data (+tokens)
+          </button>
+          <button id="reset" class="btn btn--danger" type="button">
+            Reset
+          </button>
+        </div>
+
+        <section class="status" aria-label="Status">
+          <p id="message" class="message" aria-live="polite"></p>
+          <div class="stats" role="group" aria-label="Stats">
+            <div class="stats__item">
+              <span class="stats__k">Spins</span>
+              <output id="spins" class="stats__v">0</output>
+            </div>
+            <div class="stats__item">
+              <span class="stats__k">Biggest win</span>
+              <output id="bigWin" class="stats__v">0</output>
+            </div>
+            <div class="stats__item">
+              <span class="stats__k">Net</span>
+              <output id="net" class="stats__v">0</output>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel" aria-label="How it works">
+        <h2>Rules (aka “alignment”)</h2>
+        <ul class="rules">
+          <li>Each spin costs tokens. This is the “inference budget.”</li>
+          <li>Two of a kind pays a little. Three of a kind pays a lot.</li>
+          <li>Some combos are “emergent behavior” (read: rigged for comedy).</li>
+          <li>Your tokens persist in your browser (localStorage), like a bad habit.</li>
+        </ul>
+        <div class="shareRow">
+          <button id="copy" class="btn btn--ghost" type="button">
+            Copy result to clipboard
+          </button>
+          <small class="hint" id="hint">
+            Tip: press <kbd>Space</kbd> to spin. Yes, we shipped keyboard support.
+          </small>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Activity log">
+        <h2>Telemetry (for “research”)</h2>
+        <ol id="log" class="log" aria-live="polite" aria-relevant="additions"></ol>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        Built with vanilla HTML/CSS/JS and platform APIs. No cloud. No ads. Just vibes
+        and questionable tokenomics.
+      </p>
+    </footer>
+
+    <script defer src="app.js"></script>
+  </body>
+</html>
+
