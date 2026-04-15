@@ -1,0 +1,16 @@
+Color & Theme: Commit to a cohesive aesthetic. Use CSS variables for consistency. 
+Dominant colors with sharp accents outperform timid, evenly-distributed palettes. Draw from IDE themes and cultural aesthetics for inspiration.
+
+Motion: Use animations for effects and micro-interactions. Prioritize CSS-only solutions for HTML. 
+Focus on high-impact moments: one well-orchestrated page load with staggered reveals (animation-delay) creates more delight than scattered micro-interactions.
+
+Backgrounds: Create atmosphere and depth rather than defaulting to solid colors. 
+Layer CSS gradients, use geometric patterns, or add contextual effects that match the overall aesthetic.
+
+Overall: Improve the slot machine implementation while maintaining same technology.
+The slot machine should make fun of AI, as in you are winning tokens and spending tokens.
+The user should feel good when playing, when winning the lottery there should be a clear visual, sound and haptic feedback. 
+Using fireworks, custom effects and bigger and fancier animations the bigger the cash out. 
+The game should focus on keeping the user hooked on it. Make sure to include sound effects with each spin and shop to spend tokens. 
+Include user customizability in the spin amount and options for sound settings. 
+Focus on keeping the UI clean without too much clutter.
