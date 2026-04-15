@@ -277,7 +277,7 @@ h1 {
 
 .stats {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   min-width: 260px;
 }
@@ -312,6 +312,47 @@ h1 {
   overflow: hidden;
 }
 
+.cabinetLights {
+  position: absolute;
+  inset: 10px;
+  border-radius: 16px;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(900px 300px at 50% 0%, rgba(0, 229, 255, 0.14), transparent 55%),
+    radial-gradient(900px 300px at 50% 100%, rgba(255, 43, 214, 0.12), transparent 55%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.0) 0 18px,
+      rgba(255, 255, 255, 0.065) 18px 20px
+    );
+  filter: saturate(1.35) blur(0.25px);
+  mix-blend-mode: screen;
+  transform: translateZ(0);
+  transition: opacity 220ms var(--easeOut);
+}
+
+body.spinning .cabinetLights {
+  opacity: 0.35;
+  animation: lightsRun 980ms linear infinite;
+}
+
+body.anticipation .cabinetLights {
+  opacity: 0.55;
+  animation-duration: 720ms;
+}
+
+body.flashWin .cabinetLights,
+body.flashMega .cabinetLights,
+body.flashJackpot .cabinetLights {
+  opacity: 0.75;
+}
+
+@keyframes lightsRun {
+  to {
+    background-position: 0 0, 0 0, 36px 0;
+  }
+}
+
 .machine::before {
   content: "";
   position: absolute;
@@ -323,14 +364,62 @@ h1 {
   pointer-events: none;
 }
 
+.reelsWrap {
+  position: relative;
+  margin-bottom: 14px;
+}
+
 .reels {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 0;
   position: relative;
   z-index: 1;
+}
+
+.payline {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 50%;
+  height: 7px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.75), rgba(255, 43, 214, 0.62), transparent);
+  box-shadow: 0 0 18px rgba(0, 229, 255, 0.24), 0 0 24px rgba(255, 43, 214, 0.16);
+  filter: blur(0.25px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+body.spinning .payline {
+  opacity: 0.14;
+}
+
+body.paylineWin .payline {
+  animation: paylineFlash 640ms var(--easeOut) both;
+}
+
+body.paylineJackpot .payline {
+  animation: paylineFlash 980ms var(--easeOut) both;
+}
+
+@keyframes paylineFlash {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) scaleX(0.92);
+  }
+  18% {
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1.02);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) scaleX(1.04);
+  }
 }
 
 .reel {
@@ -376,6 +465,11 @@ h1 {
 
 .reel.spinning {
   animation: wobble 240ms ease-in-out infinite alternate;
+}
+
+.reel.hold {
+  border-color: rgba(255, 200, 87, 0.40);
+  box-shadow: 0 26px 70px rgba(255, 200, 87, 0.10), 0 18px 48px rgba(0, 0, 0, 0.34);
 }
 
 .reel.spinning::before {
@@ -688,6 +782,49 @@ h2 {
   gap: 10px;
 }
 
+.buffBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 10px;
+  min-height: 22px;
+}
+
+.buffChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.18);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 12px;
+  font-weight: 780;
+  letter-spacing: 0.2px;
+}
+
+.buffChip.good {
+  border-color: rgba(125, 255, 139, 0.22);
+  background: rgba(125, 255, 139, 0.07);
+}
+
+.buffChip.warn {
+  border-color: rgba(255, 200, 87, 0.22);
+  background: rgba(255, 200, 87, 0.08);
+}
+
+.buffChip.bad {
+  border-color: rgba(255, 61, 113, 0.22);
+  background: rgba(255, 61, 113, 0.08);
+}
+
+.buffEmpty {
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 12px;
+  padding: 4px 2px;
+}
+
 .shopItem {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -891,6 +1028,7 @@ body.shake .app {
     flex-direction: column;
   }
   .stats {
+    grid-template-columns: 1fr 1fr;
     width: 100%;
     min-width: 0;
   }
