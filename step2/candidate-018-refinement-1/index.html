@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark light" />
-    <meta name="theme-color" content="#080912" />
+    <meta name="theme-color" content="#070812" />
     <title>Token Slots: The AI Casino</title>
     <meta
       name="description"
@@ -16,7 +16,7 @@
   </head>
   <body>
     <div class="app" data-js="app">
-      <header class="header">
+      <header class="header" data-reveal style="--d: 40ms">
         <div>
           <h1>Token Slots</h1>
           <p class="subtitle">Win tokens. Spend tokens. Blame the model either way.</p>
@@ -39,7 +39,7 @@
       </header>
 
       <main class="main">
-        <section class="machine" aria-label="Slot machine">
+        <section class="machine" aria-label="Slot machine" data-reveal style="--d: 120ms">
           <div class="marquee" aria-hidden="true">
             <span>•</span> <span>LATENCY</span> <span>•</span> <span>HALLUCINATIONS</span>
             <span>•</span> <span>GPU HEAT</span> <span>•</span> <span>DISRUPTION</span>
@@ -63,12 +63,26 @@
               <label for="bet" class="control__label"
                 >Prompt budget (bet): <span class="mono"><span data-js="betLabel">10</span> TOK</span></label
               >
+              <div class="betRow">
+                <input
+                  class="betRow__input"
+                  data-js="betNumber"
+                  type="number"
+                  min="1"
+                  max="250"
+                  step="1"
+                  value="10"
+                  inputmode="numeric"
+                  aria-label="Bet amount"
+                />
+                <span class="muted">TOK per spin</span>
+              </div>
               <input
                 id="bet"
                 data-js="bet"
                 type="range"
                 min="1"
-                max="50"
+                max="250"
                 step="1"
                 value="10"
               />
@@ -102,7 +116,7 @@
           </div>
         </section>
 
-        <aside class="sidebar">
+        <aside class="sidebar" data-reveal style="--d: 220ms">
           <section class="card">
             <h2>Payouts</h2>
             <div class="table" role="table" aria-label="Payouts table">
@@ -149,12 +163,52 @@
             </div>
           </section>
 
+          <section class="card shop">
+            <h2>Shop</h2>
+            <div class="small muted">Spend tokens on totally-legit &ldquo;upgrades.&rdquo; No refunds, no benchmarks.</div>
+            <div class="perks" data-js="perks" aria-live="polite"></div>
+            <div class="shopGrid" role="list">
+              <div class="shopItem" role="listitem">
+                <div class="shopItem__top">
+                  <div class="shopItem__title">Luck patch</div>
+                  <div class="shopItem__tag mono">3 spins</div>
+                </div>
+                <div class="shopItem__desc">Slightly better odds for &ldquo;coincidentally aligned&rdquo; reels.</div>
+                <button class="btn btn--small" type="button" data-js="buyLuck">Buy 60 TOK</button>
+              </div>
+              <div class="shopItem" role="listitem">
+                <div class="shopItem__top">
+                  <div class="shopItem__title">Outage insurance</div>
+                  <div class="shopItem__tag mono">5 spins</div>
+                </div>
+                <div class="shopItem__desc">If &#x1F4A5; shows up, we &ldquo;retry&rdquo; once.</div>
+                <button class="btn btn--small" type="button" data-js="buyShield">Buy 50 TOK</button>
+              </div>
+              <div class="shopItem" role="listitem">
+                <div class="shopItem__top">
+                  <div class="shopItem__title">Turbo mode</div>
+                  <div class="shopItem__tag mono">unlock</div>
+                </div>
+                <div class="shopItem__desc">Shorter spins. More dopamine per second.</div>
+                <button class="btn btn--small" type="button" data-js="buyTurbo">Buy 120 TOK</button>
+              </div>
+            </div>
+          </section>
+
           <section class="card">
             <h2>Settings</h2>
             <div class="settings">
               <label class="toggle">
                 <input data-js="sound" type="checkbox" checked />
                 <span>Sound (Web Audio)</span>
+              </label>
+              <label class="slider">
+                <span>Volume</span>
+                <input data-js="volume" type="range" min="0" max="100" step="1" value="70" />
+              </label>
+              <label class="toggle">
+                <input data-js="ticks" type="checkbox" checked />
+                <span>Spin ticks</span>
               </label>
               <label class="toggle">
                 <input data-js="haptics" type="checkbox" checked />
@@ -163,6 +217,10 @@
               <label class="toggle">
                 <input data-js="speech" type="checkbox" />
                 <span>Announcer (SpeechSynthesis)</span>
+              </label>
+              <label class="toggle">
+                <input data-js="turbo" type="checkbox" />
+                <span>Turbo mode</span>
               </label>
             </div>
             <div class="small muted">
@@ -182,7 +240,7 @@
         </aside>
       </main>
 
-      <footer class="footer">
+      <footer class="footer" data-reveal style="--d: 320ms">
         <button class="link" type="button" data-js="share">Share results</button>
         <span class="muted">•</span>
         <button class="link" type="button" data-js="copy">Copy state</button>
@@ -191,6 +249,9 @@
       </footer>
 
       <div class="toast" role="status" aria-live="polite" aria-atomic="true" data-js="toast" hidden></div>
+      <div class="fx" data-js="fx" aria-hidden="true">
+        <div class="fx__banner" data-js="fxBanner" hidden></div>
+      </div>
     </div>
 
     <script src="app.js" defer></script>

@@ -1,5 +1,5 @@
 /* Simple cache-first service worker for offline play. */
-const CACHE = "ai-slotmachine-cache-v1";
+const CACHE = "ai-slotmachine-cache-v2";
 const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", (event) => {
@@ -37,4 +37,3 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
-
