@@ -11,5 +11,5 @@
 - Files produced:	app.js, index.html, styles.css, README.md (4)
 - Lines of code: 1303
 - Runs in browser?:	Yes
-- App Quality Notes: 
-- Code Quality Notes: 
+- App Quality Notes: Polished gameplay with rich features: auto-spin, insert tokens, share results, factory reset. Uses Web Crypto for better RNG. Attractive marquee text feedback system. Detail-oriented with event log and helpful hints. Refined UI presentation with good payout rules display. Friendly tone throughout.
+- Code Quality Notes: Strong structure with centralized DOM element caching using els object. Modern JavaScript patterns (structuredClone). Good separation of concerns. Feature-rich with auto-spin, share, and settings management. Well-organized event listeners. 
