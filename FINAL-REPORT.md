@@ -34,7 +34,7 @@ The 50 candidates varied in how they handled tokens, timing, and execution flow,
 
 ### 50 -> 5 -> 3 -> 2 -> 1
 
-  * **Top Candidates:** `001`, `018`, `019`, `024`, `041`
+  * **Candidates:** `001`, `018`, `019`, `024`, `041` -> `001`, `019`, `041`-> `019`, `041` -> `041`
   * **Selection Logic:** We prioritized functional sound effects.
 
 ### Refinement Rounds
